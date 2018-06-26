@@ -71,6 +71,26 @@ const addWithCarry = (value: number, registers: RegisterSetInterface) => {
 	registers.m = 1;
 };
 
+const addFromAddressWithCarry = (address: number, memory: MemoryInterface, registers: RegisterSetInterface) => {
+	const a = registers.a;
+	const m = memory.readByte(address);
+
+	registers.a += m;
+	registers.a += registers.flags & RegisterFlag.CARRY ? 1 : 0;
+
+	registers.flags = registers.a > 255 ? RegisterFlag.CARRY : 0;
+
+	registers.a &= 255;
+
+	if (!registers.a)
+		registers.flags |= RegisterFlag.ZERO;
+
+	if ((registers.a ^ m ^ a) & 0x10)
+		registers.flags |= RegisterFlag.HALF_CARRY;
+
+	registers.m = 2;
+};
+
 export interface AddOperatorSet extends OperatorSet {
 	AddA: OperatorCallback;
 	AddB: OperatorCallback;
@@ -97,6 +117,9 @@ export interface AddOperatorSet extends OperatorSet {
 	AddEWithCarry: OperatorCallback;
 	AddHWithCarry: OperatorCallback;
 	AddLWithCarry: OperatorCallback;
+
+	AddHLAddressWithCarry: OperatorCallback;
+	AddPCAddressWithCarry: OperatorCallback;
 }
 
 export const AddOperators: AddOperatorSet = {
@@ -142,5 +165,10 @@ export const AddOperators: AddOperatorSet = {
 	AddHWithCarry: hardware => addWithCarry(hardware.cpu.registers.h, hardware.cpu.registers),
 	AddLWithCarry: hardware => addWithCarry(hardware.cpu.registers.l, hardware.cpu.registers),
 
-	// TODO ADDCHL
+	AddPCAddressWithCarry: hardware => addFromAddressWithCarry(hardware.cpu.registers.programCount, hardware.memory, hardware.cpu.registers),
+	AddHLAddressWithCarry: hardware => {
+		const registers = hardware.cpu.registers;
+
+		addFromAddressWithCarry((registers.h << 8) + registers.l, hardware.memory, registers);
+	},
 };

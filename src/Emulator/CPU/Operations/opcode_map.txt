@@ -22,7 +22,7 @@ LD{X}{Y}{Z}m > Load{Y}{Z}AddressInto{X}
 LDAmm > LoadPCWordIntoA
 	Load value at address named by the word at address named by PC into register A, and advance PC by 2
 
-LDSPnn > LoadPCWordIntoSP
+LDSPnn > LoadPCAndNextIntoSP
 	Load the word at address named by PC into SP
 
 LD{X}{Y}nn > LoadPCAndNextInto{X}{Y}
@@ -33,6 +33,8 @@ LD{X}{Y}mm > LoadPCWordInto{Y}{X}
 
 LDmmHL > LoadPCWordIntoHLAddress
 	Load the word at the address named by PC into registers H and L
+
+LDmmSP > LoadPCWordIntoSP
 
 LDHLIA > LoadAIntoHLAddressAndIncrement
 	Load register A into the address named by HL and increment HL
@@ -85,3 +87,57 @@ ADDSPn > AddPCAddressToSP
 
 ADCr_{x} > AddXWithCarry
 	Adds the value in register X to register A, with carry support
+
+ADDCHL > AddHLAddressWithCarry
+	Adds the value in the address named by HL to A, with carry support
+
+ADDCn > AddPCAddressWithCarry
+	Adds the value in the address named by PC to A, with carry support
+
+SUBr_{x} > Subtract{X}
+	Subtracts the value in register X from register A
+
+SUBHL > SubtractHLAddress
+	Subtracts the value in the address named by HL from A
+
+SUBn > SubtractPCAddress
+	Subtracts the value in the address named by PC from A
+
+SBCr_{x} > Subtract{X}WithCarry
+	Subtracts the value in register X from register A, with carry support
+
+SBCHL > SubtractHLAddressWithCarry
+	Subtracts the value in the address named by HL from register A, with carry support
+
+SBCn > SubtractPCAddressWithCarry
+	Subtracts the value in the address named by PC from register A, with carry support
+
+CPr_{x} > SetSubtract{X}Flags
+	Sets the register flags that would be set if `SUB X` were to be run
+
+CPHL > SetSubtractHLAddressFlags
+	Sets the register flags that would be set if `SUB HL` were to be run
+
+CPn > SetSubtractPCAddressFlags
+	Sets the register flags that would be set if `SUB PC` were to be run
+
+DAA > BCDCorrect
+	@see http://z80-heaven.wikidot.com/instructions-set:daa
+
+ANDr_{x} > BitAnd{X}
+	Performs bitwise AND on register A and X
+
+ANDHL > BitAndHLAddress
+	Performs bitwise AND on the value in the address named by HL and register A
+
+ANDn > BitAndPCAddress
+	Performs bitwise AND on the value in the address named by PC and register A
+
+ORr_{x} > BitOr{X}
+	Performs bitwise OR on register A and X
+
+ORHL > BitOrHLAddress
+	Performs bitwise OR on the value in the address named by HL and register A
+
+ORn > BitOrPCAddress
+	Performs bitwise OR on the value in the address named by PC and register A

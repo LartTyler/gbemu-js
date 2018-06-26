@@ -1,20 +1,24 @@
 import {HardwareBusAwareInterface, HardwareBusInterface} from '../Hardware';
 import {Clock, ClockInterface} from './Clock';
 import {AddOperators, AddOperatorSet} from './Operations/Add';
+import {BitwiseOperators, BitwiseOperatorSet} from './Operations/Bitwise';
 import {CompareOperators, CompareOperatorSet} from './Operations/Compare';
 import {ExtraOperators, ExtraOperatorSet} from './Operations/Extra';
 import {OperatorCallback, OperatorSet} from './Operations/index';
 import {LoadStoreOperators, LoadStoreOperatorSet} from './Operations/LoadStore';
 import {toCbcodeMap, toOpcodeMap} from './Operations/mappings';
 import {StackOperators, StackOperatorSet} from './Operations/Stack';
+import {SubtractOperators, SubtractOperatorSet} from './Operations/Subtract';
 import {RegisterSet, RegisterSetInterface} from './Registers';
 
 export interface CompoundOperatorSet extends OperatorSet,
 	AddOperatorSet,
+	BitwiseOperatorSet,
 	CompareOperatorSet,
 	ExtraOperatorSet,
 	LoadStoreOperatorSet,
-	StackOperatorSet {
+	StackOperatorSet,
+	SubtractOperatorSet {
 }
 
 export interface CpuInterface {
@@ -49,10 +53,12 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 		this.registers = new RegisterSet();
 		this.operators = {
 			...AddOperators,
+			...BitwiseOperators,
 			...CompareOperators,
 			...ExtraOperators,
 			...LoadStoreOperators,
 			...StackOperators,
+			...SubtractOperators,
 		};
 
 		this.opcodes = toOpcodeMap(this.operators);

@@ -25,7 +25,5 @@ romLoader.addEventListener('change', () => {
 	if (!romLoader.files.length)
 		return;
 
-	gpu.load(romLoader.files[0]);
-
-	cpu.exec();
+	memory.load(romLoader.files[0]).then(() => cpu.exec());
 });

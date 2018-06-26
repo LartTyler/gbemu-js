@@ -2,11 +2,11 @@ import {HardwareBusAwareInterface, HardwareBusInterface} from '../Hardware';
 import {bios} from './Bios';
 
 export interface MemoryInterface {
-	bios: Int16Array; // 256b
-	rom: Int16Array; // 32k
-	eram: Int16Array; // 8k
-	wram: Int16Array; // 8k
-	zram: Int16Array; // 128b
+	bios: number[]; // 256b
+	rom: number[]; // 32k
+	eram: number[]; // 8k
+	wram: number[]; // 8k
+	zram: number[]; // 128b
 
 	readByte(address: number): number;
 	readWord(address: number): number;
@@ -18,12 +18,12 @@ export interface MemoryInterface {
 }
 
 export class Memory implements MemoryInterface, HardwareBusAwareInterface {
-	public bios: Int16Array;
+	public bios: number[];
 
-	public rom: Int16Array;
-	public eram: Int16Array;
-	public wram: Int16Array;
-	public zram: Int16Array;
+	public rom: number[];
+	public eram: number[];
+	public wram: number[];
+	public zram: number[];
 
 	private inBios: boolean = true;
 	private hardware: HardwareBusInterface = null;
@@ -118,7 +118,7 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 
 		return new Promise<FileReader>((resolve, reject) => {
 			reader.addEventListener('load', () => {
-				this.rom = new Int16Array(reader.result);
+				this.rom = reader.result.split('').map((char: string) => char.charCodeAt(0));
 
 				resolve(reader);
 			});
@@ -126,16 +126,16 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 			reader.addEventListener('error', () => reject(reader.error));
 			reader.addEventListener('abort', () => reject(null));
 
-			reader.readAsArrayBuffer(file);
+			reader.readAsBinaryString(file);
 		});
 	}
 
 	public reset(): void {
 		this.inBios = true;
 
-		this.rom = new Int16Array(1 << 15); // 32k
-		this.eram = new Int16Array(1 << 13); // 8k
-		this.wram = new Int16Array(1 << 13); // 8k
-		this.zram = new Int16Array(128); // 128b
+		this.rom = (new Array(1 << 15)).fill(0); // 32k
+		this.eram = (new Array(1 << 13)).fill(0); // 8k
+		this.wram = (new Array(1 << 13)).fill(0); // 8k
+		this.zram = (new Array(128)).fill(0); // 128b
 	}
 }

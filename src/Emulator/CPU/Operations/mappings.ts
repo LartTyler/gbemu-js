@@ -3,10 +3,10 @@ import {OperatorCallback} from './index';
 
 export const toOpcodeMap = (operators: CompoundOperatorSet): OperatorCallback[] => [
 	// 0x00
-	operators.Noop, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.Noop, operators.LoadPCAndNextIntoBC, operators.LoadAIntoBCAddress, operators.NoImpl,
+	operators.NoImpl, operators.NoImpl, operators.LoadPCToB_Advance, operators.NoImpl,
+	operators.NoImpl, operators.AddBCToHL, operators.LoadBCAddressIntoA, operators.NoImpl,
+	operators.NoImpl, operators.NoImpl, operators.LoadPCToC_Advance, operators.NoImpl,
 
 	// 0x10
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
@@ -14,8 +14,14 @@ export const toOpcodeMap = (operators: CompoundOperatorSet): OperatorCallback[] 
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
 
-	// 0x30
+	// 0x20
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+
+	// 0x30
+	operators.NoImpl, operators.LoadPCAndNextIntoSP, operators.NoImpl, operators.NoImpl,
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
@@ -90,7 +96,7 @@ export const toOpcodeMap = (operators: CompoundOperatorSet): OperatorCallback[] 
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.NoImpl, operators.NoImpl, operators.SetSubtractPCAddressFlags, operators.NoImpl,
 ];
 
 export const toCbcodeMap = (operators: CompoundOperatorSet): OperatorCallback[] => [
