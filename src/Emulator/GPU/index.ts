@@ -1,4 +1,5 @@
 import {HardwareBusAwareInterface, HardwareBusInterface} from '../Hardware';
+import {Palette} from './Color';
 
 export interface GpuInterface {
 	vram: Int16Array;
@@ -6,6 +7,7 @@ export interface GpuInterface {
 
 	updateTile(address: number, value: number): void;
 	updateOAM(address: number, value: number): void;
+	load(file: File): Promise<FileReader>;
 	step(): void;
 	reset(): void;
 }
@@ -32,7 +34,12 @@ export class Gpu implements GpuInterface, HardwareBusAwareInterface {
 	private context: CanvasRenderingContext2D;
 	private screen: ImageData;
 	private tileset: number[][][];
+	private palette: Palette;
 
+	private scrollX: number = 0;
+	private scrollY: number = 0;
+	private bgMap = false;
+	private bgTile = 0;
 	private mode = RenderingMode.HBLANK;
 	private modeClock = 0;
 	private line = 0;
@@ -41,6 +48,7 @@ export class Gpu implements GpuInterface, HardwareBusAwareInterface {
 
 	public constructor(canvas: HTMLCanvasElement) {
 		this.canvas = canvas;
+		this.palette = new Palette();
 
 		this.reset();
 	}
@@ -62,6 +70,19 @@ export class Gpu implements GpuInterface, HardwareBusAwareInterface {
 
 	public updateOAM(address: number, value: number): void {
 
+	}
+
+	public load(file: File): Promise<FileReader> {
+		const reader = new FileReader();
+
+		return new Promise<FileReader>((resolve, reject) => {
+			reader.addEventListener('load', () => resolve(reader));
+
+			reader.addEventListener('error', () => reject(reader.error));
+			reader.addEventListener('abort', () => reject(null));
+
+			reader.readAsArrayBuffer(file);
+		});
 	}
 
 	public step(): void {
@@ -115,6 +136,8 @@ export class Gpu implements GpuInterface, HardwareBusAwareInterface {
 	}
 
 	public reset(): void {
+		this.palette.reset();
+
 		this.vram = new Int16Array(1 << 13); // 8k
 		this.oam = new Int16Array(160);
 
@@ -138,6 +161,38 @@ export class Gpu implements GpuInterface, HardwareBusAwareInterface {
 	}
 
 	protected render(): void {
-		// TODO Rendering
+		let mapOffset = this.bgMap ? 0x1C00 : 0x1800;
+		mapOffset += ((this.line + this.scrollY) & 255) >> 3;
+
+		let lineOffset = this.scrollX >> 3;
+
+		let y = (this.line + this.scrollY) & 7;
+		let x = this.scrollX & 7;
+
+		let canvasOffset = this.line * 160 * 4;
+
+		let tile = this.vram[mapOffset + lineOffset];
+
+		if (this.bgTile === 1 && tile < 128)
+			tile += 256;
+
+		for (let i = 0; i < 160; i++) {
+			let color = this.palette.get(this.tileset[tile][y][x]);
+
+			this.screen.data[canvasOffset++] = color.r;
+			this.screen.data[canvasOffset++] = color.g;
+			this.screen.data[canvasOffset++] = color.b;
+			this.screen.data[canvasOffset++] = color.a;
+
+			if (++x === 8) {
+				x = 0;
+
+				lineOffset = (lineOffset + 1) & 31;
+				tile = this.vram[mapOffset + lineOffset];
+
+				if (this.bgTile === 1 && tile < 128)
+					tile += 256;
+			}
+		}
 	}
 }

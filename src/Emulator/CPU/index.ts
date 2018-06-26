@@ -4,14 +4,17 @@ import {AddOperators, AddOperatorSet} from './Operations/Add';
 import {CompareOperators, CompareOperatorSet} from './Operations/Compare';
 import {ExtraOperators, ExtraOperatorSet} from './Operations/Extra';
 import {OperatorCallback, OperatorSet} from './Operations/index';
-import {MemoryOperators, MemoryOperatorSet} from './Operations/Memory';
+import {LoadStoreOperators, LoadStoreOperatorSet} from './Operations/LoadStore';
+import {toCbcodeMap, toOpcodeMap} from './Operations/mappings';
+import {StackOperators, StackOperatorSet} from './Operations/Stack';
 import {RegisterSet, RegisterSetInterface} from './Registers';
 
 export interface CompoundOperatorSet extends OperatorSet,
 	AddOperatorSet,
 	CompareOperatorSet,
 	ExtraOperatorSet,
-	MemoryOperatorSet {
+	LoadStoreOperatorSet,
+	StackOperatorSet {
 }
 
 export interface CpuInterface {
@@ -19,6 +22,7 @@ export interface CpuInterface {
 	registers: RegisterSetInterface;
 	operators: CompoundOperatorSet;
 	opcodes: OperatorCallback[];
+	cbcodes: OperatorCallback[];
 
 	halt: boolean;
 	stop: boolean;
@@ -33,6 +37,7 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 	public registers: RegisterSetInterface;
 	public operators: CompoundOperatorSet;
 	public opcodes: OperatorCallback[];
+	public cbcodes: OperatorCallback[];
 
 	public halt: boolean = false;
 	public stop: boolean = false;
@@ -46,12 +51,12 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 			...AddOperators,
 			...CompareOperators,
 			...ExtraOperators,
-			...MemoryOperators,
+			...LoadStoreOperators,
+			...StackOperators,
 		};
 
-		this.opcodes = [
-
-		];
+		this.opcodes = toOpcodeMap(this.operators);
+		this.cbcodes = toCbcodeMap(this.operators);
 	}
 
 	public setHardwareBus(hardware: HardwareBusInterface): void {
@@ -71,6 +76,9 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 	}
 
 	public exec(): void {
+		this.halt = false;
+		this.stop = false;
+
 		while (!this.halt && !this.stop)
 			this.step();
 	}
@@ -79,7 +87,7 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 		this.clock.reset();
 		this.registers.reset();
 
-		this.halt = false;
+		this.halt = true;
 		this.stop = false;
 	}
 }

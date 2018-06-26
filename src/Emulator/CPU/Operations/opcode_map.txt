@@ -1,0 +1,87 @@
+>> Load / Store
+LDrr_{x}{y} > LoadReg{X}{Y}
+	Load register Y into X
+
+LDrn_{x} > LoadPCTo{X}_Advance
+	Load current PC value into register X and advance PC
+
+LDHLmn > LoadPCIntoHLAddress
+	Load current PC value into address named by HL
+
+LDHLm_{z} >
+LD{X}{Y}m{Z} > Load{Z}Into{X}{Y}Address
+	Load register Z into address named by XY
+
+LDmmA > LoadAIntoPCAddress
+	Load register A into address named by PC
+
+LDrHLm_{x} >
+LD{X}{Y}{Z}m > Load{Y}{Z}AddressInto{X}
+	Load value at address named by XY into register X
+
+LDAmm > LoadPCWordIntoA
+	Load value at address named by the word at address named by PC into register A, and advance PC by 2
+
+LDSPnn > LoadPCWordIntoSP
+	Load the word at address named by PC into SP
+
+LD{X}{Y}nn > LoadPCAndNextInto{X}{Y}
+	Load the values at the addresses named by PC and PC + 1 into registers X and Y
+
+LD{X}{Y}mm > LoadPCWordInto{Y}{X}
+	Load the word at the address named by PC into registers Y and X (reversed for some reason)
+
+LDmmHL > LoadPCWordIntoHLAddress
+	Load the word at the address named by PC into registers H and L
+
+LDHLIA > LoadAIntoHLAddressAndIncrement
+	Load register A into the address named by HL and increment HL
+
+LDAHLI > LoadHLAddressIntoAAndIncrement
+	Load the value at address named by HL into register A and increment HL
+
+LDHLDA > LoadAIntoHLAddressAndDecrement
+	Load register A into the address named by HL and decrement HL
+
+LDAHLD > LoadHLAddressIntoAAndDecrement
+	Load the value at address named by HL into register A and decrement HL
+
+LDAIOn > LoadPCWithMagicIntoA
+	Load the value at the address named by the value at the address named by PC + a magic number to register A
+
+LDIOnA > LoadAIntoPCWithMagicAddress
+	Load the value in register A into the address named by the value at the address named by PC + a magic number
+
+LDAIOC > LoadCWithMagicAddressIntoA
+	Load the value in the address named by register C + a magic value into register A
+
+LDIOCA > LoadAIntoCWithMagicAddress
+	Load the value in register A into the address named by register C + a magic value
+
+LDHLSPn > SomeCrazyShitWithHLAndSP
+	I really have no fucking clue, I've just got a description of emulated behavior
+
+SWAPr_{x} > SwapNibbles{X}
+	Swaps the nibbles in register X (i.e. 0x37 becomes 0x73)
+
+>> Data Processing
+ADDr_{x} > Add{X}
+	Adds the value in register X to register A
+
+ADDHL > AddHLAddress
+	Adds the value in the address named by HL to A
+
+ADDn > AddPCAddress
+	Adds the value in the address named by PC to A, and increments PC
+
+ADDHL{X}{Y} > Add{X}{Y}ToHL
+	Adds the value in XY to HL
+
+ADDHLSP > AddSPToHL
+	Adds the value in SP to HL
+
+ADDSPn > AddPCAddressToSP
+	Adds the value in the address named by PC to SP
+
+ADCr_{x} > AddXWithCarry
+	Adds the value in register X to register A, with carry support

@@ -1,5 +1,7 @@
 import {Clock, ClockInterface} from './Clock';
 
+export type RegisterKey = 'a' | 'b' | 'c' | 'd' | 'e' | 'h' | 'l' | 'stackPointer';
+
 export interface RegisterSetInterface {
 	a: number;
 	b: number;
@@ -44,9 +46,9 @@ export class RegisterSet implements RegisterSetInterface {
 	private clock: ClockInterface;
 
 	public constructor(clock?: ClockInterface) {
-		this.reset();
-
 		this.clock = clock || new Clock();
+
+		this.reset();
 	}
 
 	public reset(): void {

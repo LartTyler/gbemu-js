@@ -1,12 +1,11 @@
 import {OperatorCallback, OperatorSet} from './index';
 
-export interface MemoryOperatorSet extends OperatorSet {
+export interface StackOperatorSet extends OperatorSet {
 	PushBC: OperatorCallback;
 	PopHL: OperatorCallback;
-	LoadAbsA: OperatorCallback;
 }
 
-export const MemoryOperators: MemoryOperatorSet = {
+export const StackOperators: StackOperatorSet = {
 	PushBC: hardware => {
 		const memory = hardware.memory;
 		const registers = hardware.cpu.registers;
@@ -25,15 +24,4 @@ export const MemoryOperators: MemoryOperatorSet = {
 
 		registers.m = 3;
 	},
-	LoadAbsA: hardware => {
-		const memory = hardware.memory;
-		const registers = hardware.cpu.registers;
-
-		const address = memory.readWord(registers.programCount);
-		registers.programCount += 2;
-
-		registers.a = memory.readByte(address);
-
-		registers.m = 4;
-	}
 };

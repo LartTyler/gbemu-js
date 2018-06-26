@@ -7,7 +7,13 @@
 	<title>GBEmu-JS</title>
 </head>
 <body>
-	<canvas id="screen"></canvas>
+	<div id="device">
+		<canvas id="screen" style="width: 160px; height: 144px;"></canvas>
+	</div>
+
+	<div id="controls">
+		<input type="file" id="rom-loader">
+	</div>
 
 	<script src="./bundle.js"></script>
 </body>

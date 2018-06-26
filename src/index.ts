@@ -13,4 +13,19 @@ cpu.setHardwareBus(hardware);
 memory.setHardwareBus(hardware);
 gpu.setHardwareBus(hardware);
 
-cpu.exec();
+const romLoader = <HTMLInputElement>document.getElementById('rom-loader');
+
+romLoader.addEventListener('change', () => {
+	gpu.reset();
+	memory.reset();
+	cpu.reset();
+
+	cpu.halt = true;
+
+	if (!romLoader.files.length)
+		return;
+
+	gpu.load(romLoader.files[0]);
+
+	cpu.exec();
+});
