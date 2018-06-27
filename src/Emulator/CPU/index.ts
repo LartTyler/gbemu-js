@@ -4,6 +4,7 @@ import {AddOperators, AddOperatorSet} from './Operations/Add';
 import {BitwiseOperators, BitwiseOperatorSet} from './Operations/Bitwise';
 import {CompareOperators, CompareOperatorSet} from './Operations/Compare';
 import {ExtraOperators, ExtraOperatorSet} from './Operations/Extra';
+import {IncrementOperators, IncrementOperatorSet} from './Operations/Increment';
 import {OperatorCallback, OperatorSet} from './Operations/index';
 import {LoadStoreOperators, LoadStoreOperatorSet} from './Operations/LoadStore';
 import {toCbcodeMap, toOpcodeMap} from './Operations/mappings';
@@ -16,6 +17,7 @@ export interface CompoundOperatorSet extends OperatorSet,
 	BitwiseOperatorSet,
 	CompareOperatorSet,
 	ExtraOperatorSet,
+	IncrementOperatorSet,
 	LoadStoreOperatorSet,
 	StackOperatorSet,
 	SubtractOperatorSet {
@@ -56,6 +58,7 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 			...BitwiseOperators,
 			...CompareOperators,
 			...ExtraOperators,
+			...IncrementOperators,
 			...LoadStoreOperators,
 			...StackOperators,
 			...SubtractOperators,

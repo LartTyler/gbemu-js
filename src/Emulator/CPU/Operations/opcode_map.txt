@@ -142,3 +142,36 @@ ORHL > BitOrHLAddress
 
 ORn > BitOrPCAddress
 	Performs bitwise OR on the value in the address named by PC and register A
+
+XORr_{x} > BitXor{X}
+	Performs bitwise XOR on registers A and X
+
+XORHL > BitXorHLAddress
+	Performs bitwise XOR on the value in the address named by HL and register A
+
+XORn > BitXorPCAddress
+	Performs bitwise XOR on the value in the address named by PC and register A
+
+INCr_{x} > Increment{X}
+	Increments the value in register X
+
+INCHLm > IncrementHLAddress
+	Increments the value in the address named by HL
+
+INC{X}{Y} > Increment{X}{Y}
+	Increments the 16 bit value in register pair XY
+
+INCSP > IncrementSP
+	Increments the value in SP
+
+DECr_{x} > Decrement{X}
+	Decrements the value in register X
+
+DECHLm > DecrementHLAddress
+	Decrements the value in the address named by HL
+
+DEC{X}{Y} > Decrement{X}{Y}
+	Decrements the 16 bit value in the register pair XY
+
+DECSP > DecrementSP
+	Decrements the value in SP
