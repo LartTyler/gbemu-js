@@ -3,8 +3,8 @@ import {OperatorCallback} from './index';
 
 export const toOpcodeMap = (operators: CompoundOperatorSet): OperatorCallback[] => [
 	// 0x00
-	operators.Noop, operators.LoadPCAndNextIntoBC, operators.LoadAIntoBCAddress, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.LoadPCToB_Advance, operators.NoImpl,
+	operators.Noop, operators.LoadPCAndNextIntoBC, operators.LoadAIntoBCAddress, operators.IncrementBC,
+	operators.IncrementB, operators.DecrementB, operators.LoadPCToB_Advance, operators.NoImpl,
 	operators.NoImpl, operators.AddBCToHL, operators.LoadBCAddressIntoA, operators.NoImpl,
 	operators.NoImpl, operators.NoImpl, operators.LoadPCToC_Advance, operators.NoImpl,
 
