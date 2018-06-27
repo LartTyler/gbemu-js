@@ -201,3 +201,9 @@ RRr_{x} > RotateRight{X}
 RRCA >
 RRCr_{x} > RotateRight{X}WithCarry
 	Performs an 8 bit rotation to the right on register X
+
+SLAr_{x} > ShiftLeft{X}
+	Performs an arithmetic left shift on register X
+
+SLLr_{x} > ShiftLeft{X}Undoc
+	Performs some sort of undocumented left shift on register X

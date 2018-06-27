@@ -2,6 +2,7 @@ import {ResetOperators, ResetOperatorSet} from './BitManipulation/Reset';
 import {RotateLeftOperators, RotateLeftOperatorSet} from './BitManipulation/RotateLeft';
 import {RotateRightOperators, RotateRightOperatorSet} from './BitManipulation/RotateRight';
 import {SetOperators, SetOperatorSet} from './BitManipulation/Set';
+import {ShiftLeftOperators, ShiftLeftOperatorSet} from './BitManipulation/ShiftLeft';
 import {TestOperators, TestOperatorSet} from './BitManipulation/Test';
 import {OperatorSet} from './index';
 
@@ -10,7 +11,8 @@ export interface BitManipulationOperatorSet extends OperatorSet,
 	ResetOperatorSet,
 	RotateLeftOperatorSet,
 	RotateRightOperatorSet,
-	SetOperatorSet {
+	SetOperatorSet,
+	ShiftLeftOperatorSet {
 }
 
 export const BitManipulationOperators: BitManipulationOperatorSet = {
@@ -19,4 +21,5 @@ export const BitManipulationOperators: BitManipulationOperatorSet = {
 	...RotateRightOperators,
 	...TestOperators,
 	...SetOperators,
+	...ShiftLeftOperators,
 };
