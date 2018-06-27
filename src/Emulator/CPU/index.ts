@@ -1,6 +1,7 @@
 import {HardwareBusAwareInterface, HardwareBusInterface} from '../Hardware';
 import {Clock, ClockInterface} from './Clock';
 import {AddOperators, AddOperatorSet} from './Operations/Add';
+import {BitManipulationOperators, BitManipulationOperatorSet} from './Operations/BitManipulation';
 import {BitwiseOperators, BitwiseOperatorSet} from './Operations/Bitwise';
 import {CompareOperators, CompareOperatorSet} from './Operations/Compare';
 import {DecrementOperators, DecrementOperatorSet} from './Operations/Decrement';
@@ -15,6 +16,7 @@ import {RegisterSet, RegisterSetInterface} from './Registers';
 
 export interface CompoundOperatorSet extends OperatorSet,
 	AddOperatorSet,
+	BitManipulationOperatorSet,
 	BitwiseOperatorSet,
 	CompareOperatorSet,
 	DecrementOperatorSet,
@@ -57,6 +59,7 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 		this.registers = new RegisterSet();
 		this.operators = {
 			...AddOperators,
+			...BitManipulationOperators,
 			...BitwiseOperators,
 			...CompareOperators,
 			...DecrementOperators,

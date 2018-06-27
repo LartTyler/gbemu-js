@@ -175,3 +175,13 @@ DEC{X}{Y} > Decrement{X}{Y}
 
 DECSP > DecrementSP
 	Decrements the value in SP
+
+>> Bit Manipulation
+BIT{N}{x} > Test{X}Bit{N}
+	Tests if the bit in position N for register X is set
+
+RES{N}{x} > Reset{X}Bit{N}
+	Sets the bit in position N to zero in register X
+
+SET{N}{x} > Set{X}Bit{N}
+	Sets the bit in position N to one in register X
