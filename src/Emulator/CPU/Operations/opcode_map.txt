@@ -202,8 +202,25 @@ RRCA >
 RRCr_{x} > RotateRight{X}WithCarry
 	Performs an 8 bit rotation to the right on register X
 
-SLAr_{x} > ShiftLeft{X}
+SLAr_{x} > ShiftLeft{X}Arithmetic
 	Performs an arithmetic left shift on register X
 
-SLLr_{x} > ShiftLeft{X}Undoc
+SLLr_{x} > ShiftLeft{X}Logical
 	Performs some sort of undocumented left shift on register X
+
+SRAr_{x} > ShiftRight{X}Arithmetic
+	Performs an arithmetic right shift on register X
+
+SRLr_{x} > ShiftRight{X}Logical
+
+CPL > InvertA
+	Inverts the bits in register A
+
+NEG > NegateA
+	Negates register A
+
+CCF > InvertCarryFlag
+	Inverts the CARRY flag in the flags register
+
+SCF > SetCarryFlag
+	Sets the CARRY flag in the flags register
