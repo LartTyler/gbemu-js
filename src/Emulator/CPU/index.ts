@@ -8,6 +8,7 @@ import {DecrementOperators, DecrementOperatorSet} from './Operations/Decrement';
 import {ExtraOperators, ExtraOperatorSet} from './Operations/Extra';
 import {IncrementOperators, IncrementOperatorSet} from './Operations/Increment';
 import {OperatorCallback, OperatorSet} from './Operations/index';
+import {JumpOperators, JumpOperatorSet} from './Operations/Jump';
 import {LoadStoreOperators, LoadStoreOperatorSet} from './Operations/LoadStore';
 import {toCbcodeMap, toOpcodeMap} from './Operations/mappings';
 import {StackOperators, StackOperatorSet} from './Operations/Stack';
@@ -22,6 +23,7 @@ export interface CompoundOperatorSet extends OperatorSet,
 	DecrementOperatorSet,
 	ExtraOperatorSet,
 	IncrementOperatorSet,
+	JumpOperatorSet,
 	LoadStoreOperatorSet,
 	StackOperatorSet,
 	SubtractOperatorSet {
@@ -65,6 +67,7 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 			...DecrementOperators,
 			...ExtraOperators,
 			...IncrementOperators,
+			...JumpOperators,
 			...LoadStoreOperators,
 			...StackOperators,
 			...SubtractOperators,

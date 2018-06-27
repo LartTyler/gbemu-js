@@ -230,3 +230,22 @@ PUSH{X}{Y} > Push{X}{Y}
 
 POP{X}{Y} > Pop{X}{Y}
 	Pops the current stack value off the stack and into registers X and Y
+
+JPnn > AbsoluteJumpToPCAddress
+JPHL > AbsoluteJumptoHLAddress
+
+JPZnn > AbsoluteJumpToPCAddressIfZero
+JPNZnn > AbsoluteJumpToPCAddressIfNotZero
+
+JPCnn > AbsoluteJumpToPCAddressIfCarry
+JPNCnn > AbsoluteJumpToPCAddressIfNotCarry
+
+JRn > RelativeJumpToPCAddress
+
+JRZn > RelativeJumpToPCAddressIfZero
+JRNZn > RelativeJumpToPCAddressIfNotZero
+
+JRCn > RelativeJumpToPCAddressIfCarry
+JRNCn > RelativeJumpToPCAddressIfNotCarry
+
+DJNZn > RelativeJumpToPCAddressDecrementB

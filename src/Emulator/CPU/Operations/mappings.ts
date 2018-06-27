@@ -9,16 +9,16 @@ export const toOpcodeMap = (operators: CompoundOperatorSet): OperatorCallback[] 
 	operators.IncrementC, operators.DecrementC, operators.LoadPCToC_Advance, operators.RotateRightAWithCarry,
 
 	// 0x10
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.RelativeJumpToPCAddressDecrementB, operators.LoadPCAndNextIntoDE, operators.LoadDEAddressIntoA, operators.IncrementDE,
+	operators.IncrementD, operators.DecrementH, operators.LoadPCToD_Advance, operators.RotateLeftA,
+	operators.RelativeJumpToPCAddress, operators.AddDEToHL, operators.LoadDEAddressIntoA, operators.DecrementDE,
+	operators.IncrementE, operators.DecrementE, operators.LoadPCToE_Advance, operators.RotateRightA,
 
 	// 0x20
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.RelativeJumpToPCAddressIfNotZero, operators.LoadPCAndNextIntoHL, operators.LoadAIntoHLAddressAndIncrement, operators.IncrementHL,
+	operators.IncrementH, operators.DecrementH, operators.LoadPCToH_Advance, operators.BCDCorrect,
+	operators.RelativeJumpToPCAddressIfZero, operators.AddHLToHL, operators.LoadHLAddressIntoAAndIncrement, operators.DecrementHL,
+	operators.IncrementL, operators.DecrementL, operators.LoadPCToL_Advance, operators.InvertA,
 
 	// 0x30
 	operators.NoImpl, operators.LoadPCAndNextIntoSP, operators.NoImpl, operators.NoImpl,
