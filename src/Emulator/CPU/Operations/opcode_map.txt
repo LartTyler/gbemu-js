@@ -124,6 +124,7 @@ CPn > SetSubtractPCAddressFlags
 DAA > BCDCorrect
 	@see http://z80-heaven.wikidot.com/instructions-set:daa
 
+>> Bitwise
 ANDr_{x} > BitAnd{X}
 	Performs bitwise AND on register A and X
 
