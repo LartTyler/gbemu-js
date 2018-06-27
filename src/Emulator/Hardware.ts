@@ -1,4 +1,5 @@
 import {CpuInterface} from './CPU/index';
+import {RegisterSetInterface} from './CPU/Registers';
 import {GpuInterface} from './GPU/index';
 import {MemoryInterface} from './Memory/index';
 
@@ -6,6 +7,7 @@ export interface HardwareBusInterface {
 	readonly cpu: CpuInterface;
 	readonly memory: MemoryInterface;
 	readonly gpu: GpuInterface;
+	readonly registers: RegisterSetInterface;
 }
 
 export interface HardwareBusAwareInterface {
@@ -21,5 +23,9 @@ export class HardwareBus implements HardwareBusInterface {
 		this.cpu = cpu;
 		this.memory = memory;
 		this.gpu = gpu;
+	}
+
+	get registers(): RegisterSetInterface {
+		return this.cpu.registers;
 	}
 }

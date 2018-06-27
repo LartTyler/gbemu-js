@@ -1,6 +1,6 @@
 import {Clock, ClockInterface} from './Clock';
 
-export type RegisterKey = 'a' | 'b' | 'c' | 'd' | 'e' | 'h' | 'l' | 'stackPointer';
+export type RegisterKey = 'a' | 'b' | 'c' | 'd' | 'e' | 'h' | 'l' | 'flags' | 'stackPointer';
 
 export interface RegisterSetInterface {
 	a: number;

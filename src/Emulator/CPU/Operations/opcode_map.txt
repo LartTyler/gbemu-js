@@ -224,3 +224,9 @@ CCF > InvertCarryFlag
 
 SCF > SetCarryFlag
 	Sets the CARRY flag in the flags register
+
+PUSH{X}{Y} > Push{X}{Y}
+	Pushes the values in registers X and Y onto the stack
+
+POP{X}{Y} > Pop{X}{Y}
+	Pops the current stack value off the stack and into registers X and Y
