@@ -3,6 +3,7 @@ import {Clock, ClockInterface} from './Clock';
 import {AddOperators, AddOperatorSet} from './Operations/Add';
 import {BitwiseOperators, BitwiseOperatorSet} from './Operations/Bitwise';
 import {CompareOperators, CompareOperatorSet} from './Operations/Compare';
+import {DecrementOperators, DecrementOperatorSet} from './Operations/Decrement';
 import {ExtraOperators, ExtraOperatorSet} from './Operations/Extra';
 import {IncrementOperators, IncrementOperatorSet} from './Operations/Increment';
 import {OperatorCallback, OperatorSet} from './Operations/index';
@@ -16,6 +17,7 @@ export interface CompoundOperatorSet extends OperatorSet,
 	AddOperatorSet,
 	BitwiseOperatorSet,
 	CompareOperatorSet,
+	DecrementOperatorSet,
 	ExtraOperatorSet,
 	IncrementOperatorSet,
 	LoadStoreOperatorSet,
@@ -57,6 +59,7 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 			...AddOperators,
 			...BitwiseOperators,
 			...CompareOperators,
+			...DecrementOperators,
 			...ExtraOperators,
 			...IncrementOperators,
 			...LoadStoreOperators,
