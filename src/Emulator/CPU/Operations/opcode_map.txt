@@ -189,3 +189,15 @@ SET{N}{x} > Set{X}Bit{N}
 RLA >
 RLr_{x} > RotateLeft{X}
 	Performs a 9 bit rotation to the left on register X
+
+RLCA >
+RLCr_{x} > RotateLeft{X}WithCarry
+	Performs an 8 bit rotation to the left on register X
+
+RRA >
+RRr_{x} > RotateRight{X}
+	Performs a 9 bit rotation to the right on register X
+
+RRCA >
+RRCr_{x} > RotateRight{X}WithCarry
+	Performs an 8 bit rotation to the right on register X
