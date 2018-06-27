@@ -185,3 +185,7 @@ RES{N}{x} > Reset{X}Bit{N}
 
 SET{N}{x} > Set{X}Bit{N}
 	Sets the bit in position N to one in register X
+
+RLA >
+RLr_{x} > RotateLeft{X}
+	Performs a 9 bit rotation to the left on register X
