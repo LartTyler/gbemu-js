@@ -1,10 +1,5 @@
 import {HardwareBusInterface} from '../../Hardware';
-import {RegisterFlag} from '../Registers';
-import {OperatorCallback, OperatorSet} from './index';
-
-const testMask = (value: number, mask: number) => (value & mask) !== 0;
-const testZero = (hardware: HardwareBusInterface) => testMask(hardware.registers.flags, RegisterFlag.ZERO);
-const testCarry = (hardware: HardwareBusInterface) => testMask(hardware.registers.flags, RegisterFlag.CARRY);
+import {OperatorCallback, OperatorSet, testCarry, testZero} from './index';
 
 const absJumpIf = (test: boolean, hardware: HardwareBusInterface) => {
 	const {memory, registers} = hardware;
@@ -36,6 +31,22 @@ const relJumpIf = (test: boolean, hardware: HardwareBusInterface) => {
 	}
 };
 
+const labelJumpIf = (test: boolean, hardware: HardwareBusInterface) => {
+	const {memory, registers} = hardware;
+
+	registers.m = 3;
+
+	if (test) {
+		registers.stackPointer -= 2;
+
+		memory.writeWord(registers.stackPointer, registers.programCount + 2);
+		registers.programCount = memory.readWord(registers.programCount);
+
+		registers.m += 2;
+	} else
+		registers.programCount += 2;
+};
+
 export interface JumpOperatorSet extends OperatorSet {
 	AbsoluteJumpToPCAddress: OperatorCallback;
 	AbsoluteJumpToHLAddress: OperatorCallback;
@@ -53,6 +64,12 @@ export interface JumpOperatorSet extends OperatorSet {
 	RelativeJumpToPCAddressIfNotZero: OperatorCallback;
 
 	RelativeJumpToPCAddressDecrementB: OperatorCallback;
+
+	LabelJumpPCAddress: OperatorCallback;
+	LabelJumpPCAddressIfCarry: OperatorCallback;
+	LabelJumpPCAddressIfNotCarry: OperatorCallback;
+	LabelJumpPCAddressIfZero: OperatorCallback;
+	LabelJumpPCAddressIfNotZero: OperatorCallback;
 }
 
 export const JumpOperators: JumpOperatorSet = {
@@ -81,4 +98,10 @@ export const JumpOperators: JumpOperatorSet = {
 	RelativeJumpToPCAddressIfNotZero: hardware => relJumpIf(!testZero(hardware), hardware),
 
 	RelativeJumpToPCAddressDecrementB: hardware => relJumpIf(--hardware.registers.b !== 0, hardware),
+
+	LabelJumpPCAddress: hardware => labelJumpIf(true, hardware),
+	LabelJumpPCAddressIfCarry: hardware => labelJumpIf(testCarry(hardware), hardware),
+	LabelJumpPCAddressIfNotCarry: hardware => labelJumpIf(!testCarry(hardware), hardware),
+	LabelJumpPCAddressIfZero: hardware => labelJumpIf(testZero(hardware), hardware),
+	LabelJumpPCAddressIfNotZero: hardware => labelJumpIf(!testZero(hardware), hardware),
 };

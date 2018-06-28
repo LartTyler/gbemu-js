@@ -88,7 +88,7 @@ ADDSPn > AddPCAddressToSP
 ADCr_{x} > AddXWithCarry
 	Adds the value in register X to register A, with carry support
 
-ADDCHL > AddHLAddressWithCarry
+ADCHL > AddHLAddressWithCarry
 	Adds the value in the address named by HL to A, with carry support
 
 ADDCn > AddPCAddressWithCarry
@@ -249,3 +249,14 @@ JRCn > RelativeJumpToPCAddressIfCarry
 JRNCn > RelativeJumpToPCAddressIfNotCarry
 
 DJNZn > RelativeJumpToPCAddressDecrementB
+
+CALLnn > LabelJumpPCAddress
+
+CALLZnn > LabelJumpPCAddressIfZero
+CALLNZnn > LabelJumpPCAddressIfNotZero
+
+CALLCnn > LabelJumpPCAddressIfCarry
+CALLNCnn > LabelJumpPCAddressIfNotCarry
+
+RET > Return
+RETI > ReturnInterrupt

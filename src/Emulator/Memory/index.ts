@@ -8,6 +8,9 @@ export interface MemoryInterface {
 	wram: number[]; // 8k
 	zram: number[]; // 128b
 
+	interruptsEnabled: number;
+	interruptFlags: number;
+
 	readByte(address: number): number;
 	readWord(address: number): number;
 	writeByte(address: number, value: number): void;
@@ -24,6 +27,8 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 	public eram: number[];
 	public wram: number[];
 	public zram: number[];
+	public interruptsEnabled: number;
+	public interruptFlags: number;
 
 	private inBios: boolean = true;
 	private hardware: HardwareBusInterface = null;
@@ -63,10 +68,29 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 				else
 					return 0;
 			} else if (lowMasked === 0xF00) { // Zero-page RAM
+				if (address === 0xFFFF)
+					return this.interruptsEnabled;
 				if (address >= 0xFF80)
 					return this.zram[address & 0x7F];
-				else
-					return 0;
+				else {
+					const ioMasked = address & 0xF0;
+
+					if (ioMasked === 0x00) {
+						const handlerMask = ioMasked & 0xF;
+
+						if (handlerMask === 0)
+							throw new Error('KEY not yet implemented');
+						else if (handlerMask >= 4 && handlerMask <= 7)
+							throw new Error('TIMER not yet implemented');
+						else if (handlerMask === 15)
+							return this.interruptFlags;
+						else
+							return 0;
+					} else if (ioMasked >= 0x40 && ioMasked <= 0x70)
+						return this.hardware.gpu.vram[address & 0x1FFF];
+					else
+						return 0;
+				}
 			}
 		}
 	}
@@ -99,8 +123,27 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 					return;
 
 				this.hardware.gpu.updateOAM(mapped, value);
-			} else if (lowMasked === 0xF00 && address >= 0xFF80)
-				this.zram[address & 0x7F] = value;
+			} else if (lowMasked === 0xF00) { // Zero-page RAM
+				if (address === 0xFFFF)
+					this.interruptsEnabled = value;
+				else if (address >= 0xFF80)
+					this.zram[address & 0x7F] = value;
+				else {
+					const ioMasked = address & 0xF0;
+
+					if (ioMasked === 0x00) {
+						const handlerMask = ioMasked & 0xF;
+
+						if (handlerMask === 0)
+							throw new Error('KEY not yet implemented');
+						else if (handlerMask >= 4 && handlerMask <= 7)
+							throw new Error('TIMER not yet implemented');
+						else if (handlerMask === 15)
+							this.interruptFlags = value;
+					} else if (ioMasked >= 0x40 && ioMasked <= 0x70)
+						this.hardware.gpu.vram[address & 0x1FF] = value;
+				}
+			}
 		}
 	}
 
@@ -137,5 +180,8 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 		this.eram = (new Array(1 << 13)).fill(0); // 8k
 		this.wram = (new Array(1 << 13)).fill(0); // 8k
 		this.zram = (new Array(128)).fill(0); // 128b
+
+		this.interruptsEnabled = 0;
+		this.interruptFlags = 0;
 	}
 }
