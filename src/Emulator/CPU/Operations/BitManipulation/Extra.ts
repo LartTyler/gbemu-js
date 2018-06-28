@@ -1,4 +1,3 @@
-import {dtsDtsxRegex} from 'ts-loader/dist/types/constants';
 import {RegisterFlag} from '../../Registers';
 import {OperatorCallback, OperatorSet} from '../index';
 
