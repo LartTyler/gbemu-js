@@ -21,28 +21,28 @@ export const toOpcodeMap = (operators: CompoundOperatorSet): OperatorCallback[] 
 	operators.IncrementL, operators.DecrementL, operators.LoadPCToL_Advance, operators.InvertA,
 
 	// 0x30
-	operators.NoImpl, operators.LoadPCAndNextIntoSP, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.RelativeJumpToPCAddressIfNotCarry, operators.LoadPCAndNextIntoSP, operators.LoadAIntoHLAddressAndDecrement, operators.IncrementSP,
+	operators.IncrementHLAddress, operators.DecrementHLAddress, operators.LoadPCIntoHLAddress, operators.SetCarryFlag,
+	operators.RelativeJumpToPCAddressIfCarry, operators.AddSPToHL, operators.LoadHLAddressIntoAAndDecrement, operators.DecrementSP,
+	operators.IncrementA, operators.DecrementA, operators.LoadPCToA_Advance, operators.InvertCarryFlag,
 
 	// 0x40
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.LoadRegBB, operators.LoadRegBC, operators.LoadRegBD, operators.LoadRegBE,
+	operators.LoadRegBH, operators.LoadRegBL, operators.LoadHLAddressIntoB, operators.LoadRegBA,
+	operators.LoadRegCB, operators.LoadRegCC, operators.LoadRegCD, operators.LoadRegCE,
+	operators.LoadRegCH, operators.LoadRegCL, operators.LoadHLAddressIntoC, operators.LoadRegCA,
 
 	// 0x50
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.LoadRegDB, operators.LoadRegDC, operators.LoadRegDD, operators.LoadRegDE,
+	operators.LoadRegDH, operators.LoadRegDL, operators.LoadHLAddressIntoD, operators.LoadRegDA,
+	operators.LoadRegEB, operators.LoadRegEC, operators.LoadRegED, operators.LoadRegEE,
+	operators.LoadRegEH, operators.LoadRegEL, operators.LoadHLAddressIntoE, operators.LoadRegEA,
 
 	// 0x60
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.LoadRegHB, operators.LoadRegHC, operators.LoadRegHD, operators.LoadRegHE,
+	operators.LoadRegHH, operators.LoadRegHL, operators.LoadHLAddressIntoH, operators.LoadRegHA,
+	operators.LoadRegLB, operators.LoadRegLC, operators.LoadRegLD, operators.LoadRegLE,
+	operators.LoadRegLH, operators.LoadRegLL, operators.LoadHLAddressIntoL, operators.LoadRegLA,
 
 	// 0x70
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
@@ -66,7 +66,7 @@ export const toOpcodeMap = (operators: CompoundOperatorSet): OperatorCallback[] 
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
-	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
+	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.BitXorA,
 
 	// 0xB0
 	operators.NoImpl, operators.NoImpl, operators.NoImpl, operators.NoImpl,
