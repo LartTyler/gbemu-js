@@ -177,6 +177,7 @@ DECSP > DecrementSP
 	Decrements the value in SP
 
 >> Bit Manipulation
+BIT{N}m > TestHLAddressBit{N}
 BIT{N}{x} > Test{X}Bit{N}
 	Tests if the bit in position N for register X is set
 

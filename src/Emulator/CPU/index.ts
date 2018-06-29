@@ -64,6 +64,7 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 	private interruptMap: {[key: number]: OperatorCallback};
 
 	private hardware: HardwareBusInterface = null;
+	private tickIntervalId: number = null;
 
 	public constructor() {
 		this.clock = new Clock();
@@ -142,8 +143,19 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 		this.halt = false;
 		this.stop = false;
 
-		while (!this.halt && !this.stop)
-			this.step();
+		this.tickIntervalId = setInterval(() => {
+			const frameClock = this.clock.m + 17556;
+
+			do {
+				this.step();
+
+				if (this.halt || this.stop) {
+					clearInterval(this.tickIntervalId);
+
+					this.tickIntervalId = null;
+				}
+			} while (this.clock.m < frameClock);
+		}, 1);
 	}
 
 	public reset(): void {

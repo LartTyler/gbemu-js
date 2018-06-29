@@ -87,7 +87,7 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 						else
 							return 0;
 					} else if (ioMasked >= 0x40 && ioMasked <= 0x70)
-						return this.hardware.gpu.vram[address & 0x1FFF];
+						return this.hardware.gpu.readByte(address);
 					else
 						return 0;
 				}
@@ -141,7 +141,7 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 						else if (handlerMask === 15)
 							this.interruptFlags = value;
 					} else if (ioMasked >= 0x40 && ioMasked <= 0x70)
-						this.hardware.gpu.vram[address & 0x1FF] = value;
+						this.hardware.gpu.writeByte(address, value);
 				}
 			}
 		}

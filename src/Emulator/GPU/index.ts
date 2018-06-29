@@ -7,9 +7,11 @@ export interface GpuInterface {
 
 	updateTile(address: number, value: number): void;
 	updateOAM(address: number, value: number): void;
-	load(file: File): Promise<FileReader>;
 	step(): void;
 	reset(): void;
+
+	readByte(address: number): number;
+	writeByte(address: number, value: number): void;
 }
 
 /**
@@ -64,25 +66,12 @@ export class Gpu implements GpuInterface, HardwareBusAwareInterface {
 		for (let x = 0; x < 8; x++) {
 			sx = 1 << (7 - x);
 
-			this.tileset[tile][y][x] = (this.vram[address] & sx ? 1 : 0) + (this.vram[address] & sx ? 2 : 0);
+			this.tileset[tile][y][x] = (this.vram[address] & sx ? 1 : 0) | (this.vram[address + 1] & sx ? 2 : 0);
 		}
 	}
 
 	public updateOAM(address: number, value: number): void {
 
-	}
-
-	public load(file: File): Promise<FileReader> {
-		const reader = new FileReader();
-
-		return new Promise<FileReader>((resolve, reject) => {
-			reader.addEventListener('load', () => resolve(reader));
-
-			reader.addEventListener('error', () => reject(reader.error));
-			reader.addEventListener('abort', () => reject(null));
-
-			reader.readAsArrayBuffer(file);
-		});
 	}
 
 	public step(): void {
@@ -148,12 +137,22 @@ export class Gpu implements GpuInterface, HardwareBusAwareInterface {
 
 		this.tileset = [];
 
-		for (let i = 0; i < 384; i++) {
+		for (let i = 0; i < 512; i++) {
 			this.tileset.push([]);
 
 			for (let j = 0; j < 8; j++)
 				this.tileset[i].push((new Array(8).fill(0)));
 		}
+	}
+
+	public readByte(address: number): number {
+		console.log(address - 0xFF40);
+
+		return 0;
+	}
+
+	public writeByte(address: number, value: number): void {
+		console.log(address - 0xFF40);
 	}
 
 	public setHardwareBus(hardware: HardwareBusInterface): void {

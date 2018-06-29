@@ -5,10 +5,85 @@
 	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>GBEmu-JS</title>
+
+	<style>
+		#device {
+			display: flex;
+		}
+
+		#registers {
+			display: flex;
+			font-family: monospace;
+		}
+
+		#registers > div:not(:first-of-type) {
+			margin-left: 10px;
+		}
+	</style>
 </head>
 <body>
 	<div id="device">
 		<canvas id="screen" style="width: 160px; height: 144px;"></canvas>
+
+		<div id="monitor">
+			<div id="registers">
+				<div>
+					<div class="register">
+						A: <span id="register-a">0</span>
+					</div>
+
+					<div class="register">
+						B: <span id="register-b">0</span>
+					</div>
+
+					<div class="register">
+						C: <span id="register-c">0</span>
+					</div>
+
+					<div class="register">
+						D: <span id="register-d">0</span>
+					</div>
+				</div>
+
+				<div>
+					<div class="register">
+						E: <span id="register-e">0</span>
+					</div>
+
+					<div class="register">
+						H: <span id="register-h">0</span>
+					</div>
+
+					<div class="register">
+						L: <span id="register-l">0</span>
+					</div>
+
+					<div class="register">
+						F: <span id="register-flags"></span>
+					</div>
+				</div>
+
+				<div>
+					<div class="register">
+						M: <span id="register-m">0</span>
+					</div>
+
+					<div class="register">
+						T: <span id="register-t">0</span>
+					</div>
+				</div>
+
+				<div>
+					<div class="register">
+						PC: <span id="register-programCount">0</span>
+					</div>
+
+					<div class="register">
+						SP: <span id="register-stackPointer">0</span>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<div id="controls">
