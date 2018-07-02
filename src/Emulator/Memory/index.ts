@@ -46,7 +46,7 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 			if (this.inBios) {
 				if (address < 0x0100)
 					return this.bios[address];
-				else if (this.hardware.cpu.registers.programCount === 0x0100)
+				else if (this.hardware.cpu.registers.programCount >= 0x0100)
 					this.inBios = false;
 			}
 
@@ -102,7 +102,7 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 	public writeByte(address: number, value: number): void {
 		const masked = address & 0xF000;
 
-		if (masked <= 0x7000) // ROM is not writable
+		if (masked <= 0x7000) // BIOS and ROM are not writable
 			return;
 		else if (masked <= 0x9000) { // Video RAM
 			const mapped = address & 0x1FFF;
