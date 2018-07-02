@@ -1,18 +1,21 @@
-import {MemoryInterface} from '../../Memory/index';
+import {MemoryInterface} from '../../Memory';
 import {RegisterFlag, RegisterKey, RegisterSetInterface} from '../Registers';
 import {OperatorCallback, OperatorSet} from './index';
 
 const registerAdd = (value: number, registers: RegisterSetInterface) => {
+	const original = registers.a;
+
 	registers.a += value;
-	registers.flags = 0;
-
-	if (!(registers.a & 255))
-		registers.flags |= RegisterFlag.ZERO;
-
-	if (registers.a > 255)
-		registers.flags |= RegisterFlag.CARRY;
+	registers.flags = registers.a > 255 ? RegisterFlag.CARRY : 0;
 
 	registers.a &= 255;
+
+	if (!registers.a)
+		registers.flags |= RegisterFlag.ZERO;
+
+	if ((registers.a ^ value ^ original) & 0x10)
+		registers.flags |= RegisterFlag.HALF_CARRY;
+
 	registers.m = 1;
 };
 
