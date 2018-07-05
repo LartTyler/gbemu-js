@@ -1,20 +1,22 @@
 const path = require('path');
 
 module.exports = {
-	entry: './src/index.ts',
+	entry: './src/Operators.ts',
 	devtool: 'source-map',
 	module: {
 		rules: [
 			{
-				test: /\.tsx?$/,
+				test: /\.ts$/,
 				use: 'ts-loader',
-				exclude: /node_modules/,
+				exclude: [
+					/node_modules/,
+					/\\.spec\\.ts$/,
+				],
 			},
 		],
 	},
 	resolve: {
 		extensions: [
-			'.tsx',
 			'.ts',
 			'.js',
 		],
