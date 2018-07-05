@@ -1,7 +1,7 @@
-import {CpuInterface} from './CPU/index';
+import {CpuInterface} from './CPU';
 import {RegisterSetInterface} from './CPU/Registers';
-import {GpuInterface} from './GPU/index';
-import {MemoryInterface} from './Memory/index';
+import {GpuInterface} from './GPU';
+import {MemoryInterface} from './Memory';
 
 export interface HardwareBusInterface {
 	readonly cpu: CpuInterface;

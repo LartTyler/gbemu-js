@@ -103,7 +103,7 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 		const masked = address & 0xF000;
 
 		if (masked <= 0x7000) // BIOS and ROM are not writable
-			return;
+			throw new Error(`Tried to write BIOS or ROM (0x${address.toString(16).toUpperCase()})`);
 		else if (masked <= 0x9000) { // Video RAM
 			const mapped = address & 0x1FFF;
 

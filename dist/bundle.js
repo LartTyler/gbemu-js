@@ -90,395 +90,150 @@
 /*!***********************************!*\
   !*** ./src/Emulator/CPU/Clock.ts ***!
   \***********************************/
-/*! exports provided: Clock */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Clock\", function() { return Clock; });\nclass Clock {\n    constructor() {\n        this.t = 0;\n        this._m = 0;\n    }\n    get m() {\n        return this._m;\n    }\n    set m(value) {\n        this._m = value;\n        this.t = value * 4;\n    }\n    reset() {\n        this.m = 0;\n    }\n}\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Clock.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Clock = /** @class */ (function () {
+    function Clock() {
+        this.t = 0;
+        this._m = 0;
+    }
+    Object.defineProperty(Clock.prototype, "m", {
+        get: function () {
+            return this._m;
+        },
+        set: function (value) {
+            this._m = value;
+            this.t = value * 4;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Clock.prototype.reset = function () {
+        this.m = 0;
+    };
+    return Clock;
+}());
+exports.Clock = Clock;
+
 
 /***/ }),
 
-/***/ "./src/Emulator/CPU/Operations/Add.ts":
-/*!********************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Add.ts ***!
-  \********************************************/
-/*! exports provided: AddOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ "./src/Emulator/CPU/InstructionSet/Operators/Load.ts":
+/*!***********************************************************!*\
+  !*** ./src/Emulator/CPU/InstructionSet/Operators/Load.ts ***!
+  \***********************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"AddOperators\", function() { return AddOperators; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst registerAdd = (value, registers) => {\n    registers.a += value;\n    registers.flags = 0;\n    if (!(registers.a & 255))\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    if (registers.a > 255)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY;\n    registers.a &= 255;\n    registers.m = 1;\n};\nconst registerAdd16 = (value, registers) => {\n    value += (registers.h << 8) + registers.l;\n    if (value > 65535)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY;\n    else\n        registers.flags &= 0xEF;\n    registers.h = (value >> 8) & 255;\n    registers.l = value & 255;\n    registers.m = 3;\n};\nconst registerAdd16FromAddress = (sourceHigh, sourceLow, registers) => {\n    registerAdd16((registers[sourceHigh] << 8) + registers[sourceLow], registers);\n};\nconst addFromAddress = (address, memory, registers) => {\n    const a = registers.a;\n    const m = memory.readByte(address);\n    registers.a += m;\n    registers.flags = registers.a > 255 ? _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY : 0;\n    registers.a &= 255;\n    if (!registers.a)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    if ((registers.a ^ a ^ m) & 0x10)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].HALF_CARRY;\n    registers.m = 2;\n};\nconst addWithCarry = (value, registers) => {\n    const a = registers.a;\n    registers.a += value;\n    registers.a += registers.flags & _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY ? 1 : 0;\n    registers.flags = (registers.a > 255) ? _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY : 0;\n    registers.a &= 255;\n    if (registers.a)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    if ((registers.a ^ value ^ a) & 0x10)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].HALF_CARRY;\n    registers.m = 1;\n};\nconst addFromAddressWithCarry = (address, memory, registers) => {\n    const a = registers.a;\n    const m = memory.readByte(address);\n    registers.a += m;\n    registers.a += registers.flags & _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY ? 1 : 0;\n    registers.flags = registers.a > 255 ? _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY : 0;\n    registers.a &= 255;\n    if (!registers.a)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    if ((registers.a ^ m ^ a) & 0x10)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].HALF_CARRY;\n    registers.m = 2;\n};\nconst AddOperators = {\n    AddA: hardware => registerAdd(hardware.cpu.registers.a, hardware.cpu.registers),\n    AddB: hardware => registerAdd(hardware.cpu.registers.b, hardware.cpu.registers),\n    AddC: hardware => registerAdd(hardware.cpu.registers.c, hardware.cpu.registers),\n    AddD: hardware => registerAdd(hardware.cpu.registers.d, hardware.cpu.registers),\n    AddE: hardware => registerAdd(hardware.cpu.registers.e, hardware.cpu.registers),\n    AddH: hardware => registerAdd(hardware.cpu.registers.h, hardware.cpu.registers),\n    AddL: hardware => registerAdd(hardware.cpu.registers.l, hardware.cpu.registers),\n    AddPCAddress: hardware => addFromAddress(hardware.cpu.registers.programCount, hardware.memory, hardware.cpu.registers),\n    AddHLAddress: hardware => {\n        const registers = hardware.cpu.registers;\n        addFromAddress((registers.h << 8) + registers.l, hardware.memory, registers);\n    },\n    AddBCToHL: hardware => registerAdd16FromAddress('b', 'c', hardware.cpu.registers),\n    AddDEToHL: hardware => registerAdd16FromAddress('d', 'e', hardware.cpu.registers),\n    AddHLToHL: hardware => registerAdd16FromAddress('h', 'l', hardware.cpu.registers),\n    AddSPToHL: hardware => registerAdd16(hardware.cpu.registers.stackPointer, hardware.cpu.registers),\n    AddPCAddressToSP: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        let i = memory.readByte(registers.programCount++);\n        if (i > 127)\n            i = -((~i + 1) & 255);\n        registers.stackPointer += i;\n        registers.m = 4;\n    },\n    AddAWithCarry: hardware => addWithCarry(hardware.cpu.registers.a, hardware.cpu.registers),\n    AddBWithCarry: hardware => addWithCarry(hardware.cpu.registers.b, hardware.cpu.registers),\n    AddCWithCarry: hardware => addWithCarry(hardware.cpu.registers.c, hardware.cpu.registers),\n    AddDWithCarry: hardware => addWithCarry(hardware.cpu.registers.d, hardware.cpu.registers),\n    AddEWithCarry: hardware => addWithCarry(hardware.cpu.registers.e, hardware.cpu.registers),\n    AddHWithCarry: hardware => addWithCarry(hardware.cpu.registers.h, hardware.cpu.registers),\n    AddLWithCarry: hardware => addWithCarry(hardware.cpu.registers.l, hardware.cpu.registers),\n    AddPCAddressWithCarry: hardware => addFromAddressWithCarry(hardware.cpu.registers.programCount, hardware.memory, hardware.cpu.registers),\n    AddHLAddressWithCarry: hardware => {\n        const registers = hardware.cpu.registers;\n        addFromAddressWithCarry((registers.h << 8) + registers.l, hardware.memory, registers);\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Add.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var index_1 = __webpack_require__(/*! ../index */ "./src/Emulator/CPU/InstructionSet/index.ts");
+var loadRegisterIntoRegister = function (source, destination, hardware) {
+    var registers = hardware.registers;
+    registers[destination] = registers[source];
+    registers.m = 1;
+};
+var loadByteIntoRegister = function (address, destination, hardware) {
+    var memory = hardware.memory, registers = hardware.registers;
+    registers[destination] = memory.readByte(address);
+    registers.m = 2;
+};
+exports.LoadOperators = [
+    new index_1.Operator('LoadRegisterBIntoA', 0x78, function (hardware) { return loadRegisterIntoRegister('b', 'a', hardware); }),
+    new index_1.Operator('LoadRegisterCIntoA', 0x79, function (hardware) { return loadRegisterIntoRegister('c', 'a', hardware); }),
+    new index_1.Operator('LoadRegisterDIntoA', 0x7A, function (hardware) { return loadRegisterIntoRegister('d', 'a', hardware); }),
+    new index_1.Operator('LoadRegisterEIntoA', 0x7B, function (hardware) { return loadRegisterIntoRegister('e', 'a', hardware); }),
+    new index_1.Operator('LoadRegisterHIntoA', 0x7C, function (hardware) { return loadRegisterIntoRegister('h', 'a', hardware); }),
+    new index_1.Operator('LoadRegisterLIntoA', 0x7D, function (hardware) { return loadRegisterIntoRegister('l', 'a', hardware); }),
+    new index_1.Operator('LoadRegisterAIntoA', 0x7F, function (hardware) { return loadRegisterIntoRegister('a', 'a', hardware); }),
+];
+
 
 /***/ }),
 
-/***/ "./src/Emulator/CPU/Operations/BitManipulation.ts":
-/*!********************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/BitManipulation.ts ***!
-  \********************************************************/
-/*! exports provided: BitManipulationOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"BitManipulationOperators\", function() { return BitManipulationOperators; });\n/* harmony import */ var _BitManipulation_Extra__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./BitManipulation/Extra */ \"./src/Emulator/CPU/Operations/BitManipulation/Extra.ts\");\n/* harmony import */ var _BitManipulation_Reset__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./BitManipulation/Reset */ \"./src/Emulator/CPU/Operations/BitManipulation/Reset.ts\");\n/* harmony import */ var _BitManipulation_RotateLeft__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./BitManipulation/RotateLeft */ \"./src/Emulator/CPU/Operations/BitManipulation/RotateLeft.ts\");\n/* harmony import */ var _BitManipulation_RotateRight__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./BitManipulation/RotateRight */ \"./src/Emulator/CPU/Operations/BitManipulation/RotateRight.ts\");\n/* harmony import */ var _BitManipulation_Set__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./BitManipulation/Set */ \"./src/Emulator/CPU/Operations/BitManipulation/Set.ts\");\n/* harmony import */ var _BitManipulation_ShiftLeft__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./BitManipulation/ShiftLeft */ \"./src/Emulator/CPU/Operations/BitManipulation/ShiftLeft.ts\");\n/* harmony import */ var _BitManipulation_ShiftRight__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./BitManipulation/ShiftRight */ \"./src/Emulator/CPU/Operations/BitManipulation/ShiftRight.ts\");\n/* harmony import */ var _BitManipulation_Test__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./BitManipulation/Test */ \"./src/Emulator/CPU/Operations/BitManipulation/Test.ts\");\n\n\n\n\n\n\n\n\nconst BitManipulationOperators = Object.assign({}, _BitManipulation_Extra__WEBPACK_IMPORTED_MODULE_0__[\"ExtraBitManipOperatos\"], _BitManipulation_Reset__WEBPACK_IMPORTED_MODULE_1__[\"ResetOperators\"], _BitManipulation_RotateLeft__WEBPACK_IMPORTED_MODULE_2__[\"RotateLeftOperators\"], _BitManipulation_RotateRight__WEBPACK_IMPORTED_MODULE_3__[\"RotateRightOperators\"], _BitManipulation_Test__WEBPACK_IMPORTED_MODULE_7__[\"TestOperators\"], _BitManipulation_Set__WEBPACK_IMPORTED_MODULE_4__[\"SetOperators\"], _BitManipulation_ShiftLeft__WEBPACK_IMPORTED_MODULE_5__[\"ShiftLeftOperators\"], _BitManipulation_ShiftRight__WEBPACK_IMPORTED_MODULE_6__[\"ShiftRightOperators\"]);\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/BitManipulation.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/BitManipulation/Extra.ts":
-/*!**************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/BitManipulation/Extra.ts ***!
-  \**************************************************************/
-/*! exports provided: ExtraBitManipOperatos */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"ExtraBitManipOperatos\", function() { return ExtraBitManipOperatos; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst ExtraBitManipOperatos = {\n    InvertA: hardware => {\n        const registers = hardware.cpu.registers;\n        registers.a ^= 255;\n        registers.flags = registers.a ? 0 : _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n        registers.m = 1;\n    },\n    NegateA: hardware => {\n        const registers = hardware.cpu.registers;\n        registers.a = -registers.a;\n        registers.flags = registers.a < 0 ? _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY : 0;\n        registers.a &= 255;\n        if (!registers.a)\n            registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n        registers.m = 2;\n    },\n    InvertCarryFlag: hardware => {\n        const registers = hardware.cpu.registers;\n        const ci = registers.flags & _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY ? 0 : 0x10;\n        registers.flags = (registers.flags & 0xEF) + ci;\n        registers.m = 1;\n    },\n    SetCarryFlag: hardware => {\n        hardware.cpu.registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY;\n        hardware.cpu.registers.m = 1;\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/BitManipulation/Extra.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/BitManipulation/Reset.ts":
-/*!**************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/BitManipulation/Reset.ts ***!
-  \**************************************************************/
-/*! exports provided: ResetOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"ResetOperators\", function() { return ResetOperators; });\nconst reset = (name, mask, registers) => {\n    registers[name] &= mask;\n    registers.m = 2;\n};\nconst resetAddress = (mask, hardware) => {\n    const memory = hardware.memory;\n    const registers = hardware.cpu.registers;\n    const address = (registers.h << 8) + registers.l;\n    memory.writeByte(address, memory.readByte(address) & mask);\n    registers.m = 4;\n};\nconst operators = {};\n['a', 'b', 'c', 'd', 'e', 'h', 'l', 'm'].forEach((name) => {\n    let mask = 0xFE;\n    for (let i = 0; i <= 7; i++) {\n        let key;\n        let callable;\n        if (name === 'm') {\n            key = `ResetHLAddressBit${i}`;\n            callable = (hardware) => resetAddress(mask, hardware);\n        }\n        else {\n            key = `Reset${name.toUpperCase()}Bit${i}`;\n            callable = (hardware) => reset(name, mask, hardware.cpu.registers);\n        }\n        operators[key] = callable;\n        if (i === 0)\n            mask -= 1;\n        else\n            mask -= Math.pow(2, i);\n    }\n});\nconst ResetOperators = operators;\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/BitManipulation/Reset.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/BitManipulation/RotateLeft.ts":
-/*!*******************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/BitManipulation/RotateLeft.ts ***!
-  \*******************************************************************/
-/*! exports provided: RotateLeftOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"RotateLeftOperators\", function() { return RotateLeftOperators; });\nconst rotateLeft = (name, carry, registers) => {\n    const flagMask = carry ? 0x80 : 0x10;\n    const ci = registers.flags & flagMask ? 1 : 0;\n    const co = registers[name] & 0x80 ? 0x10 : 0;\n    registers[name] = ((registers[name] << 1) + ci) & 255;\n    registers.flags = (registers.flags & 0xEF) + co;\n    registers.m = name === 'a' ? 1 : 2;\n};\nconst rotateLeftAddress = (carry, hardware) => {\n    const memory = hardware.memory;\n    const registers = hardware.cpu.registers;\n    const flagMask = carry ? 0x80 : 0x10;\n    const address = (registers.h << 8) + registers.l;\n    let i = memory.readByte(address);\n    const ci = registers.flags & flagMask ? 1 : 0;\n    const co = i & 0x80 ? 0x10 : 0;\n    i = ((i << 1) + ci) & 255;\n    registers.flags = i ? 0 : 0x80;\n    memory.writeByte(address, i);\n    registers.flags = (registers.flags & 0xEF) + co;\n    registers.m = 4;\n};\nconst RotateLeftOperators = {\n    RotateLeftA: hardware => rotateLeft('a', false, hardware.cpu.registers),\n    RotateLeftB: hardware => rotateLeft('b', false, hardware.cpu.registers),\n    RotateLeftC: hardware => rotateLeft('c', false, hardware.cpu.registers),\n    RotateLeftD: hardware => rotateLeft('d', false, hardware.cpu.registers),\n    RotateLeftE: hardware => rotateLeft('e', false, hardware.cpu.registers),\n    RotateLeftH: hardware => rotateLeft('h', false, hardware.cpu.registers),\n    RotateLeftL: hardware => rotateLeft('l', false, hardware.cpu.registers),\n    RotateLeftHLAddress: hardware => rotateLeftAddress(false, hardware),\n    RotateLeftAWithCarry: hardware => rotateLeft('a', true, hardware.cpu.registers),\n    RotateLeftBWithCarry: hardware => rotateLeft('b', true, hardware.cpu.registers),\n    RotateLeftCWithCarry: hardware => rotateLeft('c', true, hardware.cpu.registers),\n    RotateLeftDWithCarry: hardware => rotateLeft('d', true, hardware.cpu.registers),\n    RotateLeftEWithCarry: hardware => rotateLeft('e', true, hardware.cpu.registers),\n    RotateLeftHWithCarry: hardware => rotateLeft('h', true, hardware.cpu.registers),\n    RotateLeftLWithCarry: hardware => rotateLeft('l', true, hardware.cpu.registers),\n    RotateLeftHLAddressWithCarry: hardware => rotateLeftAddress(true, hardware),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/BitManipulation/RotateLeft.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/BitManipulation/RotateRight.ts":
-/*!********************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/BitManipulation/RotateRight.ts ***!
-  \********************************************************************/
-/*! exports provided: RotateRightOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"RotateRightOperators\", function() { return RotateRightOperators; });\nconst rotateRight = (name, carry, registers) => {\n    const flagMask = carry ? 1 : 0x10;\n    const ci = registers.flags & flagMask ? 0x80 : 0;\n    const co = registers[name] & 1 ? 0x10 : 0;\n    registers[name] = ((registers[name] >> 1) + ci) & 255;\n    registers.flags = (registers.flags & 0xEF) + co;\n    registers.m = name === 'a' ? 1 : 2;\n};\nconst rotateRightAddress = (carry, hardware) => {\n    const memory = hardware.memory;\n    const registers = hardware.cpu.registers;\n    const flagMask = carry ? 1 : 0x10;\n    const address = (registers.h << 8) + registers.l;\n    let i = memory.readByte(address);\n    const ci = registers.flags & flagMask ? 0x80 : 0;\n    const co = i & 1 ? 0x10 : 0;\n    i = ((i >> 1) + ci) & 255;\n    memory.writeByte(address, i);\n    registers.flags = i ? 0 : 0x80;\n    registers.flags = (registers.flags & 0xEF) + co;\n    registers.m = 4;\n};\nconst RotateRightOperators = {\n    RotateRightA: hardware => rotateRight('a', false, hardware.cpu.registers),\n    RotateRightB: hardware => rotateRight('b', false, hardware.cpu.registers),\n    RotateRightC: hardware => rotateRight('c', false, hardware.cpu.registers),\n    RotateRightD: hardware => rotateRight('d', false, hardware.cpu.registers),\n    RotateRightE: hardware => rotateRight('e', false, hardware.cpu.registers),\n    RotateRightH: hardware => rotateRight('h', false, hardware.cpu.registers),\n    RotateRightL: hardware => rotateRight('l', false, hardware.cpu.registers),\n    RotateRightHLAddress: hardware => rotateRightAddress(false, hardware),\n    RotateRightAWithCarry: hardware => rotateRight('a', true, hardware.cpu.registers),\n    RotateRightBWithCarry: hardware => rotateRight('b', true, hardware.cpu.registers),\n    RotateRightCWithCarry: hardware => rotateRight('c', true, hardware.cpu.registers),\n    RotateRightDWithCarry: hardware => rotateRight('d', true, hardware.cpu.registers),\n    RotateRightEWithCarry: hardware => rotateRight('e', true, hardware.cpu.registers),\n    RotateRightHWithCarry: hardware => rotateRight('h', true, hardware.cpu.registers),\n    RotateRightLWithCarry: hardware => rotateRight('l', true, hardware.cpu.registers),\n    RotateRightHLAddressWithCarry: hardware => rotateRightAddress(true, hardware),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/BitManipulation/RotateRight.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/BitManipulation/Set.ts":
-/*!************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/BitManipulation/Set.ts ***!
-  \************************************************************/
-/*! exports provided: SetOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"SetOperators\", function() { return SetOperators; });\nconst set = (name, mask, registers) => {\n    registers[name] = registers[name] & mask;\n    registers.m = 2;\n};\nconst setAddress = (mask, hardware) => {\n    const memory = hardware.memory;\n    const registers = hardware.cpu.registers;\n    const address = (registers.h << 8) + registers.l;\n    memory.writeByte(address, memory.readByte(address) & mask);\n    registers.m = 4;\n};\nconst operators = {};\n['a', 'b', 'c', 'd', 'e', 'h', 'l', 'm'].forEach((name) => {\n    let mask = 0x01;\n    for (let i = 0; i <= 7; i++) {\n        let key;\n        let callable;\n        if (name === 'm') {\n            key = `SetHLAddressBit${i}`;\n            callable = (hardware) => setAddress(mask, hardware);\n        }\n        else {\n            key = `Set${name.toUpperCase()}Bit${i}`;\n            callable = (hardware) => set(name, mask, hardware.cpu.registers);\n        }\n        operators[key] = callable;\n        mask *= 2;\n    }\n});\nconst SetOperators = operators;\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/BitManipulation/Set.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/BitManipulation/ShiftLeft.ts":
-/*!******************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/BitManipulation/ShiftLeft.ts ***!
-  \******************************************************************/
-/*! exports provided: ShiftLeftOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"ShiftLeftOperators\", function() { return ShiftLeftOperators; });\nconst shiftLeft = (name, registers, extra = 0) => {\n    const co = registers[name] & 0x80 ? 0x10 : 0;\n    registers[name] = (registers[name] << 1) & 255 + extra;\n    registers.flags = registers[name] ? 0 : 0x80;\n    registers.flags = (registers.flags & 0xEF) + co;\n    registers.m = 2;\n};\nconst shiftLeftLogical = (name, registers) => {\n    shiftLeft(name, registers, 1);\n};\nconst ShiftLeftOperators = {\n    ShiftLeftAArithmetic: hardware => shiftLeft('a', hardware.cpu.registers),\n    ShiftLeftBArithmetic: hardware => shiftLeft('b', hardware.cpu.registers),\n    ShiftLeftCArithmetic: hardware => shiftLeft('c', hardware.cpu.registers),\n    ShiftLeftDArithmetic: hardware => shiftLeft('d', hardware.cpu.registers),\n    ShiftLeftEArithmetic: hardware => shiftLeft('e', hardware.cpu.registers),\n    ShiftLeftHArithmetic: hardware => shiftLeft('h', hardware.cpu.registers),\n    ShiftLeftLArithmetic: hardware => shiftLeft('l', hardware.cpu.registers),\n    ShiftLeftALogical: hardware => shiftLeftLogical('a', hardware.cpu.registers),\n    ShiftLeftBLogical: hardware => shiftLeftLogical('b', hardware.cpu.registers),\n    ShiftLeftCLogical: hardware => shiftLeftLogical('c', hardware.cpu.registers),\n    ShiftLeftDLogical: hardware => shiftLeftLogical('d', hardware.cpu.registers),\n    ShiftLeftELogical: hardware => shiftLeftLogical('e', hardware.cpu.registers),\n    ShiftLeftHLogical: hardware => shiftLeftLogical('h', hardware.cpu.registers),\n    ShiftLeftLLogical: hardware => shiftLeftLogical('l', hardware.cpu.registers),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/BitManipulation/ShiftLeft.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/BitManipulation/ShiftRight.ts":
-/*!*******************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/BitManipulation/ShiftRight.ts ***!
-  \*******************************************************************/
-/*! exports provided: ShiftRightOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"ShiftRightOperators\", function() { return ShiftRightOperators; });\nconst shiftRight = (name, registers) => {\n    const ci = registers[name] & 0x80;\n    const co = registers[name] & 1 ? 0x10 : 0;\n    registers[name] = ((registers[name] >> 1) + ci) & 255;\n    registers.flags = registers[name] ? 0 : 0x80;\n    registers.flags = (registers.flags & 0xEF) + co;\n    registers.m = 2;\n};\nconst shiftRightLogical = (name, registers) => {\n    const co = registers[name] & 1 ? 0x10 : 0;\n    registers[name] = (registers[name] >> 1) & 255;\n    registers.flags = registers[name] ? 0 : 0x80;\n    registers.flags = (registers.flags & 0xEF) + co;\n    registers.m = 2;\n};\nconst ShiftRightOperators = {\n    ShiftRightAArithmetic: hardware => shiftRight('a', hardware.cpu.registers),\n    ShiftRightBArithmetic: hardware => shiftRight('b', hardware.cpu.registers),\n    ShiftRightCArithmetic: hardware => shiftRight('c', hardware.cpu.registers),\n    ShiftRightDArithmetic: hardware => shiftRight('d', hardware.cpu.registers),\n    ShiftRightEArithmetic: hardware => shiftRight('e', hardware.cpu.registers),\n    ShiftRightHArithmetic: hardware => shiftRight('h', hardware.cpu.registers),\n    ShiftRightLArithmetic: hardware => shiftRight('l', hardware.cpu.registers),\n    ShiftRightALogical: hardware => shiftRightLogical('a', hardware.cpu.registers),\n    ShiftRightBLogical: hardware => shiftRightLogical('b', hardware.cpu.registers),\n    ShiftRightCLogical: hardware => shiftRightLogical('c', hardware.cpu.registers),\n    ShiftRightDLogical: hardware => shiftRightLogical('d', hardware.cpu.registers),\n    ShiftRightELogical: hardware => shiftRightLogical('e', hardware.cpu.registers),\n    ShiftRightHLogical: hardware => shiftRightLogical('h', hardware.cpu.registers),\n    ShiftRightLLogical: hardware => shiftRightLogical('l', hardware.cpu.registers),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/BitManipulation/ShiftRight.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/BitManipulation/Test.ts":
-/*!*************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/BitManipulation/Test.ts ***!
-  \*************************************************************/
-/*! exports provided: TestOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"TestOperators\", function() { return TestOperators; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst test = (name, mask, registers) => {\n    registers.flags = registers[name] & mask ? 0 : _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    registers.m = 2;\n};\nconst testAddress = (mask, hardware) => {\n    const registers = hardware.cpu.registers;\n    registers.flags = hardware.memory.readByte((registers.h << 8) + registers.l) & mask ? 0 : _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    registers.m = 3;\n};\nconst operators = {};\n['a', 'b', 'c', 'd', 'e', 'h', 'l', 'm'].forEach((name) => {\n    let mask = 0x01;\n    for (let i = 0; i <= 7; i++) {\n        let key;\n        let callable;\n        if (name === 'm') {\n            key = `TestHLAddressBit${i}`;\n            callable = (hardware) => testAddress(mask, hardware);\n        }\n        else {\n            key = `Test${name.toUpperCase()}Bit${i}`;\n            callable = (hardware) => test(name, mask, hardware.cpu.registers);\n        }\n        operators[key] = callable;\n        mask *= 2;\n    }\n});\nconst TestOperators = operators;\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/BitManipulation/Test.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Bitwise.ts":
-/*!************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Bitwise.ts ***!
-  \************************************************/
-/*! exports provided: BitwiseOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"BitwiseOperators\", function() { return BitwiseOperators; });\n/* harmony import */ var _Bitwise_And__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Bitwise/And */ \"./src/Emulator/CPU/Operations/Bitwise/And.ts\");\n/* harmony import */ var _Bitwise_Or__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Bitwise/Or */ \"./src/Emulator/CPU/Operations/Bitwise/Or.ts\");\n/* harmony import */ var _Bitwise_Xor__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Bitwise/Xor */ \"./src/Emulator/CPU/Operations/Bitwise/Xor.ts\");\n\n\n\nconst BitwiseOperators = Object.assign({}, _Bitwise_And__WEBPACK_IMPORTED_MODULE_0__[\"BitAndOperators\"], _Bitwise_Or__WEBPACK_IMPORTED_MODULE_1__[\"BitOrOperators\"], _Bitwise_Xor__WEBPACK_IMPORTED_MODULE_2__[\"BitXorOperators\"]);\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Bitwise.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Bitwise/And.ts":
-/*!****************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Bitwise/And.ts ***!
-  \****************************************************/
-/*! exports provided: BitAndOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"BitAndOperators\", function() { return BitAndOperators; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst and = (value, registers) => {\n    registers.a &= value;\n    registers.a &= 255;\n    registers.flags = registers.a ? 0 : _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    registers.m = 1;\n};\nconst andAddress = (address, hardware) => {\n    const registers = hardware.cpu.registers;\n    and(hardware.memory.readByte(address), registers);\n    registers.m = 2;\n};\nconst BitAndOperators = {\n    BitAndA: hardware => and(hardware.cpu.registers.a, hardware.cpu.registers),\n    BitAndB: hardware => and(hardware.cpu.registers.a, hardware.cpu.registers),\n    BitAndC: hardware => and(hardware.cpu.registers.a, hardware.cpu.registers),\n    BitAndD: hardware => and(hardware.cpu.registers.a, hardware.cpu.registers),\n    BitAndE: hardware => and(hardware.cpu.registers.a, hardware.cpu.registers),\n    BitAndH: hardware => and(hardware.cpu.registers.a, hardware.cpu.registers),\n    BitAndL: hardware => and(hardware.cpu.registers.a, hardware.cpu.registers),\n    BitAndHLAddress: hardware => {\n        const registers = hardware.cpu.registers;\n        andAddress((registers.h << 8) + registers.l, hardware);\n    },\n    BitAndPCAddress: hardware => {\n        const registers = hardware.cpu.registers;\n        andAddress(registers.programCount++, hardware);\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Bitwise/And.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Bitwise/Or.ts":
-/*!***************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Bitwise/Or.ts ***!
-  \***************************************************/
-/*! exports provided: BitOrOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"BitOrOperators\", function() { return BitOrOperators; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst or = (value, registers) => {\n    registers.a |= value;\n    registers.a &= 255;\n    registers.flags = registers.a ? 0 : _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    registers.m = 1;\n};\nconst orAddress = (address, hardware) => {\n    const registers = hardware.cpu.registers;\n    or(hardware.memory.readByte(address), registers);\n    registers.m = 2;\n};\nconst BitOrOperators = {\n    BitOrA: hardware => or(hardware.cpu.registers.a, hardware.cpu.registers),\n    BitOrB: hardware => or(hardware.cpu.registers.b, hardware.cpu.registers),\n    BitOrC: hardware => or(hardware.cpu.registers.c, hardware.cpu.registers),\n    BitOrD: hardware => or(hardware.cpu.registers.d, hardware.cpu.registers),\n    BitOrE: hardware => or(hardware.cpu.registers.e, hardware.cpu.registers),\n    BitOrH: hardware => or(hardware.cpu.registers.h, hardware.cpu.registers),\n    BitOrL: hardware => or(hardware.cpu.registers.l, hardware.cpu.registers),\n    BitOrHLAddress: hardware => {\n        const registers = hardware.cpu.registers;\n        orAddress((registers.h << 8) + registers.l, hardware);\n    },\n    BitOrPCAddress: hardware => {\n        const registers = hardware.cpu.registers;\n        orAddress(registers.programCount++, hardware);\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Bitwise/Or.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Bitwise/Xor.ts":
-/*!****************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Bitwise/Xor.ts ***!
-  \****************************************************/
-/*! exports provided: BitXorOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"BitXorOperators\", function() { return BitXorOperators; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst xor = (value, registers) => {\n    registers.a ^= value;\n    registers.a &= 255;\n    registers.flags = registers.a ? 0 : _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    registers.m = 1;\n};\nconst xorAddress = (address, hardware) => {\n    xor(hardware.memory.readByte(address), hardware.cpu.registers);\n    hardware.cpu.registers.m = 2;\n};\nconst BitXorOperators = {\n    BitXorA: hardware => xor(hardware.cpu.registers.a, hardware.cpu.registers),\n    BitXorB: hardware => xor(hardware.cpu.registers.b, hardware.cpu.registers),\n    BitXorC: hardware => xor(hardware.cpu.registers.c, hardware.cpu.registers),\n    BitXorD: hardware => xor(hardware.cpu.registers.d, hardware.cpu.registers),\n    BitXorE: hardware => xor(hardware.cpu.registers.e, hardware.cpu.registers),\n    BitXorH: hardware => xor(hardware.cpu.registers.h, hardware.cpu.registers),\n    BitXorL: hardware => xor(hardware.cpu.registers.l, hardware.cpu.registers),\n    BitXorHLAddress: hardware => {\n        const registers = hardware.cpu.registers;\n        xorAddress((registers.h << 8) + registers.l, hardware);\n    },\n    BitXorPCAddress: hardware => xorAddress(hardware.cpu.registers.programCount++, hardware),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Bitwise/Xor.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Compare.ts":
-/*!************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Compare.ts ***!
-  \************************************************/
-/*! exports provided: CompareOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"CompareOperators\", function() { return CompareOperators; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst registerCompare = (value, registers) => {\n    const i = registers.a - value;\n    registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].OPERATION;\n    if (!(i & 255))\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    if (i < 255)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY;\n    registers.m = 1;\n};\nconst CompareOperators = {\n    Compare_RegisterA: hardware => registerCompare(hardware.cpu.registers.a, hardware.cpu.registers),\n    Compare_RegisterB: hardware => registerCompare(hardware.cpu.registers.b, hardware.cpu.registers),\n    Compare_RegisterC: hardware => registerCompare(hardware.cpu.registers.c, hardware.cpu.registers),\n    Compare_RegisterD: hardware => registerCompare(hardware.cpu.registers.d, hardware.cpu.registers),\n    Compare_RegisterE: hardware => registerCompare(hardware.cpu.registers.e, hardware.cpu.registers),\n    Compare_RegisterH: hardware => registerCompare(hardware.cpu.registers.h, hardware.cpu.registers),\n    Compare_RegisterL: hardware => registerCompare(hardware.cpu.registers.l, hardware.cpu.registers),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Compare.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Decrement.ts":
+/***/ "./src/Emulator/CPU/InstructionSet/index.ts":
 /*!**************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Decrement.ts ***!
+  !*** ./src/Emulator/CPU/InstructionSet/index.ts ***!
   \**************************************************/
-/*! exports provided: DecrementOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"DecrementOperators\", function() { return DecrementOperators; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst decrement = (name, registers) => {\n    registers[name] = (registers[name] - 1) & 255;\n    registers.flags = registers[name] ? 0 : _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    registers.m = 1;\n};\nconst decrementAddress = (address, hardware) => {\n    const memory = hardware.memory;\n    const value = (memory.readByte(address) - 1) & 255;\n    memory.writeByte(address, value);\n    hardware.cpu.registers.flags = value ? 0 : _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    hardware.cpu.registers.m = 3;\n};\nconst decrement16 = (highReg, lowReg, registers) => {\n    registers[lowReg] = (registers[lowReg] - 1) & 255;\n    if (!registers[lowReg])\n        registers[highReg] = (registers[highReg] - 1) & 255;\n    registers.m = 1;\n};\nconst DecrementOperators = {\n    DecrementA: hardware => decrement('a', hardware.cpu.registers),\n    DecrementB: hardware => decrement('b', hardware.cpu.registers),\n    DecrementC: hardware => decrement('c', hardware.cpu.registers),\n    DecrementD: hardware => decrement('d', hardware.cpu.registers),\n    DecrementE: hardware => decrement('e', hardware.cpu.registers),\n    DecrementH: hardware => decrement('h', hardware.cpu.registers),\n    DecrementL: hardware => decrement('l', hardware.cpu.registers),\n    DecrementHLAddress: hardware => {\n        const registers = hardware.cpu.registers;\n        decrementAddress((registers.h << 8) + registers.l, hardware);\n    },\n    DecrementBC: hardware => decrement16('b', 'c', hardware.cpu.registers),\n    DecrementDE: hardware => decrement16('d', 'e', hardware.cpu.registers),\n    DecrementHL: hardware => decrement16('h', 'l', hardware.cpu.registers),\n    DecrementSP: hardware => {\n        const registers = hardware.cpu.registers;\n        registers.stackPointer = (registers.stackPointer - 1) & 65535;\n        registers.m = 1;\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Decrement.ts?");
 
-/***/ }),
+Object.defineProperty(exports, "__esModule", { value: true });
+var Load_1 = __webpack_require__(/*! ./Operators/Load */ "./src/Emulator/CPU/InstructionSet/Operators/Load.ts");
+var Operator = /** @class */ (function () {
+    function Operator(name, opcode, callback) {
+        this.name = name;
+        this.opcode = opcode;
+        this.callback = callback;
+    }
+    Operator.prototype.invoke = function (hardware) {
+        this.callback(hardware);
+    };
+    return Operator;
+}());
+exports.Operator = Operator;
+var Manager = /** @class */ (function () {
+    /**
+     * Manager constructor.
+     */
+    function Manager() {
+        this.operators = {};
+        this.opcodes = [];
+        this.opcodes = new Array(256);
+    }
+    /**
+     * @param {string} name
+     * @return {OperatorInterface | null}
+     */
+    Manager.prototype.getByName = function (name) {
+        return this.operators[name] || null;
+    };
+    /**
+     * @param {number} opcode
+     * @return {OperatorInterface | null}
+     */
+    Manager.prototype.getByCode = function (opcode) {
+        return this.opcodes[opcode] || null;
+    };
+    /**
+     * @param {OperatorInterface} operator
+     * @return {Manager}
+     */
+    Manager.prototype.register = function (operator) {
+        this.operators[operator.name] = operator;
+        this.operators[operator.opcode] = operator;
+        return this;
+    };
+    /**
+     * @param {OperatorInterface[]} operators
+     * @return {Manager}
+     */
+    Manager.prototype.registerAll = function (operators) {
+        operators.forEach(this.register);
+        return this;
+    };
+    /**
+     * @param {OperatorInterface} operator
+     * @return {Manager}
+     */
+    Manager.prototype.deregister = function (operator) {
+        delete this.operators[operator.name];
+        delete this.opcodes[operator.opcode];
+        return this;
+    };
+    return Manager;
+}());
+exports.PrimaryInstructions = new Manager();
+exports.BitInstructions = new Manager();
+exports.PrimaryInstructions.registerAll(Load_1.LoadOperators.slice());
 
-/***/ "./src/Emulator/CPU/Operations/Extra.ts":
-/*!**********************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Extra.ts ***!
-  \**********************************************/
-/*! exports provided: ExtraOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"ExtraOperators\", function() { return ExtraOperators; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst ExtraOperators = {\n    BCDCorrect: hardware => {\n        const registers = hardware.cpu.registers;\n        const original = registers.a;\n        if ((registers.flags & _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].HALF_CARRY) || (registers.a & 15) > 9)\n            registers.a += 6;\n        registers.flags &= 0xEF;\n        if ((registers.flags & _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].HALF_CARRY) || original > 0x99) {\n            registers.a += 0x60;\n            registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY;\n        }\n        registers.m = 1;\n    },\n    ExtraOperators: hardware => {\n        const registers = hardware.registers;\n        const i = hardware.memory.readByte(registers.programCount++);\n        registers.programCount &= 65535;\n        if (hardware.cpu.cbcodes[i])\n            hardware.cpu.cbcodes[i](hardware);\n        else\n            hardware.cpu.operators.NoImplExtra(hardware);\n    },\n    Halt: hardware => {\n        hardware.cpu.halt = true;\n        hardware.registers.m = 1;\n    },\n    NoImpl: hardware => {\n        const offset = hardware.cpu.registers.programCount - 1;\n        const opcode = hardware.memory.readByte(offset);\n        console.error(`Unimplemented instruction 0x${opcode.toString(16).toUpperCase()} at offset 0x${offset.toString(16).toUpperCase()}, stopping`);\n        hardware.cpu.stop = true;\n    },\n    NoImplExtra: hardware => {\n        const offset = hardware.cpu.registers.programCount - 1;\n        const opcode = hardware.memory.readByte(offset);\n        console.error(`Unimplemented extra instruction 0x${opcode.toString(16).toUpperCase()} at offset 0x${offset.toString(16).toUpperCase()}, stopping`);\n        hardware.cpu.stop = true;\n    },\n    Noop: hardware => {\n        hardware.cpu.registers.m = 1;\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Extra.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Increment.ts":
-/*!**************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Increment.ts ***!
-  \**************************************************/
-/*! exports provided: IncrementOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"IncrementOperators\", function() { return IncrementOperators; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst increment = (name, registers) => {\n    registers[name] = (registers[name] + 1) & 255;\n    registers.flags = registers[name] ? 0 : _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    registers.m = 1;\n};\nconst incrementAddress = (address, hardware) => {\n    const memory = hardware.memory;\n    const value = (memory.readByte(address) + 1) & 255;\n    memory.writeByte(address, value);\n    hardware.cpu.registers.flags = value ? 0 : _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    hardware.cpu.registers.m = 3;\n};\nconst increment16 = (highReg, lowReg, registers) => {\n    registers[lowReg] = (registers[lowReg] + 1) & 255;\n    if (!registers[lowReg])\n        registers[highReg] = (registers[highReg] + 1) & 255;\n    registers.m = 1;\n};\nconst IncrementOperators = {\n    IncrementA: hardware => increment('a', hardware.cpu.registers),\n    IncrementB: hardware => increment('b', hardware.cpu.registers),\n    IncrementC: hardware => increment('c', hardware.cpu.registers),\n    IncrementD: hardware => increment('d', hardware.cpu.registers),\n    IncrementE: hardware => increment('e', hardware.cpu.registers),\n    IncrementH: hardware => increment('h', hardware.cpu.registers),\n    IncrementL: hardware => increment('l', hardware.cpu.registers),\n    IncrementHLAddress: hardware => {\n        const registers = hardware.cpu.registers;\n        incrementAddress((registers.h << 8) + registers.l, hardware);\n    },\n    IncrementBC: hardware => increment16('b', 'c', hardware.cpu.registers),\n    IncrementDE: hardware => increment16('d', 'e', hardware.cpu.registers),\n    IncrementHL: hardware => increment16('h', 'l', hardware.cpu.registers),\n    IncrementSP: hardware => {\n        const registers = hardware.cpu.registers;\n        registers.stackPointer = (registers.stackPointer + 1) & 65535;\n        registers.m = 1;\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Increment.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Interrupt.ts":
-/*!**************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Interrupt.ts ***!
-  \**************************************************/
-/*! exports provided: Interrupt, InterruptOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Interrupt\", function() { return Interrupt; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"InterruptOperators\", function() { return InterruptOperators; });\nconst registerKeys = ['a', 'b', 'c', 'd', 'e', 'h', 'l'];\nclass RegisterStorage {\n    static save(registers) {\n        registerKeys.forEach(key => this.registers[key] = registers[key]);\n    }\n    static restore(registers) {\n        registerKeys.forEach(key => registers[key] = this.registers[key]);\n    }\n}\nRegisterStorage.registers = {\n    a: 0,\n    b: 0,\n    c: 0,\n    d: 0,\n    e: 0,\n    h: 0,\n    l: 0,\n};\nconst interrupt = (value, hardware) => {\n    const registers = hardware.registers;\n    RegisterStorage.save(registers);\n    registers.stackPointer -= 2;\n    hardware.memory.writeWord(registers.stackPointer, registers.programCount);\n    registers.programCount = value;\n    registers.m = 3;\n};\nvar Interrupt;\n(function (Interrupt) {\n    Interrupt[Interrupt[\"VBLANK\"] = 1] = \"VBLANK\";\n    Interrupt[Interrupt[\"LCD_STAT\"] = 2] = \"LCD_STAT\";\n    Interrupt[Interrupt[\"TIMER\"] = 4] = \"TIMER\";\n    Interrupt[Interrupt[\"SERIAL\"] = 8] = \"SERIAL\";\n    Interrupt[Interrupt[\"JOYPAD\"] = 16] = \"JOYPAD\";\n})(Interrupt || (Interrupt = {}));\nconst InterruptOperators = {\n    InterruptEnable: hardware => {\n        hardware.cpu.allowInterrupts = true;\n        hardware.registers.m = 1;\n    },\n    InterruptDisable: hardware => {\n        hardware.cpu.allowInterrupts = false;\n        hardware.registers.m = 1;\n    },\n    InterruptReturn: hardware => {\n        const registers = hardware.registers;\n        hardware.cpu.allowInterrupts = true;\n        RegisterStorage.restore(registers);\n        registers.programCount = hardware.memory.readWord(registers.stackPointer);\n        registers.stackPointer += 2;\n        registers.m = 3;\n    },\n    Interrupt00: hardware => interrupt(0x00, hardware),\n    Interrupt08: hardware => interrupt(0x08, hardware),\n    Interrupt10: hardware => interrupt(0x10, hardware),\n    Interrupt18: hardware => interrupt(0x18, hardware),\n    Interrupt20: hardware => interrupt(0x20, hardware),\n    Interrupt28: hardware => interrupt(0x28, hardware),\n    Interrupt30: hardware => interrupt(0x30, hardware),\n    Interrupt38: hardware => interrupt(0x38, hardware),\n    Interrupt40: hardware => interrupt(0x40, hardware),\n    Interrupt48: hardware => interrupt(0x48, hardware),\n    Interrupt50: hardware => interrupt(0x50, hardware),\n    Interrupt58: hardware => interrupt(0x58, hardware),\n    Interrupt60: hardware => interrupt(0x60, hardware),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Interrupt.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Jump.ts":
-/*!*********************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Jump.ts ***!
-  \*********************************************/
-/*! exports provided: JumpOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"JumpOperators\", function() { return JumpOperators; });\n/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ \"./src/Emulator/CPU/Operations/index.ts\");\n\nconst absJumpIf = (test, hardware) => {\n    const { memory, registers } = hardware;\n    registers.m = 3;\n    if (test) {\n        registers.programCount = memory.readWord(registers.programCount);\n        ++registers.m;\n    }\n    else\n        registers.programCount += 2;\n};\nconst relJumpIf = (test, hardware) => {\n    const { memory, registers } = hardware;\n    let offset = memory.readByte(registers.programCount++);\n    if (offset > 127)\n        offset = -((~offset + 1) & 255);\n    registers.m = 2;\n    if (test) {\n        registers.programCount += offset;\n        ++registers.m;\n    }\n};\nconst labelJumpIf = (test, hardware) => {\n    const { memory, registers } = hardware;\n    registers.m = 3;\n    if (test) {\n        registers.stackPointer -= 2;\n        memory.writeWord(registers.stackPointer, registers.programCount + 2);\n        registers.programCount = memory.readWord(registers.programCount);\n        registers.m += 2;\n    }\n    else\n        registers.programCount += 2;\n};\nconst JumpOperators = {\n    AbsoluteJumpToPCAddress: hardware => {\n        const registers = hardware.registers;\n        registers.programCount = hardware.memory.readWord(registers.programCount);\n        registers.m = 3;\n    },\n    AbsoluteJumpToHLAddress: hardware => {\n        const registers = hardware.registers;\n        registers.programCount = (registers.h << 8) + registers.l;\n        registers.m = 1;\n    },\n    AbsoluteJumpToPCAddressIfZero: hardware => absJumpIf(Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testZero\"])(hardware), hardware),\n    AbsoluteJumpToPCAddressIfNotZero: hardware => absJumpIf(!Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testZero\"])(hardware), hardware),\n    AbsoluteJumpToPCAddressIfCarry: hardware => absJumpIf(Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testCarry\"])(hardware), hardware),\n    AbsoluteJumpToPCAddressIfNotCarry: hardware => absJumpIf(!Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testCarry\"])(hardware), hardware),\n    RelativeJumpToPCAddress: hardware => relJumpIf(true, hardware),\n    RelativeJumpToPCAddressIfCarry: hardware => relJumpIf(Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testCarry\"])(hardware), hardware),\n    RelativeJumpToPCAddressIfNotCarry: hardware => relJumpIf(!Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testCarry\"])(hardware), hardware),\n    RelativeJumpToPCAddressIfZero: hardware => relJumpIf(Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testZero\"])(hardware), hardware),\n    RelativeJumpToPCAddressIfNotZero: hardware => relJumpIf(!Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testZero\"])(hardware), hardware),\n    RelativeJumpToPCAddressDecrementB: hardware => relJumpIf(--hardware.registers.b !== 0, hardware),\n    LabelJumpPCAddress: hardware => labelJumpIf(true, hardware),\n    LabelJumpPCAddressIfCarry: hardware => labelJumpIf(Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testCarry\"])(hardware), hardware),\n    LabelJumpPCAddressIfNotCarry: hardware => labelJumpIf(!Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testCarry\"])(hardware), hardware),\n    LabelJumpPCAddressIfZero: hardware => labelJumpIf(Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testZero\"])(hardware), hardware),\n    LabelJumpPCAddressIfNotZero: hardware => labelJumpIf(!Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testZero\"])(hardware), hardware),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Jump.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/LoadStore.ts":
-/*!**************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/LoadStore.ts ***!
-  \**************************************************/
-/*! exports provided: LoadStoreOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"LoadStoreOperators\", function() { return LoadStoreOperators; });\n/* harmony import */ var _LoadStore_MemoryToMemory__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./LoadStore/MemoryToMemory */ \"./src/Emulator/CPU/Operations/LoadStore/MemoryToMemory.ts\");\n/* harmony import */ var _LoadStore_MemoryToRegister__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./LoadStore/MemoryToRegister */ \"./src/Emulator/CPU/Operations/LoadStore/MemoryToRegister.ts\");\n/* harmony import */ var _LoadStore_ProgramCount__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./LoadStore/ProgramCount */ \"./src/Emulator/CPU/Operations/LoadStore/ProgramCount.ts\");\n/* harmony import */ var _LoadStore_RegisterToMemory__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./LoadStore/RegisterToMemory */ \"./src/Emulator/CPU/Operations/LoadStore/RegisterToMemory.ts\");\n/* harmony import */ var _LoadStore_RegisterToRegister__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./LoadStore/RegisterToRegister */ \"./src/Emulator/CPU/Operations/LoadStore/RegisterToRegister.ts\");\n/* harmony import */ var _LoadStore_Swap__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./LoadStore/Swap */ \"./src/Emulator/CPU/Operations/LoadStore/Swap.ts\");\n\n\n\n\n\n\nconst LoadStoreOperators = Object.assign({}, _LoadStore_MemoryToMemory__WEBPACK_IMPORTED_MODULE_0__[\"MemoryToMemoryOperators\"], _LoadStore_MemoryToRegister__WEBPACK_IMPORTED_MODULE_1__[\"MemoryToRegisterOperators\"], _LoadStore_ProgramCount__WEBPACK_IMPORTED_MODULE_2__[\"ProgramCountOperators\"], _LoadStore_RegisterToMemory__WEBPACK_IMPORTED_MODULE_3__[\"RegisterToMemoryOperators\"], _LoadStore_RegisterToRegister__WEBPACK_IMPORTED_MODULE_4__[\"RegisterToRegisterOperators\"], _LoadStore_Swap__WEBPACK_IMPORTED_MODULE_5__[\"SwapOperators\"]);\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/LoadStore.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/LoadStore/MemoryToMemory.ts":
-/*!*****************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/LoadStore/MemoryToMemory.ts ***!
-  \*****************************************************************/
-/*! exports provided: MemoryToMemoryOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"MemoryToMemoryOperators\", function() { return MemoryToMemoryOperators; });\nconst MemoryToMemoryOperators = {\n    LoadPCIntoHLAddress: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        memory.writeByte((registers.h << 8) + registers.l, memory.readByte(registers.programCount++));\n        registers.m = 3;\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/LoadStore/MemoryToMemory.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/LoadStore/MemoryToRegister.ts":
-/*!*******************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/LoadStore/MemoryToRegister.ts ***!
-  \*******************************************************************/
-/*! exports provided: MemoryToRegisterOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"MemoryToRegisterOperators\", function() { return MemoryToRegisterOperators; });\nconst loadMemoryToRegister = (destination, highReg, lowReg, hardware) => {\n    const memory = hardware.memory;\n    const registers = hardware.cpu.registers;\n    const high = registers[highReg];\n    const low = registers[lowReg];\n    registers[destination] = memory.readByte((high << 8) + low);\n    registers.m = 2;\n};\nconst loadHLMemoryToRegister = (destination, hardware) => {\n    loadMemoryToRegister(destination, 'h', 'l', hardware);\n};\nconst loadPCAndNextIntoRegister = (destinationA, destinationB, hardware) => {\n    const memory = hardware.memory;\n    const registers = hardware.cpu.registers;\n    registers[destinationA] = memory.readByte(registers.programCount++);\n    registers[destinationB] = memory.readByte(registers.programCount++);\n    registers.m = 3;\n};\nconst MemoryToRegisterOperators = {\n    LoadHLAddressIntoA: hardware => loadHLMemoryToRegister('a', hardware),\n    LoadHLAddressIntoB: hardware => loadHLMemoryToRegister('b', hardware),\n    LoadHLAddressIntoC: hardware => loadHLMemoryToRegister('c', hardware),\n    LoadHLAddressIntoD: hardware => loadHLMemoryToRegister('d', hardware),\n    LoadHLAddressIntoE: hardware => loadHLMemoryToRegister('e', hardware),\n    LoadHLAddressIntoH: hardware => loadHLMemoryToRegister('h', hardware),\n    LoadHLAddressIntoL: hardware => loadHLMemoryToRegister('l', hardware),\n    LoadBCAddressIntoA: hardware => loadMemoryToRegister('a', 'b', 'c', hardware),\n    LoadDEAddressIntoA: hardware => loadMemoryToRegister('a', 'd', 'e', hardware),\n    LoadPCAndNextIntoBC: hardware => loadPCAndNextIntoRegister('b', 'c', hardware),\n    LoadPCAndNextIntoDE: hardware => loadPCAndNextIntoRegister('d', 'e', hardware),\n    LoadPCAndNextIntoHL: hardware => loadPCAndNextIntoRegister('h', 'l', hardware),\n    LoadPCAndNextIntoSP: hardware => {\n        const registers = hardware.cpu.registers;\n        registers.stackPointer = hardware.memory.readWord(registers.programCount);\n        registers.programCount += 2;\n        registers.m = 3;\n    },\n    LoadPCWordIntoLH: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        const index = memory.readWord(registers.programCount);\n        registers.programCount += 2;\n        // TODO Should this be reversed?\n        registers.l = memory.readByte(index);\n        registers.h = memory.readByte(index + 1);\n        registers.m = 5;\n    },\n    LoadHLAddressIntoAAndIncrement: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        registers.a = memory.readByte((registers.h << 8) + registers.l);\n        registers.l = (registers.l + 1) & 255;\n        if (!registers.l)\n            registers.h = (registers.h + 1) & 255;\n        registers.m = 2;\n    },\n    LoadHLAddressIntoAAndDecrement: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        registers.a = memory.readByte((registers.h << 8) + registers.l);\n        registers.l = (registers.l - 1) & 255;\n        if (registers.l === 255)\n            registers.h = (registers.h - 1) & 255;\n        registers.m = 2;\n    },\n    LoadPCWithMagicIntoA: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        registers.a = memory.readByte(0xFF00 + memory.readByte(registers.programCount++));\n        registers.m = 3;\n    },\n    LoadCWithMagicAddressIntoA: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        registers.a = memory.readByte(0xFF00 + registers.c);\n        registers.m = 2;\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/LoadStore/MemoryToRegister.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/LoadStore/ProgramCount.ts":
-/*!***************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/LoadStore/ProgramCount.ts ***!
-  \***************************************************************/
-/*! exports provided: ProgramCountOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"ProgramCountOperators\", function() { return ProgramCountOperators; });\nconst pcToRegisterAndAdvance = (destination, memory, registers) => {\n    registers[destination] = memory.readByte(registers.programCount++);\n};\nconst ProgramCountOperators = {\n    LoadPCToA_Advance: hardware => pcToRegisterAndAdvance('a', hardware.memory, hardware.cpu.registers),\n    LoadPCToB_Advance: hardware => pcToRegisterAndAdvance('b', hardware.memory, hardware.cpu.registers),\n    LoadPCToC_Advance: hardware => pcToRegisterAndAdvance('c', hardware.memory, hardware.cpu.registers),\n    LoadPCToD_Advance: hardware => pcToRegisterAndAdvance('d', hardware.memory, hardware.cpu.registers),\n    LoadPCToE_Advance: hardware => pcToRegisterAndAdvance('e', hardware.memory, hardware.cpu.registers),\n    LoadPCToH_Advance: hardware => pcToRegisterAndAdvance('h', hardware.memory, hardware.cpu.registers),\n    LoadPCToL_Advance: hardware => pcToRegisterAndAdvance('l', hardware.memory, hardware.cpu.registers),\n    LoadPCWordIntoA: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        registers.a = memory.readByte(memory.readWord(registers.programCount));\n        registers.programCount += 2;\n        registers.m = 4;\n    },\n    LoadPCWordIntoHL: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        const index = memory.readWord(registers.programCount);\n        registers.programCount += 2;\n        memory.writeWord(index, (registers.h << 8) + registers.l);\n        registers.m = 5;\n    },\n    SomeCrazyShitWithHLAndSP: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        let i = memory.readByte(registers.programCount++);\n        if (i > 127)\n            i = -((~i + 1) & 255);\n        i += registers.stackPointer;\n        registers.h = (i >> 8) & 255;\n        registers.l = i & 255;\n        registers.m = 3;\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/LoadStore/ProgramCount.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/LoadStore/RegisterToMemory.ts":
-/*!*******************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/LoadStore/RegisterToMemory.ts ***!
-  \*******************************************************************/
-/*! exports provided: RegisterToMemoryOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"RegisterToMemoryOperators\", function() { return RegisterToMemoryOperators; });\nconst loadRegisterToMemory = (source, highReg, lowReg, hardware) => {\n    const memory = hardware.memory;\n    const registers = hardware.cpu.registers;\n    const high = registers[highReg];\n    const low = registers[lowReg];\n    memory.writeByte((high << 8) + low, registers[source]);\n    registers.m = 2;\n};\nconst loadRegisterToHLMemory = (source, hardware) => {\n    loadRegisterToMemory(source, 'h', 'l', hardware);\n};\nconst RegisterToMemoryOperators = {\n    LoadAIntoHLAddress: hardware => loadRegisterToHLMemory('a', hardware),\n    LoadBIntoHLAddress: hardware => loadRegisterToHLMemory('b', hardware),\n    LoadCIntoHLAddress: hardware => loadRegisterToHLMemory('c', hardware),\n    LoadDIntoHLAddress: hardware => loadRegisterToHLMemory('d', hardware),\n    LoadEIntoHLAddress: hardware => loadRegisterToHLMemory('e', hardware),\n    LoadHIntoHLAddress: hardware => loadRegisterToHLMemory('h', hardware),\n    LoadLIntoHLAddress: hardware => loadRegisterToHLMemory('l', hardware),\n    LoadAIntoBCAddress: hardware => loadRegisterToMemory('a', 'b', 'c', hardware),\n    LoadAIntoDEAddress: hardware => loadRegisterToMemory('a', 'd', 'e', hardware),\n    LoadAIntoPCAddress: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        memory.writeByte(memory.readWord(registers.programCount), registers.a);\n        registers.programCount += 2;\n        registers.m = 4;\n    },\n    LoadAIntoHLAddressAndIncrement: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        memory.writeByte((registers.h << 8) + registers.l, registers.a);\n        registers.l = (registers.l + 1) & 255;\n        if (!registers.l)\n            registers.h = (registers.h + 1) & 255;\n        registers.m = 2;\n    },\n    LoadAIntoHLAddressAndDecrement: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        memory.writeByte((registers.h << 8) + registers.l, registers.a);\n        registers.l = (registers.l - 1) & 255;\n        if (registers.l === 255)\n            registers.h = (registers.h - 1) & 255;\n        registers.m = 2;\n    },\n    LoadAIntoPCWithMagicAddress: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        memory.writeByte(0xFF00 + memory.readByte(registers.programCount++), registers.a);\n        registers.m = 3;\n    },\n    LoadAIntoCWithMagicAddress: hardware => {\n        const memory = hardware.memory;\n        const registers = hardware.cpu.registers;\n        memory.writeByte(0xFF00 + registers.c, registers.a);\n        registers.m = 2;\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/LoadStore/RegisterToMemory.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/LoadStore/RegisterToRegister.ts":
-/*!*********************************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/LoadStore/RegisterToRegister.ts ***!
-  \*********************************************************************/
-/*! exports provided: RegisterToRegisterOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"RegisterToRegisterOperators\", function() { return RegisterToRegisterOperators; });\nconst writeToRegister = (destination, source, registers) => {\n    registers[destination] = source;\n    registers.m = 1;\n};\nconst RegisterToRegisterOperators = {\n    LoadRegAA: hardware => writeToRegister('a', hardware.cpu.registers.a, hardware.cpu.registers),\n    LoadRegAB: hardware => writeToRegister('a', hardware.cpu.registers.b, hardware.cpu.registers),\n    LoadRegAC: hardware => writeToRegister('a', hardware.cpu.registers.c, hardware.cpu.registers),\n    LoadRegAD: hardware => writeToRegister('a', hardware.cpu.registers.d, hardware.cpu.registers),\n    LoadRegAE: hardware => writeToRegister('a', hardware.cpu.registers.e, hardware.cpu.registers),\n    LoadRegAH: hardware => writeToRegister('a', hardware.cpu.registers.h, hardware.cpu.registers),\n    LoadRegAL: hardware => writeToRegister('a', hardware.cpu.registers.l, hardware.cpu.registers),\n    LoadRegBA: hardware => writeToRegister('b', hardware.cpu.registers.a, hardware.cpu.registers),\n    LoadRegBB: hardware => writeToRegister('b', hardware.cpu.registers.b, hardware.cpu.registers),\n    LoadRegBC: hardware => writeToRegister('b', hardware.cpu.registers.c, hardware.cpu.registers),\n    LoadRegBD: hardware => writeToRegister('b', hardware.cpu.registers.d, hardware.cpu.registers),\n    LoadRegBE: hardware => writeToRegister('b', hardware.cpu.registers.e, hardware.cpu.registers),\n    LoadRegBH: hardware => writeToRegister('b', hardware.cpu.registers.h, hardware.cpu.registers),\n    LoadRegBL: hardware => writeToRegister('b', hardware.cpu.registers.l, hardware.cpu.registers),\n    LoadRegCA: hardware => writeToRegister('c', hardware.cpu.registers.a, hardware.cpu.registers),\n    LoadRegCB: hardware => writeToRegister('c', hardware.cpu.registers.b, hardware.cpu.registers),\n    LoadRegCC: hardware => writeToRegister('c', hardware.cpu.registers.c, hardware.cpu.registers),\n    LoadRegCD: hardware => writeToRegister('c', hardware.cpu.registers.d, hardware.cpu.registers),\n    LoadRegCE: hardware => writeToRegister('c', hardware.cpu.registers.e, hardware.cpu.registers),\n    LoadRegCH: hardware => writeToRegister('c', hardware.cpu.registers.h, hardware.cpu.registers),\n    LoadRegCL: hardware => writeToRegister('c', hardware.cpu.registers.l, hardware.cpu.registers),\n    LoadRegDA: hardware => writeToRegister('d', hardware.cpu.registers.a, hardware.cpu.registers),\n    LoadRegDB: hardware => writeToRegister('d', hardware.cpu.registers.b, hardware.cpu.registers),\n    LoadRegDC: hardware => writeToRegister('d', hardware.cpu.registers.c, hardware.cpu.registers),\n    LoadRegDD: hardware => writeToRegister('d', hardware.cpu.registers.d, hardware.cpu.registers),\n    LoadRegDE: hardware => writeToRegister('d', hardware.cpu.registers.e, hardware.cpu.registers),\n    LoadRegDH: hardware => writeToRegister('d', hardware.cpu.registers.h, hardware.cpu.registers),\n    LoadRegDL: hardware => writeToRegister('d', hardware.cpu.registers.l, hardware.cpu.registers),\n    LoadRegEA: hardware => writeToRegister('e', hardware.cpu.registers.a, hardware.cpu.registers),\n    LoadRegEB: hardware => writeToRegister('e', hardware.cpu.registers.b, hardware.cpu.registers),\n    LoadRegEC: hardware => writeToRegister('e', hardware.cpu.registers.c, hardware.cpu.registers),\n    LoadRegED: hardware => writeToRegister('e', hardware.cpu.registers.d, hardware.cpu.registers),\n    LoadRegEE: hardware => writeToRegister('e', hardware.cpu.registers.e, hardware.cpu.registers),\n    LoadRegEH: hardware => writeToRegister('e', hardware.cpu.registers.h, hardware.cpu.registers),\n    LoadRegEL: hardware => writeToRegister('e', hardware.cpu.registers.l, hardware.cpu.registers),\n    LoadRegHA: hardware => writeToRegister('h', hardware.cpu.registers.a, hardware.cpu.registers),\n    LoadRegHB: hardware => writeToRegister('h', hardware.cpu.registers.b, hardware.cpu.registers),\n    LoadRegHC: hardware => writeToRegister('h', hardware.cpu.registers.c, hardware.cpu.registers),\n    LoadRegHD: hardware => writeToRegister('h', hardware.cpu.registers.d, hardware.cpu.registers),\n    LoadRegHE: hardware => writeToRegister('h', hardware.cpu.registers.e, hardware.cpu.registers),\n    LoadRegHH: hardware => writeToRegister('h', hardware.cpu.registers.h, hardware.cpu.registers),\n    LoadRegHL: hardware => writeToRegister('h', hardware.cpu.registers.l, hardware.cpu.registers),\n    LoadRegLA: hardware => writeToRegister('l', hardware.cpu.registers.a, hardware.cpu.registers),\n    LoadRegLB: hardware => writeToRegister('l', hardware.cpu.registers.b, hardware.cpu.registers),\n    LoadRegLC: hardware => writeToRegister('l', hardware.cpu.registers.c, hardware.cpu.registers),\n    LoadRegLD: hardware => writeToRegister('l', hardware.cpu.registers.d, hardware.cpu.registers),\n    LoadRegLE: hardware => writeToRegister('l', hardware.cpu.registers.e, hardware.cpu.registers),\n    LoadRegLH: hardware => writeToRegister('l', hardware.cpu.registers.h, hardware.cpu.registers),\n    LoadRegLL: hardware => writeToRegister('l', hardware.cpu.registers.l, hardware.cpu.registers),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/LoadStore/RegisterToRegister.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/LoadStore/Swap.ts":
-/*!*******************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/LoadStore/Swap.ts ***!
-  \*******************************************************/
-/*! exports provided: SwapOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"SwapOperators\", function() { return SwapOperators; });\nconst swap = (register, registers) => {\n    const value = registers[register];\n    registers[register] = ((value & 0xF) << 4) | ((value & 0xF0) >> 4);\n};\nconst SwapOperators = {\n    SwapNibblesA: hardware => swap('a', hardware.cpu.registers),\n    SwapNibblesB: hardware => swap('b', hardware.cpu.registers),\n    SwapNibblesC: hardware => swap('c', hardware.cpu.registers),\n    SwapNibblesD: hardware => swap('d', hardware.cpu.registers),\n    SwapNibblesE: hardware => swap('e', hardware.cpu.registers),\n    SwapNibblesH: hardware => swap('h', hardware.cpu.registers),\n    SwapNibblesL: hardware => swap('l', hardware.cpu.registers),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/LoadStore/Swap.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Return.ts":
-/*!***********************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Return.ts ***!
-  \***********************************************/
-/*! exports provided: ReturnOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"ReturnOperators\", function() { return ReturnOperators; });\n/* harmony import */ var _index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./index */ \"./src/Emulator/CPU/Operations/index.ts\");\n\nconst returnIf = (test, hardware) => {\n    const { memory, registers } = hardware;\n    registers.m = 1;\n    if (test) {\n        registers.programCount = memory.readWord(registers.stackPointer);\n        registers.stackPointer += 2;\n        registers.m += 2;\n    }\n};\nconst ReturnOperators = {\n    Return: hardware => returnIf(true, hardware),\n    ReturnIfCarry: hardware => returnIf(Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testCarry\"])(hardware), hardware),\n    ReturnIfNotCarry: hardware => returnIf(!Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testCarry\"])(hardware), hardware),\n    ReturnIfZero: hardware => returnIf(Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testZero\"])(hardware), hardware),\n    ReturnIfNotZero: hardware => returnIf(!Object(_index__WEBPACK_IMPORTED_MODULE_0__[\"testZero\"])(hardware), hardware),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Return.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Stack.ts":
-/*!**********************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Stack.ts ***!
-  \**********************************************/
-/*! exports provided: StackOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"StackOperators\", function() { return StackOperators; });\nconst push = (highReg, lowReg, hardware) => {\n    const { memory, registers } = hardware;\n    memory.writeByte(--registers.stackPointer, registers[highReg]);\n    memory.writeByte(--registers.stackPointer, registers[lowReg]);\n    registers.m = 3;\n};\nconst pop = (highReg, lowReg, hardware) => {\n    const { memory, registers } = hardware;\n    registers[lowReg] = memory.readByte(registers.stackPointer++);\n    registers[highReg] = memory.readByte(registers.stackPointer++);\n    registers.m = 3;\n};\nconst StackOperators = {\n    PushBC: hardware => push('b', 'c', hardware),\n    PushDE: hardware => push('d', 'e', hardware),\n    PushHL: hardware => push('h', 'l', hardware),\n    PopBC: hardware => pop('b', 'c', hardware),\n    PopDE: hardware => pop('d', 'e', hardware),\n    PopHL: hardware => pop('h', 'l', hardware),\n    PopAF: hardware => pop('a', 'flags', hardware),\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Stack.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/Subtract.ts":
-/*!*************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/Subtract.ts ***!
-  \*************************************************/
-/*! exports provided: SubtractOperators */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"SubtractOperators\", function() { return SubtractOperators; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst setFlags = (result, value, original, registers) => {\n    registers.flags = _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].OPERATION;\n    if (result < 0)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY;\n    result &= 255;\n    if (!result)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO;\n    if (result ^ value ^ original)\n        registers.flags |= _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].HALF_CARRY;\n};\nconst finalize = (value, original, registers) => {\n    setFlags(registers.a, value, original, registers);\n    registers.a &= 255;\n};\nconst subtract = (value, registers) => {\n    const original = registers.a;\n    registers.a -= value;\n    finalize(value, original, registers);\n    registers.m = 1;\n};\nconst subtractAddress = (address, hardware) => {\n    const memory = hardware.memory;\n    const registers = hardware.cpu.registers;\n    const original = registers.a;\n    const value = memory.readByte(address);\n    registers.a -= value;\n    finalize(value, original, registers);\n    registers.m = 2;\n};\nconst subtractWithCarry = (value, registers) => {\n    const original = registers.a;\n    registers.a -= value;\n    registers.a -= registers.flags & _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY ? 1 : 0;\n    finalize(value, original, registers);\n    registers.m = 1;\n};\nconst subtractAddressWithCarry = (address, hardware) => {\n    const registers = hardware.cpu.registers;\n    const original = registers.a;\n    const value = hardware.memory.readByte(address);\n    registers.a -= value;\n    registers.a -= registers.flags & _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY ? 1 : 0;\n    finalize(value, original, registers);\n    registers.m = 2;\n};\nconst setSubtractFlags = (value, hardware) => {\n    const registers = hardware.cpu.registers;\n    const original = registers.a;\n    setFlags(original - value, value, original, registers);\n    registers.m = 1;\n};\nconst setSubtractAddressFlags = (address, hardware) => {\n    const registers = hardware.cpu.registers;\n    const original = registers.a;\n    const value = hardware.memory.readByte(address);\n    setFlags(original - value, value, original, registers);\n    registers.m = 2;\n};\nconst SubtractOperators = {\n    SubtractA: hardware => subtract(hardware.cpu.registers.a, hardware.cpu.registers),\n    SubtractB: hardware => subtract(hardware.cpu.registers.b, hardware.cpu.registers),\n    SubtractC: hardware => subtract(hardware.cpu.registers.c, hardware.cpu.registers),\n    SubtractD: hardware => subtract(hardware.cpu.registers.d, hardware.cpu.registers),\n    SubtractE: hardware => subtract(hardware.cpu.registers.e, hardware.cpu.registers),\n    SubtractH: hardware => subtract(hardware.cpu.registers.h, hardware.cpu.registers),\n    SubtractL: hardware => subtract(hardware.cpu.registers.l, hardware.cpu.registers),\n    SubtractHLAddress: hardware => {\n        const registers = hardware.cpu.registers;\n        subtractAddress((registers.h << 8) + registers.l, hardware);\n    },\n    SubtractPCAddress: hardware => {\n        const registers = hardware.cpu.registers;\n        subtractAddress(registers.programCount++, hardware);\n    },\n    SubtractAWithCarry: hardware => subtractWithCarry(hardware.cpu.registers.a, hardware.cpu.registers),\n    SubtractBWithCarry: hardware => subtractWithCarry(hardware.cpu.registers.b, hardware.cpu.registers),\n    SubtractCWithCarry: hardware => subtractWithCarry(hardware.cpu.registers.c, hardware.cpu.registers),\n    SubtractDWithCarry: hardware => subtractWithCarry(hardware.cpu.registers.d, hardware.cpu.registers),\n    SubtractEWithCarry: hardware => subtractWithCarry(hardware.cpu.registers.e, hardware.cpu.registers),\n    SubtractHWithCarry: hardware => subtractWithCarry(hardware.cpu.registers.h, hardware.cpu.registers),\n    SubtractLWithCarry: hardware => subtractWithCarry(hardware.cpu.registers.l, hardware.cpu.registers),\n    SubtractHLAddressWithCarry: hardware => {\n        const registers = hardware.cpu.registers;\n        subtractAddressWithCarry((registers.h << 8) + registers.l, hardware);\n    },\n    SubtractPCAddressWithCarry: hardware => {\n        const registers = hardware.cpu.registers;\n        subtractAddressWithCarry(registers.programCount++, hardware);\n    },\n    SetSubtractAFlags: hardware => setSubtractFlags(hardware.cpu.registers.a, hardware),\n    SetSubtractBFlags: hardware => setSubtractFlags(hardware.cpu.registers.b, hardware),\n    SetSubtractCFlags: hardware => setSubtractFlags(hardware.cpu.registers.c, hardware),\n    SetSubtractDFlags: hardware => setSubtractFlags(hardware.cpu.registers.d, hardware),\n    SetSubtractEFlags: hardware => setSubtractFlags(hardware.cpu.registers.e, hardware),\n    SetSubtractHFlags: hardware => setSubtractFlags(hardware.cpu.registers.h, hardware),\n    SetSubtractLFlags: hardware => setSubtractFlags(hardware.cpu.registers.l, hardware),\n    SetSubtractHLAddressFlags: hardware => {\n        const registers = hardware.cpu.registers;\n        setSubtractAddressFlags((registers.h << 8) + registers.l, hardware);\n    },\n    SetSubtractPCAddressFlags: hardware => {\n        const registers = hardware.cpu.registers;\n        setSubtractAddressFlags(registers.programCount++, hardware);\n    },\n};\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/Subtract.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/index.ts":
-/*!**********************************************!*\
-  !*** ./src/Emulator/CPU/Operations/index.ts ***!
-  \**********************************************/
-/*! exports provided: testMask, testZero, testCarry */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"testMask\", function() { return testMask; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"testZero\", function() { return testZero; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"testCarry\", function() { return testCarry; });\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\nconst testMask = (value, mask) => (value & mask) !== 0;\nconst testZero = (hardware) => testMask(hardware.registers.flags, _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].ZERO);\nconst testCarry = (hardware) => testMask(hardware.registers.flags, _Registers__WEBPACK_IMPORTED_MODULE_0__[\"RegisterFlag\"].CARRY);\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/index.ts?");
-
-/***/ }),
-
-/***/ "./src/Emulator/CPU/Operations/mappings.ts":
-/*!*************************************************!*\
-  !*** ./src/Emulator/CPU/Operations/mappings.ts ***!
-  \*************************************************/
-/*! exports provided: toOpcodeMap, toCbcodeMap */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"toOpcodeMap\", function() { return toOpcodeMap; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"toCbcodeMap\", function() { return toCbcodeMap; });\nconst toOpcodeMap = (operators) => [\n    // 0x00\n    operators.Noop, operators.LoadPCAndNextIntoBC, operators.LoadAIntoBCAddress, operators.IncrementBC,\n    operators.IncrementB, operators.DecrementB, operators.LoadPCToB_Advance, operators.RotateLeftAWithCarry,\n    operators.LoadPCAndNextIntoSP, operators.AddBCToHL, operators.LoadBCAddressIntoA, operators.DecrementBC,\n    operators.IncrementC, operators.DecrementC, operators.LoadPCToC_Advance, operators.RotateRightAWithCarry,\n    // 0x10\n    operators.RelativeJumpToPCAddressDecrementB, operators.LoadPCAndNextIntoDE, operators.LoadDEAddressIntoA, operators.IncrementDE,\n    operators.IncrementD, operators.DecrementH, operators.LoadPCToD_Advance, operators.RotateLeftA,\n    operators.RelativeJumpToPCAddress, operators.AddDEToHL, operators.LoadDEAddressIntoA, operators.DecrementDE,\n    operators.IncrementE, operators.DecrementE, operators.LoadPCToE_Advance, operators.RotateRightA,\n    // 0x20\n    operators.RelativeJumpToPCAddressIfNotZero, operators.LoadPCAndNextIntoHL, operators.LoadAIntoHLAddressAndIncrement, operators.IncrementHL,\n    operators.IncrementH, operators.DecrementH, operators.LoadPCToH_Advance, operators.BCDCorrect,\n    operators.RelativeJumpToPCAddressIfZero, operators.AddHLToHL, operators.LoadHLAddressIntoAAndIncrement, operators.DecrementHL,\n    operators.IncrementL, operators.DecrementL, operators.LoadPCToL_Advance, operators.InvertA,\n    // 0x30\n    operators.RelativeJumpToPCAddressIfNotCarry, operators.LoadPCAndNextIntoSP, operators.LoadAIntoHLAddressAndDecrement, operators.IncrementSP,\n    operators.IncrementHLAddress, operators.DecrementHLAddress, operators.LoadPCIntoHLAddress, operators.SetCarryFlag,\n    operators.RelativeJumpToPCAddressIfCarry, operators.AddSPToHL, operators.LoadHLAddressIntoAAndDecrement, operators.DecrementSP,\n    operators.IncrementA, operators.DecrementA, operators.LoadPCToA_Advance, operators.InvertCarryFlag,\n    // 0x40\n    operators.LoadRegBB, operators.LoadRegBC, operators.LoadRegBD, operators.LoadRegBE,\n    operators.LoadRegBH, operators.LoadRegBL, operators.LoadHLAddressIntoB, operators.LoadRegBA,\n    operators.LoadRegCB, operators.LoadRegCC, operators.LoadRegCD, operators.LoadRegCE,\n    operators.LoadRegCH, operators.LoadRegCL, operators.LoadHLAddressIntoC, operators.LoadRegCA,\n    // 0x50\n    operators.LoadRegDB, operators.LoadRegDC, operators.LoadRegDD, operators.LoadRegDE,\n    operators.LoadRegDH, operators.LoadRegDL, operators.LoadHLAddressIntoD, operators.LoadRegDA,\n    operators.LoadRegEB, operators.LoadRegEC, operators.LoadRegED, operators.LoadRegEE,\n    operators.LoadRegEH, operators.LoadRegEL, operators.LoadHLAddressIntoE, operators.LoadRegEA,\n    // 0x60\n    operators.LoadRegHB, operators.LoadRegHC, operators.LoadRegHD, operators.LoadRegHE,\n    operators.LoadRegHH, operators.LoadRegHL, operators.LoadHLAddressIntoH, operators.LoadRegHA,\n    operators.LoadRegLB, operators.LoadRegLC, operators.LoadRegLD, operators.LoadRegLE,\n    operators.LoadRegLH, operators.LoadRegLL, operators.LoadHLAddressIntoL, operators.LoadRegLA,\n    // 0x70\n    operators.LoadBIntoHLAddress, operators.LoadCIntoHLAddress, operators.LoadDIntoHLAddress, operators.LoadEIntoHLAddress,\n    operators.LoadHIntoHLAddress, operators.LoadLIntoHLAddress, operators.Halt, operators.LoadAIntoHLAddress,\n    operators.LoadRegAB, operators.LoadRegAC, operators.LoadRegAD, operators.LoadRegAE,\n    operators.LoadRegAH, operators.LoadRegAL, operators.LoadHLAddressIntoA, operators.LoadRegAA,\n    // 0x80\n    operators.AddB, operators.AddC, operators.AddD, operators.AddE,\n    operators.AddH, operators.AddL, operators.AddHLAddress, operators.AddA,\n    operators.AddBWithCarry, operators.AddCWithCarry, operators.AddDWithCarry, operators.AddEWithCarry,\n    operators.AddHWithCarry, operators.AddLWithCarry, operators.AddHLAddressWithCarry, operators.AddAWithCarry,\n    // 0x90\n    operators.SubtractB, operators.SubtractC, operators.SubtractD, operators.SubtractE,\n    operators.SubtractH, operators.SubtractL, operators.SubtractHLAddress, operators.SubtractA,\n    operators.SubtractBWithCarry, operators.SubtractCWithCarry, operators.SubtractDWithCarry, operators.SubtractEWithCarry,\n    operators.SubtractHWithCarry, operators.SubtractLWithCarry, operators.SubtractHLAddressWithCarry, operators.SubtractAWithCarry,\n    // 0xA0\n    operators.BitAndB, operators.BitAndC, operators.BitAndD, operators.BitAndE,\n    operators.BitAndH, operators.BitAndL, operators.BitAndHLAddress, operators.BitAndA,\n    operators.BitXorB, operators.BitXorC, operators.BitXorD, operators.BitXorE,\n    operators.BitXorH, operators.BitXorL, operators.BitXorHLAddress, operators.BitXorA,\n    // 0xB0\n    operators.BitOrB, operators.BitOrC, operators.BitOrD, operators.BitOrD,\n    operators.BitOrH, operators.BitOrL, operators.BitOrHLAddress, operators.BitOrA,\n    operators.SetSubtractBFlags, operators.SetSubtractCFlags, operators.SetSubtractDFlags, operators.SetSubtractEFlags,\n    operators.SetSubtractHFlags, operators.SetSubtractLFlags, operators.SetSubtractHLAddressFlags, operators.SetSubtractAFlags,\n    // 0xC0\n    operators.ReturnIfNotZero, operators.PopBC, operators.AbsoluteJumpToPCAddressIfNotZero, operators.AbsoluteJumpToPCAddress,\n    operators.LabelJumpPCAddressIfNotZero, operators.PushBC, operators.AddPCAddress, operators.Interrupt00,\n    operators.ReturnIfZero, operators.Return, operators.AbsoluteJumpToPCAddressIfZero, operators.ExtraOperators,\n    operators.LabelJumpPCAddressIfZero, operators.LabelJumpPCAddress, operators.AddPCAddressWithCarry, operators.Interrupt08,\n    // 0xD0\n    operators.ReturnIfNotCarry, operators.PopDE, operators.AbsoluteJumpToPCAddressIfNotCarry, operators.NoImpl,\n    operators.LabelJumpPCAddressIfNotCarry, operators.PishDE, operators.SubtractPCAddress, operators.Interrupt10,\n    operators.ReturnIfCarry, operators.InterruptReturn, operators.AbsoluteJumpToPCAddressIfCarry, operators.NoImpl,\n    operators.LabelJumpPCAddressIfCarry, operators.NoImpl, operators.SubtractPCAddressWithCarry, operators.Interrupt18,\n    // 0xE0\n    operators.LoadAIntoPCWithMagicAddress, operators.PopHL, operators.LoadAIntoCWithMagicAddress, operators.NoImpl,\n    operators.NoImpl, operators.PushHL, operators.BitAndPCAddress, operators.Interrupt20,\n    operators.AddPCAddressToSP, operators.AbsoluteJumpToHLAddress, operators.LoadAIntoPCAddress, operators.NoImpl,\n    operators.NoImpl, operators.NoImpl, operators.BitXorPCAddress, operators.Interrupt28,\n    // 0xF0\n    operators.LoadPCWithMagicIntoA, operators.PopAF, operators.LoadCWithMagicAddressIntoA, operators.InterruptDisable,\n    operators.NoImpl, operators.PushAF, operators.BitOrPCAddress, operators.Interrupt30,\n    operators.SomeCrazyShitWithHLAndSP, operators.NoImpl, operators.LoadPCWordIntoA, operators.InterruptEnable,\n    operators.NoImpl, operators.NoImpl, operators.SetSubtractPCAddressFlags, operators.Interrupt38,\n];\nconst toCbcodeMap = (operators) => [\n    // CB 0x00\n    operators.RotateLeftBWithCarry, operators.RotateLeftCWithCarry, operators.RotateLeftDWithCarry, operators.RotateLeftEWithCarry,\n    operators.RotateLeftHWithCarry, operators.RotateLeftLWithCarry, operators.RotateLeftHLAddressWithCarry, operators.RotateLeftHLAddressWithCarry,\n    operators.RotateRightBWithCarry, operators.RotateRightCWithCarry, operators.RotateRightDWithCarry, operators.RotateRightEWithCarry,\n    operators.RotateRightHLAddressWithCarry, operators.RotateRightLWithCarry, operators.RotateRightHLAddressWithCarry, operators.RotateRightAWithCarry,\n    // CB 0x10\n    operators.RotateLeftB, operators.RotateLeftC, operators.RotateLeftD, operators.RotateLeftE,\n    operators.RotateLeftH, operators.RotateLeftL, operators.RotateLeftHLAddress, operators.RotateLeftA,\n    operators.RotateRightB, operators.RotateRightC, operators.RotateRightD, operators.RotateRightE,\n    operators.RotateRightH, operators.RotateRightL, operators.RotateRightHLAddress, operators.RotateRightA,\n    // CB 0x20\n    operators.ShiftLeftBArithmetic, operators.ShiftLeftCArithmetic, operators.ShiftLeftDArithmetic, operators.ShiftLeftEArithmetic,\n    operators.ShiftLeftHArithmetic, operators.ShiftLeftLArithmetic, operators.NoImplExtra, operators.ShiftLeftAArithmetic,\n    operators.ShiftRightBArithmetic, operators.ShiftRightCArithmetic, operators.ShiftRightDArithmetic, operators.ShiftRightEArithmetic,\n    operators.ShiftRightHArithmetic, operators.ShiftRightLArithmetic, operators.NoImplExtra, operators.ShiftRightAArithmetic,\n    // CB 0x30\n    operators.SwapNibblesB, operators.SwapNibblesC, operators.SwapNibblesD, operators.SwapNibblesE,\n    operators.SwapNibblesH, operators.SwapNibblesL, operators.NoImplExtra, operators.SwapNibblesA,\n    operators.ShiftRightBLogical, operators.ShiftRightCLogical, operators.ShiftRightDLogical, operators.ShiftRightELogical,\n    operators.ShiftRightHLogical, operators.ShiftRightLLogical, operators.NoImplExtra, operators.ShiftRightALogical,\n    // CB 0x40\n    operators.TestBBit0, operators.TestCBit0, operators.TestDBit0, operators.TestEBit0,\n    operators.TestHBit0, operators.TestLBit0, operators.TestHLAddressBit0, operators.TestABit0,\n    operators.TestBBit1, operators.TestCBit1, operators.TestDBit1, operators.TestEBit1,\n    operators.TestHBit1, operators.TestLBit1, operators.TestHLAddressBit1, operators.TestABit1,\n    // CB 0x50\n    operators.TestBBit2, operators.TestCBit2, operators.TestDBit2, operators.TestEBit2,\n    operators.TestHBit2, operators.TestLBit2, operators.TestHLAddressBit2, operators.TestABit2,\n    operators.TestBBit3, operators.TestCBit3, operators.TestDBit3, operators.TestEBit3,\n    operators.TestHBit3, operators.TestLBit3, operators.TestHLAddressBit3, operators.TestABit3,\n    // CB 0x60\n    operators.TestBBit4, operators.TestCBit4, operators.TestDBit4, operators.TestEBit4,\n    operators.TestHBit4, operators.TestLBit4, operators.TestHLAddressBit4, operators.TestABit4,\n    operators.TestBBit5, operators.TestCBit5, operators.TestDBit5, operators.TestEBit5,\n    operators.TestHBit5, operators.TestLBit5, operators.TestHLAddressBit5, operators.TestABit5,\n    // CB 0x70\n    operators.TestBBit6, operators.TestCBit6, operators.TestDBit6, operators.TestEBit6,\n    operators.TestHBit6, operators.TestLBit6, operators.TestHLAddressBit6, operators.TestABit6,\n    operators.TestBBit7, operators.TestCBit7, operators.TestDBit7, operators.TestEBit7,\n    operators.TestHBit7, operators.TestLBit7, operators.TestHLAddressBit7, operators.TestABit7,\n    // CB 0x80\n    operators.ResetBBit0, operators.ResetCBit0, operators.ResetDBit0, operators.ResetEBit0,\n    operators.ResetHBit0, operators.ResetLBit0, operators.ResetHLAddressBit0, operators.ResetABit0,\n    operators.ResetBBit1, operators.ResetCBit1, operators.ResetDBit1, operators.ResetEBit1,\n    operators.ResetHBit1, operators.ResetLBit1, operators.ResetHLAddressBit1, operators.ResetABit1,\n    // CB 0x90\n    operators.ResetBBit2, operators.ResetCBit2, operators.ResetDBit2, operators.ResetEBit2,\n    operators.ResetHBit2, operators.ResetLBit2, operators.ResetHLAddressBit2, operators.ResetABit2,\n    operators.ResetBBit3, operators.ResetCBit3, operators.ResetDBit3, operators.ResetEBit3,\n    operators.ResetHBit3, operators.ResetLBit3, operators.ResetHLAddressBit3, operators.ResetABit3,\n    // CB 0xA0\n    operators.ResetBBit4, operators.ResetCBit4, operators.ResetDBit4, operators.ResetEBit4,\n    operators.ResetHBit4, operators.ResetLBit4, operators.ResetHLAddressBit4, operators.ResetABit4,\n    operators.ResetBBit5, operators.ResetCBit5, operators.ResetDBit5, operators.ResetEBit5,\n    operators.ResetHBit5, operators.ResetLBit5, operators.ResetHLAddressBit5, operators.ResetABit5,\n    // CB 0xB0\n    operators.ResetBBit6, operators.ResetCBit6, operators.ResetDBit6, operators.ResetEBit6,\n    operators.ResetHBit6, operators.ResetLBit6, operators.ResetHLAddressBit6, operators.ResetABit6,\n    operators.ResetBBit7, operators.ResetCBit7, operators.ResetDBit7, operators.ResetEBit7,\n    operators.ResetHBit7, operators.ResetLBit7, operators.ResetHLAddressBit7, operators.ResetABit7,\n    // CB 0xC0\n    operators.SetBBit0, operators.SetCBit0, operators.SetDBit0, operators.SetEBit0,\n    operators.SetHBit0, operators.SetLBit0, operators.SetHLAddressBit0, operators.SetABit0,\n    operators.SetBBit1, operators.SetCBit1, operators.SetDBit1, operators.SetEBit1,\n    operators.SetHBit1, operators.SetLBit1, operators.SetHLAddressBit1, operators.SetABit1,\n    // CB 0xD0\n    operators.SetBBit2, operators.SetCBit2, operators.SetDBit2, operators.SetEBit2,\n    operators.SetHBit2, operators.SetLBit2, operators.SetHLAddressBit2, operators.SetABit2,\n    operators.SetBBit3, operators.SetCBit3, operators.SetDBit3, operators.SetEBit3,\n    operators.SetHBit3, operators.SetLBit3, operators.SetHLAddressBit3, operators.SetABit3,\n    // CB 0xE0\n    operators.SetBBit4, operators.SetCBit4, operators.SetDBit4, operators.SetEBit4,\n    operators.SetHBit4, operators.SetLBit4, operators.SetHLAddressBit4, operators.SetABit4,\n    operators.SetBBit5, operators.SetCBit5, operators.SetDBit5, operators.SetEBit5,\n    operators.SetHBit5, operators.SetLBit5, operators.SetHLAddressBit5, operators.SetABit5,\n    // CB 0xF0\n    operators.SetBBit6, operators.SetCBit6, operators.SetDBit6, operators.SetEBit6,\n    operators.SetHBit6, operators.SetLBit6, operators.SetHLAddressBit6, operators.SetABit6,\n    operators.SetBBit7, operators.SetCBit7, operators.SetDBit7, operators.SetEBit7,\n    operators.SetHBit7, operators.SetLBit7, operators.SetHLAddressBit7, operators.SetABit7,\n];\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Operations/mappings.ts?");
 
 /***/ }),
 
@@ -486,11 +241,62 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!***************************************!*\
   !*** ./src/Emulator/CPU/Registers.ts ***!
   \***************************************/
-/*! exports provided: RegisterFlag, RegisterSet */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"RegisterFlag\", function() { return RegisterFlag; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"RegisterSet\", function() { return RegisterSet; });\n/* harmony import */ var _Clock__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Clock */ \"./src/Emulator/CPU/Clock.ts\");\n\nvar RegisterFlag;\n(function (RegisterFlag) {\n    RegisterFlag[RegisterFlag[\"CARRY\"] = 16] = \"CARRY\";\n    RegisterFlag[RegisterFlag[\"HALF_CARRY\"] = 32] = \"HALF_CARRY\";\n    RegisterFlag[RegisterFlag[\"OPERATION\"] = 64] = \"OPERATION\";\n    RegisterFlag[RegisterFlag[\"ZERO\"] = 128] = \"ZERO\";\n})(RegisterFlag || (RegisterFlag = {}));\nclass RegisterSet {\n    constructor(clock) {\n        this.clock = clock || new _Clock__WEBPACK_IMPORTED_MODULE_0__[\"Clock\"]();\n        this.reset();\n    }\n    reset() {\n        this.a = 0;\n        this.b = 0;\n        this.c = 0;\n        this.d = 0;\n        this.e = 0;\n        this.h = 0;\n        this.l = 0;\n        this.flags = 0;\n        this.stackPointer = 0;\n        this.programCount = 0;\n        this.clock.reset();\n    }\n    get m() {\n        return this.clock.m;\n    }\n    set m(value) {\n        this.clock.m = value;\n    }\n    get t() {\n        return this.clock.t;\n    }\n    set t(value) {\n        this.clock.t = value;\n    }\n}\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/Registers.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Clock_1 = __webpack_require__(/*! ./Clock */ "./src/Emulator/CPU/Clock.ts");
+var RegisterFlag;
+(function (RegisterFlag) {
+    RegisterFlag[RegisterFlag["CARRY"] = 16] = "CARRY";
+    RegisterFlag[RegisterFlag["HALF_CARRY"] = 32] = "HALF_CARRY";
+    RegisterFlag[RegisterFlag["OPERATION"] = 64] = "OPERATION";
+    RegisterFlag[RegisterFlag["ZERO"] = 128] = "ZERO";
+})(RegisterFlag = exports.RegisterFlag || (exports.RegisterFlag = {}));
+var RegisterSet = /** @class */ (function () {
+    function RegisterSet(clock) {
+        this.clock = clock || new Clock_1.Clock();
+        this.reset();
+    }
+    RegisterSet.prototype.reset = function () {
+        this.a = 0;
+        this.b = 0;
+        this.c = 0;
+        this.d = 0;
+        this.e = 0;
+        this.h = 0;
+        this.l = 0;
+        this.flags = 0;
+        this.stackPointer = 0;
+        this.programCount = 0;
+        this.clock.reset();
+    };
+    Object.defineProperty(RegisterSet.prototype, "m", {
+        get: function () {
+            return this.clock.m;
+        },
+        set: function (value) {
+            this.clock.m = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(RegisterSet.prototype, "t", {
+        get: function () {
+            return this.clock.t;
+        },
+        set: function (value) {
+            this.clock.t = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return RegisterSet;
+}());
+exports.RegisterSet = RegisterSet;
+
 
 /***/ }),
 
@@ -498,11 +304,74 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!***********************************!*\
   !*** ./src/Emulator/CPU/index.ts ***!
   \***********************************/
-/*! exports provided: Cpu */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Cpu\", function() { return Cpu; });\n/* harmony import */ var _Clock__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Clock */ \"./src/Emulator/CPU/Clock.ts\");\n/* harmony import */ var _Operations_Add__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Operations/Add */ \"./src/Emulator/CPU/Operations/Add.ts\");\n/* harmony import */ var _Operations_BitManipulation__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Operations/BitManipulation */ \"./src/Emulator/CPU/Operations/BitManipulation.ts\");\n/* harmony import */ var _Operations_Bitwise__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Operations/Bitwise */ \"./src/Emulator/CPU/Operations/Bitwise.ts\");\n/* harmony import */ var _Operations_Compare__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Operations/Compare */ \"./src/Emulator/CPU/Operations/Compare.ts\");\n/* harmony import */ var _Operations_Decrement__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./Operations/Decrement */ \"./src/Emulator/CPU/Operations/Decrement.ts\");\n/* harmony import */ var _Operations_Extra__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ./Operations/Extra */ \"./src/Emulator/CPU/Operations/Extra.ts\");\n/* harmony import */ var _Operations_Increment__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Operations/Increment */ \"./src/Emulator/CPU/Operations/Increment.ts\");\n/* harmony import */ var _Operations_Interrupt__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ./Operations/Interrupt */ \"./src/Emulator/CPU/Operations/Interrupt.ts\");\n/* harmony import */ var _Operations_Jump__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ./Operations/Jump */ \"./src/Emulator/CPU/Operations/Jump.ts\");\n/* harmony import */ var _Operations_LoadStore__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ./Operations/LoadStore */ \"./src/Emulator/CPU/Operations/LoadStore.ts\");\n/* harmony import */ var _Operations_mappings__WEBPACK_IMPORTED_MODULE_11__ = __webpack_require__(/*! ./Operations/mappings */ \"./src/Emulator/CPU/Operations/mappings.ts\");\n/* harmony import */ var _Operations_Return__WEBPACK_IMPORTED_MODULE_12__ = __webpack_require__(/*! ./Operations/Return */ \"./src/Emulator/CPU/Operations/Return.ts\");\n/* harmony import */ var _Operations_Stack__WEBPACK_IMPORTED_MODULE_13__ = __webpack_require__(/*! ./Operations/Stack */ \"./src/Emulator/CPU/Operations/Stack.ts\");\n/* harmony import */ var _Operations_Subtract__WEBPACK_IMPORTED_MODULE_14__ = __webpack_require__(/*! ./Operations/Subtract */ \"./src/Emulator/CPU/Operations/Subtract.ts\");\n/* harmony import */ var _Registers__WEBPACK_IMPORTED_MODULE_15__ = __webpack_require__(/*! ./Registers */ \"./src/Emulator/CPU/Registers.ts\");\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nclass Cpu {\n    constructor() {\n        this.halt = false;\n        this.stop = false;\n        this.allowInterrupts = true;\n        this.hardware = null;\n        this.tickIntervalId = null;\n        this.clock = new _Clock__WEBPACK_IMPORTED_MODULE_0__[\"Clock\"]();\n        this.registers = new _Registers__WEBPACK_IMPORTED_MODULE_15__[\"RegisterSet\"]();\n        this.operators = Object.assign({}, _Operations_Add__WEBPACK_IMPORTED_MODULE_1__[\"AddOperators\"], _Operations_BitManipulation__WEBPACK_IMPORTED_MODULE_2__[\"BitManipulationOperators\"], _Operations_Bitwise__WEBPACK_IMPORTED_MODULE_3__[\"BitwiseOperators\"], _Operations_Compare__WEBPACK_IMPORTED_MODULE_4__[\"CompareOperators\"], _Operations_Decrement__WEBPACK_IMPORTED_MODULE_5__[\"DecrementOperators\"], _Operations_Extra__WEBPACK_IMPORTED_MODULE_6__[\"ExtraOperators\"], _Operations_Increment__WEBPACK_IMPORTED_MODULE_7__[\"IncrementOperators\"], _Operations_Interrupt__WEBPACK_IMPORTED_MODULE_8__[\"InterruptOperators\"], _Operations_Jump__WEBPACK_IMPORTED_MODULE_9__[\"JumpOperators\"], _Operations_LoadStore__WEBPACK_IMPORTED_MODULE_10__[\"LoadStoreOperators\"], _Operations_Return__WEBPACK_IMPORTED_MODULE_12__[\"ReturnOperators\"], _Operations_Stack__WEBPACK_IMPORTED_MODULE_13__[\"StackOperators\"], _Operations_Subtract__WEBPACK_IMPORTED_MODULE_14__[\"SubtractOperators\"]);\n        this.interruptMap = {\n            [_Operations_Interrupt__WEBPACK_IMPORTED_MODULE_8__[\"Interrupt\"].VBLANK]: this.operators.Interrupt40,\n            [_Operations_Interrupt__WEBPACK_IMPORTED_MODULE_8__[\"Interrupt\"].LCD_STAT]: this.operators.Interrupt48,\n            [_Operations_Interrupt__WEBPACK_IMPORTED_MODULE_8__[\"Interrupt\"].TIMER]: this.operators.Interrupt50,\n            [_Operations_Interrupt__WEBPACK_IMPORTED_MODULE_8__[\"Interrupt\"].SERIAL]: this.operators.Interrupt58,\n            [_Operations_Interrupt__WEBPACK_IMPORTED_MODULE_8__[\"Interrupt\"].JOYPAD]: this.operators.Interrupt60,\n        };\n        this.opcodes = Object(_Operations_mappings__WEBPACK_IMPORTED_MODULE_11__[\"toOpcodeMap\"])(this.operators);\n        this.cbcodes = Object(_Operations_mappings__WEBPACK_IMPORTED_MODULE_11__[\"toCbcodeMap\"])(this.operators);\n    }\n    setHardwareBus(hardware) {\n        this.hardware = hardware;\n    }\n    step() {\n        const op = this.hardware.memory.readByte(this.registers.programCount++);\n        this.opcodes[op](this.hardware);\n        this.registers.programCount &= 65535;\n        this.clock.m += this.registers.m;\n        this.hardware.gpu.step();\n        const memory = this.hardware.memory;\n        if (this.allowInterrupts && memory.interruptsEnabled && memory.interruptFlags) {\n            this.halt = false;\n            this.allowInterrupts = false;\n            const interrupts = memory.interruptsEnabled & memory.interruptFlags;\n            let fired = false;\n            for (let key in this.interruptMap) {\n                const mask = parseInt(key, 10);\n                if (interrupts & mask) {\n                    fired = true;\n                    memory.interruptFlags ^= mask;\n                    this.interruptMap[key](this.hardware);\n                    break;\n                }\n            }\n            if (!fired)\n                this.allowInterrupts = true;\n        }\n    }\n    exec() {\n        this.halt = false;\n        this.stop = false;\n        this.tickIntervalId = setInterval(() => {\n            const frameClock = this.clock.m + 17556;\n            do {\n                this.step();\n                if (this.halt || this.stop) {\n                    clearInterval(this.tickIntervalId);\n                    this.tickIntervalId = null;\n                }\n            } while (this.clock.m < frameClock);\n        }, 1);\n    }\n    reset() {\n        this.clock.reset();\n        this.registers.reset();\n        this.halt = true;\n        this.stop = false;\n    }\n}\n\n\n//# sourceURL=webpack:///./src/Emulator/CPU/index.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var util_1 = __webpack_require__(/*! ../util */ "./src/Emulator/util.ts");
+var Clock_1 = __webpack_require__(/*! ./Clock */ "./src/Emulator/CPU/Clock.ts");
+var InstructionSet_1 = __webpack_require__(/*! ./InstructionSet */ "./src/Emulator/CPU/InstructionSet/index.ts");
+var Registers_1 = __webpack_require__(/*! ./Registers */ "./src/Emulator/CPU/Registers.ts");
+var Cpu = /** @class */ (function () {
+    function Cpu() {
+        this.halt = false;
+        this.stop = false;
+        this.allowInterrupts = true;
+        this.hardware = null;
+        this.tickIntervalId = null;
+        this.clock = new Clock_1.Clock();
+        this.registers = new Registers_1.RegisterSet();
+    }
+    Cpu.prototype.setHardwareBus = function (hardware) {
+        this.hardware = hardware;
+    };
+    Cpu.prototype.step = function () {
+        var opcode = this.hardware.memory.readByte(this.registers.programCount++);
+        var operator = InstructionSet_1.PrimaryInstructions.getByCode(opcode);
+        this.registers.programCount &= 65535;
+        if (!operator)
+            throw new Error("Instruction " + util_1.toHex(opcode) + " is not implemented (at " + ((this.registers.programCount - 1) & 65535));
+        operator.invoke(this.hardware);
+        this.clock.m += this.registers.m;
+        this.hardware.gpu.step();
+        var memory = this.hardware.memory;
+        if (this.allowInterrupts && memory.interruptsEnabled && memory.interruptFlags) {
+            this.halt = false;
+            this.allowInterrupts = false;
+            // const interrupts = memory.interruptsEnabled & memory.interruptFlags;
+            var fired = false;
+            // TODO Add interrupt handling
+            if (!fired)
+                this.allowInterrupts = true;
+        }
+    };
+    Cpu.prototype.exec = function () {
+        var _this = this;
+        this.halt = false;
+        this.stop = false;
+        this.tickIntervalId = setInterval(function () {
+            var frameClock = _this.clock.m + 17556;
+            do {
+                _this.step();
+                if (_this.halt || _this.stop) {
+                    clearInterval(_this.tickIntervalId);
+                    _this.tickIntervalId = null;
+                }
+            } while (_this.clock.m < frameClock);
+        }, 1);
+    };
+    Cpu.prototype.reset = function () {
+        this.clock.reset();
+        this.registers.reset();
+        this.halt = true;
+        this.stop = false;
+    };
+    return Cpu;
+}());
+exports.Cpu = Cpu;
+
 
 /***/ }),
 
@@ -510,11 +379,83 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!***********************************!*\
   !*** ./src/Emulator/GPU/Color.ts ***!
   \***********************************/
-/*! exports provided: Color, Palette */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Color\", function() { return Color; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Palette\", function() { return Palette; });\nclass Color {\n    constructor(data) {\n        this.data = data;\n    }\n    get r() {\n        return this.data[0];\n    }\n    set r(value) {\n        this.data[0] = value;\n    }\n    get g() {\n        return this.data[1];\n    }\n    set g(value) {\n        this.data[1] = value;\n    }\n    get b() {\n        return this.data[2];\n    }\n    set b(value) {\n        this.data[2] = value;\n    }\n    get a() {\n        return this.data[3];\n    }\n    set a(value) {\n        this.data[3] = value;\n    }\n    static fromRGB(r, g, b, a) {\n        return new Color([r, g, b, a]);\n    }\n}\nclass Palette {\n    constructor() {\n        this.reset();\n    }\n    get(index) {\n        if (index < 0 || index > this.colors.length)\n            throw new Error(`Invalid palette index: ${index}`);\n        return this.colors[index];\n    }\n    reset() {\n        this.colors = [\n            Color.fromRGB(255, 255, 255, 255),\n            Color.fromRGB(192, 192, 192, 255),\n            Color.fromRGB(96, 96, 96, 255),\n            Color.fromRGB(0, 0, 0, 255),\n        ];\n    }\n}\n\n\n//# sourceURL=webpack:///./src/Emulator/GPU/Color.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Color = /** @class */ (function () {
+    function Color(data) {
+        this.data = data;
+    }
+    Object.defineProperty(Color.prototype, "r", {
+        get: function () {
+            return this.data[0];
+        },
+        set: function (value) {
+            this.data[0] = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Color.prototype, "g", {
+        get: function () {
+            return this.data[1];
+        },
+        set: function (value) {
+            this.data[1] = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Color.prototype, "b", {
+        get: function () {
+            return this.data[2];
+        },
+        set: function (value) {
+            this.data[2] = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Object.defineProperty(Color.prototype, "a", {
+        get: function () {
+            return this.data[3];
+        },
+        set: function (value) {
+            this.data[3] = value;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    Color.fromRGB = function (r, g, b, a) {
+        return new Color([r, g, b, a]);
+    };
+    return Color;
+}());
+exports.Color = Color;
+var Palette = /** @class */ (function () {
+    function Palette() {
+        this.reset();
+    }
+    Palette.prototype.get = function (index) {
+        if (index < 0 || index > this.colors.length)
+            throw new Error("Invalid palette index: " + index);
+        return this.colors[index];
+    };
+    Palette.prototype.reset = function () {
+        this.colors = [
+            Color.fromRGB(255, 255, 255, 255),
+            Color.fromRGB(192, 192, 192, 255),
+            Color.fromRGB(96, 96, 96, 255),
+            Color.fromRGB(0, 0, 0, 255),
+        ];
+    };
+    return Palette;
+}());
+exports.Palette = Palette;
+
 
 /***/ }),
 
@@ -522,11 +463,144 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!***********************************!*\
   !*** ./src/Emulator/GPU/index.ts ***!
   \***********************************/
-/*! exports provided: RenderingMode, Gpu */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"RenderingMode\", function() { return RenderingMode; });\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Gpu\", function() { return Gpu; });\n/* harmony import */ var _Color__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Color */ \"./src/Emulator/GPU/Color.ts\");\n\n/**\n * OAM_READ: 80 ticks\n * VRAM_READ: 172 ticks\n * HBLANK: 204 ticks\n *\n * Full line = OAM_READ + VRAM_READ + HBLANK = 456 ticks\n */\nvar RenderingMode;\n(function (RenderingMode) {\n    RenderingMode[RenderingMode[\"HBLANK\"] = 0] = \"HBLANK\";\n    RenderingMode[RenderingMode[\"VBLANK\"] = 1] = \"VBLANK\";\n    RenderingMode[RenderingMode[\"OAM_READ\"] = 2] = \"OAM_READ\";\n    RenderingMode[RenderingMode[\"VRAM_READ\"] = 3] = \"VRAM_READ\";\n})(RenderingMode || (RenderingMode = {}));\nclass Gpu {\n    constructor(canvas) {\n        this.scrollX = 0;\n        this.scrollY = 0;\n        this.bgMap = false;\n        this.bgTile = 0;\n        this.mode = RenderingMode.HBLANK;\n        this.modeClock = 0;\n        this.line = 0;\n        this.hardware = null;\n        this.canvas = canvas;\n        this.palette = new _Color__WEBPACK_IMPORTED_MODULE_0__[\"Palette\"]();\n        this.reset();\n    }\n    updateTile(address, value) {\n        address &= 0x1FFE;\n        const tile = (address >> 4) & 511;\n        const y = (address >> 1) & 7;\n        let sx;\n        for (let x = 0; x < 8; x++) {\n            sx = 1 << (7 - x);\n            this.tileset[tile][y][x] = (this.vram[address] & sx ? 1 : 0) | (this.vram[address + 1] & sx ? 2 : 0);\n        }\n    }\n    updateOAM(address, value) {\n    }\n    step() {\n        this.modeClock += this.hardware.cpu.registers.t;\n        switch (this.mode) {\n            case RenderingMode.OAM_READ:\n                if (this.modeClock >= 80) {\n                    this.modeClock = 0;\n                    this.mode = RenderingMode.VRAM_READ;\n                }\n                break;\n            case RenderingMode.VRAM_READ:\n                if (this.modeClock >= 172) {\n                    this.modeClock = 0;\n                    this.mode = RenderingMode.HBLANK;\n                    this.render();\n                }\n                break;\n            case RenderingMode.HBLANK:\n                if (this.modeClock >= 204) {\n                    this.modeClock = 0;\n                    if (++this.line === 143) {\n                        this.mode = RenderingMode.VBLANK;\n                        this.context.putImageData(this.screen, 0, 0);\n                    }\n                    else\n                        this.mode = RenderingMode.OAM_READ;\n                }\n                break;\n            case RenderingMode.VBLANK:\n                if (this.modeClock >= 456) {\n                    this.modeClock = 0;\n                    if (++this.line > 153) {\n                        this.mode = RenderingMode.OAM_READ;\n                        this.line = 0;\n                    }\n                }\n                break;\n        }\n    }\n    reset() {\n        this.palette.reset();\n        this.vram = new Int16Array(1 << 13); // 8k\n        this.oam = new Int16Array(160);\n        this.context = this.canvas.getContext('2d');\n        this.screen = this.context.createImageData(160, 144);\n        this.context.putImageData(this.screen, 0, 0);\n        this.tileset = [];\n        for (let i = 0; i < 512; i++) {\n            this.tileset.push([]);\n            for (let j = 0; j < 8; j++)\n                this.tileset[i].push((new Array(8).fill(0)));\n        }\n    }\n    readByte(address) {\n        console.log(address - 0xFF40);\n        return 0;\n    }\n    writeByte(address, value) {\n        console.log(address - 0xFF40);\n    }\n    setHardwareBus(hardware) {\n        this.hardware = hardware;\n    }\n    render() {\n        let mapOffset = this.bgMap ? 0x1C00 : 0x1800;\n        mapOffset += ((this.line + this.scrollY) & 255) >> 3;\n        let lineOffset = this.scrollX >> 3;\n        let y = (this.line + this.scrollY) & 7;\n        let x = this.scrollX & 7;\n        let canvasOffset = this.line * 160 * 4;\n        let tile = this.vram[mapOffset + lineOffset];\n        if (this.bgTile === 1 && tile < 128)\n            tile += 256;\n        for (let i = 0; i < 160; i++) {\n            let color = this.palette.get(this.tileset[tile][y][x]);\n            this.screen.data[canvasOffset++] = color.r;\n            this.screen.data[canvasOffset++] = color.g;\n            this.screen.data[canvasOffset++] = color.b;\n            this.screen.data[canvasOffset++] = color.a;\n            if (++x === 8) {\n                x = 0;\n                lineOffset = (lineOffset + 1) & 31;\n                tile = this.vram[mapOffset + lineOffset];\n                if (this.bgTile === 1 && tile < 128)\n                    tile += 256;\n            }\n        }\n    }\n}\n\n\n//# sourceURL=webpack:///./src/Emulator/GPU/index.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Color_1 = __webpack_require__(/*! ./Color */ "./src/Emulator/GPU/Color.ts");
+/**
+ * OAM_READ: 80 ticks
+ * VRAM_READ: 172 ticks
+ * HBLANK: 204 ticks
+ *
+ * Full line = OAM_READ + VRAM_READ + HBLANK = 456 ticks
+ */
+var RenderingMode;
+(function (RenderingMode) {
+    RenderingMode[RenderingMode["HBLANK"] = 0] = "HBLANK";
+    RenderingMode[RenderingMode["VBLANK"] = 1] = "VBLANK";
+    RenderingMode[RenderingMode["OAM_READ"] = 2] = "OAM_READ";
+    RenderingMode[RenderingMode["VRAM_READ"] = 3] = "VRAM_READ";
+})(RenderingMode = exports.RenderingMode || (exports.RenderingMode = {}));
+var Gpu = /** @class */ (function () {
+    function Gpu(canvas) {
+        this.scrollX = 0;
+        this.scrollY = 0;
+        this.bgMap = false;
+        this.bgTile = 0;
+        this.mode = RenderingMode.HBLANK;
+        this.modeClock = 0;
+        this.line = 0;
+        this.hardware = null;
+        this.canvas = canvas;
+        this.palette = new Color_1.Palette();
+        this.reset();
+    }
+    Gpu.prototype.updateTile = function (address, value) {
+        address &= 0x1FFE;
+        var tile = (address >> 4) & 511;
+        var y = (address >> 1) & 7;
+        var sx;
+        for (var x = 0; x < 8; x++) {
+            sx = 1 << (7 - x);
+            this.tileset[tile][y][x] = (this.vram[address] & sx ? 1 : 0) | (this.vram[address + 1] & sx ? 2 : 0);
+        }
+    };
+    Gpu.prototype.updateOAM = function (address, value) {
+    };
+    Gpu.prototype.step = function () {
+        this.modeClock += this.hardware.cpu.registers.t;
+        switch (this.mode) {
+            case RenderingMode.OAM_READ:
+                if (this.modeClock >= 80) {
+                    this.modeClock = 0;
+                    this.mode = RenderingMode.VRAM_READ;
+                }
+                break;
+            case RenderingMode.VRAM_READ:
+                if (this.modeClock >= 172) {
+                    this.modeClock = 0;
+                    this.mode = RenderingMode.HBLANK;
+                    this.render();
+                }
+                break;
+            case RenderingMode.HBLANK:
+                if (this.modeClock >= 204) {
+                    this.modeClock = 0;
+                    if (++this.line === 143) {
+                        this.mode = RenderingMode.VBLANK;
+                        this.context.putImageData(this.screen, 0, 0);
+                    }
+                    else
+                        this.mode = RenderingMode.OAM_READ;
+                }
+                break;
+            case RenderingMode.VBLANK:
+                if (this.modeClock >= 456) {
+                    this.modeClock = 0;
+                    if (++this.line > 153) {
+                        this.mode = RenderingMode.OAM_READ;
+                        this.line = 0;
+                    }
+                }
+                break;
+        }
+    };
+    Gpu.prototype.reset = function () {
+        this.palette.reset();
+        this.vram = new Int16Array(1 << 13); // 8k
+        this.oam = new Int16Array(160);
+        this.context = this.canvas.getContext('2d');
+        this.screen = this.context.createImageData(160, 144);
+        this.context.putImageData(this.screen, 0, 0);
+        this.tileset = [];
+        for (var i = 0; i < 512; i++) {
+            this.tileset.push([]);
+            for (var j = 0; j < 8; j++)
+                this.tileset[i].push((new Array(8).fill(0)));
+        }
+    };
+    Gpu.prototype.readByte = function (address) {
+        console.log(address - 0xFF40);
+        return 0;
+    };
+    Gpu.prototype.writeByte = function (address, value) {
+        console.log(address - 0xFF40);
+    };
+    Gpu.prototype.setHardwareBus = function (hardware) {
+        this.hardware = hardware;
+    };
+    Gpu.prototype.render = function () {
+        var mapOffset = this.bgMap ? 0x1C00 : 0x1800;
+        mapOffset += ((this.line + this.scrollY) & 255) >> 3;
+        var lineOffset = this.scrollX >> 3;
+        var y = (this.line + this.scrollY) & 7;
+        var x = this.scrollX & 7;
+        var canvasOffset = this.line * 160 * 4;
+        var tile = this.vram[mapOffset + lineOffset];
+        if (this.bgTile === 1 && tile < 128)
+            tile += 256;
+        for (var i = 0; i < 160; i++) {
+            var color = this.palette.get(this.tileset[tile][y][x]);
+            this.screen.data[canvasOffset++] = color.r;
+            this.screen.data[canvasOffset++] = color.g;
+            this.screen.data[canvasOffset++] = color.b;
+            this.screen.data[canvasOffset++] = color.a;
+            if (++x === 8) {
+                x = 0;
+                lineOffset = (lineOffset + 1) & 31;
+                tile = this.vram[mapOffset + lineOffset];
+                if (this.bgTile === 1 && tile < 128)
+                    tile += 256;
+            }
+        }
+    };
+    return Gpu;
+}());
+exports.Gpu = Gpu;
+
 
 /***/ }),
 
@@ -534,11 +608,29 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!**********************************!*\
   !*** ./src/Emulator/Hardware.ts ***!
   \**********************************/
-/*! exports provided: HardwareBus */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"HardwareBus\", function() { return HardwareBus; });\nclass HardwareBus {\n    constructor(cpu, memory, gpu) {\n        this.cpu = cpu;\n        this.memory = memory;\n        this.gpu = gpu;\n    }\n    get registers() {\n        return this.cpu.registers;\n    }\n}\n\n\n//# sourceURL=webpack:///./src/Emulator/Hardware.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var HardwareBus = /** @class */ (function () {
+    function HardwareBus(cpu, memory, gpu) {
+        this.cpu = cpu;
+        this.memory = memory;
+        this.gpu = gpu;
+    }
+    Object.defineProperty(HardwareBus.prototype, "registers", {
+        get: function () {
+            return this.cpu.registers;
+        },
+        enumerable: true,
+        configurable: true
+    });
+    return HardwareBus;
+}());
+exports.HardwareBus = HardwareBus;
+
 
 /***/ }),
 
@@ -546,11 +638,31 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!*************************************!*\
   !*** ./src/Emulator/Memory/Bios.ts ***!
   \*************************************/
-/*! exports provided: bios */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"bios\", function() { return bios; });\nconst bios = [\n    0x31, 0xFE, 0xFF, 0xAF, 0x21, 0xFF, 0x9F, 0x32, 0xCB, 0x7C, 0x20, 0xFB, 0x21, 0x26, 0xFF, 0x0E,\n    0x11, 0x3E, 0x80, 0x32, 0xE2, 0x0C, 0x3E, 0xF3, 0xE2, 0x32, 0x3E, 0x77, 0x77, 0x3E, 0xFC, 0xE0,\n    0x47, 0x11, 0x04, 0x01, 0x21, 0x10, 0x80, 0x1A, 0xCD, 0x95, 0x00, 0xCD, 0x96, 0x00, 0x13, 0x7B,\n    0xFE, 0x34, 0x20, 0xF3, 0x11, 0xD8, 0x00, 0x06, 0x08, 0x1A, 0x13, 0x22, 0x23, 0x05, 0x20, 0xF9,\n    0x3E, 0x19, 0xEA, 0x10, 0x99, 0x21, 0x2F, 0x99, 0x0E, 0x0C, 0x3D, 0x28, 0x08, 0x32, 0x0D, 0x20,\n    0xF9, 0x2E, 0x0F, 0x18, 0xF3, 0x67, 0x3E, 0x64, 0x57, 0xE0, 0x42, 0x3E, 0x91, 0xE0, 0x40, 0x04,\n    0x1E, 0x02, 0x0E, 0x0C, 0xF0, 0x44, 0xFE, 0x90, 0x20, 0xFA, 0x0D, 0x20, 0xF7, 0x1D, 0x20, 0xF2,\n    0x0E, 0x13, 0x24, 0x7C, 0x1E, 0x83, 0xFE, 0x62, 0x28, 0x06, 0x1E, 0xC1, 0xFE, 0x64, 0x20, 0x06,\n    0x7B, 0xE2, 0x0C, 0x3E, 0x87, 0xF2, 0xF0, 0x42, 0x90, 0xE0, 0x42, 0x15, 0x20, 0xD2, 0x05, 0x20,\n    0x4F, 0x16, 0x20, 0x18, 0xCB, 0x4F, 0x06, 0x04, 0xC5, 0xCB, 0x11, 0x17, 0xC1, 0xCB, 0x11, 0x17,\n    0x05, 0x20, 0xF5, 0x22, 0x23, 0x22, 0x23, 0xC9, 0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B,\n    0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E,\n    0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC,\n    0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E, 0x3c, 0x42, 0xB9, 0xA5, 0xB9, 0xA5, 0x42, 0x4C,\n    0x21, 0x04, 0x01, 0x11, 0xA8, 0x00, 0x1A, 0x13, 0xBE, 0x20, 0xFE, 0x23, 0x7D, 0xFE, 0x34, 0x20,\n    0xF5, 0x06, 0x19, 0x78, 0x86, 0x23, 0x05, 0x20, 0xFB, 0x86, 0x20, 0xFE, 0x3E, 0x01, 0xE0, 0x50,\n];\n\n\n//# sourceURL=webpack:///./src/Emulator/Memory/Bios.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.bios = [
+    0x31, 0xFE, 0xFF, 0xAF, 0x21, 0xFF, 0x9F, 0x32, 0xCB, 0x7C, 0x20, 0xFB, 0x21, 0x26, 0xFF, 0x0E,
+    0x11, 0x3E, 0x80, 0x32, 0xE2, 0x0C, 0x3E, 0xF3, 0xE2, 0x32, 0x3E, 0x77, 0x77, 0x3E, 0xFC, 0xE0,
+    0x47, 0x11, 0x04, 0x01, 0x21, 0x10, 0x80, 0x1A, 0xCD, 0x95, 0x00, 0xCD, 0x96, 0x00, 0x13, 0x7B,
+    0xFE, 0x34, 0x20, 0xF3, 0x11, 0xD8, 0x00, 0x06, 0x08, 0x1A, 0x13, 0x22, 0x23, 0x05, 0x20, 0xF9,
+    0x3E, 0x19, 0xEA, 0x10, 0x99, 0x21, 0x2F, 0x99, 0x0E, 0x0C, 0x3D, 0x28, 0x08, 0x32, 0x0D, 0x20,
+    0xF9, 0x2E, 0x0F, 0x18, 0xF3, 0x67, 0x3E, 0x64, 0x57, 0xE0, 0x42, 0x3E, 0x91, 0xE0, 0x40, 0x04,
+    0x1E, 0x02, 0x0E, 0x0C, 0xF0, 0x44, 0xFE, 0x90, 0x20, 0xFA, 0x0D, 0x20, 0xF7, 0x1D, 0x20, 0xF2,
+    0x0E, 0x13, 0x24, 0x7C, 0x1E, 0x83, 0xFE, 0x62, 0x28, 0x06, 0x1E, 0xC1, 0xFE, 0x64, 0x20, 0x06,
+    0x7B, 0xE2, 0x0C, 0x3E, 0x87, 0xF2, 0xF0, 0x42, 0x90, 0xE0, 0x42, 0x15, 0x20, 0xD2, 0x05, 0x20,
+    0x4F, 0x16, 0x20, 0x18, 0xCB, 0x4F, 0x06, 0x04, 0xC5, 0xCB, 0x11, 0x17, 0xC1, 0xCB, 0x11, 0x17,
+    0x05, 0x20, 0xF5, 0x22, 0x23, 0x22, 0x23, 0xC9, 0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B,
+    0x03, 0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08, 0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E,
+    0xDC, 0xCC, 0x6E, 0xE6, 0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63, 0x6E, 0x0E, 0xEC, 0xCC,
+    0xDD, 0xDC, 0x99, 0x9F, 0xBB, 0xB9, 0x33, 0x3E, 0x3c, 0x42, 0xB9, 0xA5, 0xB9, 0xA5, 0x42, 0x4C,
+    0x21, 0x04, 0x01, 0x11, 0xA8, 0x00, 0x1A, 0x13, 0xBE, 0x20, 0xFE, 0x23, 0x7D, 0xFE, 0x34, 0x20,
+    0xF5, 0x06, 0x19, 0x78, 0x86, 0x23, 0x05, 0x20, 0xFB, 0x86, 0x20, 0xFE, 0x3E, 0x01, 0xE0, 0x50,
+];
+
 
 /***/ }),
 
@@ -558,11 +670,172 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!**************************************!*\
   !*** ./src/Emulator/Memory/index.ts ***!
   \**************************************/
-/*! exports provided: Memory */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"Memory\", function() { return Memory; });\n/* harmony import */ var _Bios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Bios */ \"./src/Emulator/Memory/Bios.ts\");\n\nclass Memory {\n    constructor() {\n        this.inBios = true;\n        this.hardware = null;\n        this.bios = _Bios__WEBPACK_IMPORTED_MODULE_0__[\"bios\"];\n        this.reset();\n    }\n    readByte(address) {\n        const masked = address & 0xF000;\n        if (masked === 0x0000) { // BIOS / High ROM0\n            if (this.inBios) {\n                if (address < 0x0100)\n                    return this.bios[address];\n                else if (this.hardware.cpu.registers.programCount === 0x0100)\n                    this.inBios = false;\n            }\n            return this.rom[address];\n        }\n        else if (masked <= 0x7000) // ROM0 / ROM1 (unbanked)\n            return this.rom[address];\n        else if (masked <= 0x9000) // Video RAM\n            return this.hardware.gpu.vram[address & 0x1FFF];\n        else if (masked <= 0xB000) // External RAM\n            return this.eram[address & 0x1FFF];\n        else if (masked <= 0xFD00) // Working RAM and WRAM shadow\n            return this.wram[address & 0x1FFF];\n        else {\n            const lowMasked = address & 0x0F00;\n            if (lowMasked === 0xE00) { // Graphics object attribute memory (OAM)\n                if (address < 0xFEA0)\n                    return this.hardware.gpu.oam[address & 0xFF];\n                else\n                    return 0;\n            }\n            else if (lowMasked === 0xF00) { // Zero-page RAM\n                if (address === 0xFFFF)\n                    return this.interruptsEnabled;\n                if (address >= 0xFF80)\n                    return this.zram[address & 0x7F];\n                else {\n                    const ioMasked = address & 0xF0;\n                    if (ioMasked === 0x00) {\n                        const handlerMask = ioMasked & 0xF;\n                        if (handlerMask === 0)\n                            throw new Error('KEY not yet implemented');\n                        else if (handlerMask >= 4 && handlerMask <= 7)\n                            throw new Error('TIMER not yet implemented');\n                        else if (handlerMask === 15)\n                            return this.interruptFlags;\n                        else\n                            return 0;\n                    }\n                    else if (ioMasked >= 0x40 && ioMasked <= 0x70)\n                        return this.hardware.gpu.readByte(address);\n                    else\n                        return 0;\n                }\n            }\n        }\n    }\n    readWord(address) {\n        return this.readByte(address) + (this.readByte(address + 1) << 8);\n    }\n    writeByte(address, value) {\n        const masked = address & 0xF000;\n        if (masked <= 0x7000) // ROM is not writable\n            return;\n        else if (masked <= 0x9000) { // Video RAM\n            const mapped = address & 0x1FFF;\n            this.hardware.gpu.vram[mapped] = value;\n            this.hardware.gpu.updateTile(mapped, value); // TODO this may need to be the full address, not the mapped one\n        }\n        else if (masked <= 0xB000) // External RAM\n            this.eram[address & 0x1FFF] = value;\n        else if (masked <= 0xFD000) // Working RAM / WRAM shadow\n            this.wram[address & 0x1FFF] = value;\n        else {\n            const lowMasked = address & 0x0F00;\n            if (lowMasked === 0xE00) {\n                const mapped = address & 0xFF;\n                if (mapped < 0xA0)\n                    return;\n                this.hardware.gpu.updateOAM(mapped, value);\n            }\n            else if (lowMasked === 0xF00) { // Zero-page RAM\n                if (address === 0xFFFF)\n                    this.interruptsEnabled = value;\n                else if (address >= 0xFF80)\n                    this.zram[address & 0x7F] = value;\n                else {\n                    const ioMasked = address & 0xF0;\n                    if (ioMasked === 0x00) {\n                        const handlerMask = ioMasked & 0xF;\n                        if (handlerMask === 0)\n                            throw new Error('KEY not yet implemented');\n                        else if (handlerMask >= 4 && handlerMask <= 7)\n                            throw new Error('TIMER not yet implemented');\n                        else if (handlerMask === 15)\n                            this.interruptFlags = value;\n                    }\n                    else if (ioMasked >= 0x40 && ioMasked <= 0x70)\n                        this.hardware.gpu.writeByte(address, value);\n                }\n            }\n        }\n    }\n    writeWord(address, value) {\n        this.writeByte(address, value & 255);\n        this.writeByte(address + 1, value >> 8);\n    }\n    setHardwareBus(hardware) {\n        this.hardware = hardware;\n    }\n    load(file) {\n        const reader = new FileReader();\n        return new Promise((resolve, reject) => {\n            reader.addEventListener('load', () => {\n                this.rom = reader.result.split('').map((char) => char.charCodeAt(0));\n                resolve(reader);\n            });\n            reader.addEventListener('error', () => reject(reader.error));\n            reader.addEventListener('abort', () => reject(null));\n            reader.readAsBinaryString(file);\n        });\n    }\n    reset() {\n        this.inBios = true;\n        this.rom = (new Array(1 << 15)).fill(0); // 32k\n        this.eram = (new Array(1 << 13)).fill(0); // 8k\n        this.wram = (new Array(1 << 13)).fill(0); // 8k\n        this.zram = (new Array(128)).fill(0); // 128b\n        this.interruptsEnabled = 0;\n        this.interruptFlags = 0;\n    }\n}\n\n\n//# sourceURL=webpack:///./src/Emulator/Memory/index.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var Bios_1 = __webpack_require__(/*! ./Bios */ "./src/Emulator/Memory/Bios.ts");
+var Memory = /** @class */ (function () {
+    function Memory() {
+        this.inBios = true;
+        this.hardware = null;
+        this.bios = Bios_1.bios;
+        this.reset();
+    }
+    Memory.prototype.readByte = function (address) {
+        var masked = address & 0xF000;
+        if (masked === 0x0000) { // BIOS / High ROM0
+            if (this.inBios) {
+                if (address < 0x0100)
+                    return this.bios[address];
+                else if (this.hardware.cpu.registers.programCount >= 0x0100)
+                    this.inBios = false;
+            }
+            return this.rom[address];
+        }
+        else if (masked <= 0x7000) // ROM0 / ROM1 (unbanked)
+            return this.rom[address];
+        else if (masked <= 0x9000) // Video RAM
+            return this.hardware.gpu.vram[address & 0x1FFF];
+        else if (masked <= 0xB000) // External RAM
+            return this.eram[address & 0x1FFF];
+        else if (masked <= 0xFD00) // Working RAM and WRAM shadow
+            return this.wram[address & 0x1FFF];
+        else {
+            var lowMasked = address & 0x0F00;
+            if (lowMasked === 0xE00) { // Graphics object attribute memory (OAM)
+                if (address < 0xFEA0)
+                    return this.hardware.gpu.oam[address & 0xFF];
+                else
+                    return 0;
+            }
+            else if (lowMasked === 0xF00) { // Zero-page RAM
+                if (address === 0xFFFF)
+                    return this.interruptsEnabled;
+                if (address >= 0xFF80)
+                    return this.zram[address & 0x7F];
+                else {
+                    var ioMasked = address & 0xF0;
+                    if (ioMasked === 0x00) {
+                        var handlerMask = ioMasked & 0xF;
+                        if (handlerMask === 0)
+                            throw new Error('KEY not yet implemented');
+                        else if (handlerMask >= 4 && handlerMask <= 7)
+                            throw new Error('TIMER not yet implemented');
+                        else if (handlerMask === 15)
+                            return this.interruptFlags;
+                        else
+                            return 0;
+                    }
+                    else if (ioMasked >= 0x40 && ioMasked <= 0x70)
+                        return this.hardware.gpu.readByte(address);
+                    else
+                        return 0;
+                }
+            }
+        }
+    };
+    Memory.prototype.readWord = function (address) {
+        return this.readByte(address) + (this.readByte(address + 1) << 8);
+    };
+    Memory.prototype.writeByte = function (address, value) {
+        var masked = address & 0xF000;
+        if (masked <= 0x7000) // BIOS and ROM are not writable
+            throw new Error("Tried to write BIOS or ROM (0x" + address.toString(16).toUpperCase() + ")");
+        else if (masked <= 0x9000) { // Video RAM
+            var mapped = address & 0x1FFF;
+            this.hardware.gpu.vram[mapped] = value;
+            this.hardware.gpu.updateTile(mapped, value); // TODO this may need to be the full address, not the mapped one
+        }
+        else if (masked <= 0xB000) // External RAM
+            this.eram[address & 0x1FFF] = value;
+        else if (masked <= 0xFD000) // Working RAM / WRAM shadow
+            this.wram[address & 0x1FFF] = value;
+        else {
+            var lowMasked = address & 0x0F00;
+            if (lowMasked === 0xE00) {
+                var mapped = address & 0xFF;
+                if (mapped < 0xA0)
+                    return;
+                this.hardware.gpu.updateOAM(mapped, value);
+            }
+            else if (lowMasked === 0xF00) { // Zero-page RAM
+                if (address === 0xFFFF)
+                    this.interruptsEnabled = value;
+                else if (address >= 0xFF80)
+                    this.zram[address & 0x7F] = value;
+                else {
+                    var ioMasked = address & 0xF0;
+                    if (ioMasked === 0x00) {
+                        var handlerMask = ioMasked & 0xF;
+                        if (handlerMask === 0)
+                            throw new Error('KEY not yet implemented');
+                        else if (handlerMask >= 4 && handlerMask <= 7)
+                            throw new Error('TIMER not yet implemented');
+                        else if (handlerMask === 15)
+                            this.interruptFlags = value;
+                    }
+                    else if (ioMasked >= 0x40 && ioMasked <= 0x70)
+                        this.hardware.gpu.writeByte(address, value);
+                }
+            }
+        }
+    };
+    Memory.prototype.writeWord = function (address, value) {
+        this.writeByte(address, value & 255);
+        this.writeByte(address + 1, value >> 8);
+    };
+    Memory.prototype.setHardwareBus = function (hardware) {
+        this.hardware = hardware;
+    };
+    Memory.prototype.load = function (file) {
+        var _this = this;
+        var reader = new FileReader();
+        return new Promise(function (resolve, reject) {
+            reader.addEventListener('load', function () {
+                _this.rom = reader.result.split('').map(function (char) { return char.charCodeAt(0); });
+                resolve(reader);
+            });
+            reader.addEventListener('error', function () { return reject(reader.error); });
+            reader.addEventListener('abort', function () { return reject(null); });
+            reader.readAsBinaryString(file);
+        });
+    };
+    Memory.prototype.reset = function () {
+        this.inBios = true;
+        this.rom = (new Array(1 << 15)).fill(0); // 32k
+        this.eram = (new Array(1 << 13)).fill(0); // 8k
+        this.wram = (new Array(1 << 13)).fill(0); // 8k
+        this.zram = (new Array(128)).fill(0); // 128b
+        this.interruptsEnabled = 0;
+        this.interruptFlags = 0;
+    };
+    return Memory;
+}());
+exports.Memory = Memory;
+
+
+/***/ }),
+
+/***/ "./src/Emulator/util.ts":
+/*!******************************!*\
+  !*** ./src/Emulator/util.ts ***!
+  \******************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.toBinary = function (value) {
+    return value.toString(2);
+};
+exports.toHex = function (value) {
+    return value.toString(16).toUpperCase();
+};
+
 
 /***/ }),
 
@@ -570,11 +843,56 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!************************!*\
   !*** ./src/Monitor.ts ***!
   \************************/
-/*! exports provided: default */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, \"default\", function() { return Monitor; });\nconst registerKeys = ['a', 'b', 'c', 'd', 'e', 'h', 'l', 'flags', 'programCount', 'stackPointer', 'm', 't'];\nclass RegisterMonitor {\n    static update() {\n        if (!this.attached)\n            return;\n        Object.keys(this.elements).forEach(key => {\n            if (!this.elements[key])\n                return;\n            let value = this.registers[key].toString(16);\n            if (value.length < 2)\n                value = `0${value}`;\n            this.elements[key].textContent = '0x' + value;\n        });\n    }\n    static attach(root, registers) {\n        registerKeys.forEach(key => {\n            this.elements[key] = root.querySelector(`#register-${key}`);\n        });\n        this.attached = true;\n        this.registers = registers;\n    }\n}\nRegisterMonitor.attached = false;\nRegisterMonitor.registers = null;\nRegisterMonitor.elements = {};\nclass Monitor {\n    static attach(root, hardware) {\n        RegisterMonitor.attach(root.querySelector('#registers'), hardware.registers);\n        this.updateIntervalId = setInterval(() => {\n            RegisterMonitor.update();\n        });\n    }\n}\nMonitor.updateIntervalId = null;\n\n\n//# sourceURL=webpack:///./src/Monitor.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var registerKeys = ['a', 'b', 'c', 'd', 'e', 'h', 'l', 'flags', 'programCount', 'stackPointer', 'm', 't'];
+var RegisterMonitor = /** @class */ (function () {
+    function RegisterMonitor() {
+    }
+    RegisterMonitor.update = function () {
+        var _this = this;
+        if (!this.attached)
+            return;
+        Object.keys(this.elements).forEach(function (key) {
+            if (!_this.elements[key])
+                return;
+            var value = _this.registers[key].toString(16);
+            if (value.length < 2)
+                value = "0" + value;
+            _this.elements[key].textContent = '0x' + value;
+        });
+    };
+    RegisterMonitor.attach = function (root, registers) {
+        var _this = this;
+        registerKeys.forEach(function (key) {
+            _this.elements[key] = root.querySelector("#register-" + key);
+        });
+        this.attached = true;
+        this.registers = registers;
+    };
+    RegisterMonitor.attached = false;
+    RegisterMonitor.registers = null;
+    RegisterMonitor.elements = {};
+    return RegisterMonitor;
+}());
+var Monitor = /** @class */ (function () {
+    function Monitor() {
+    }
+    Monitor.attach = function (root, hardware) {
+        RegisterMonitor.attach(root.querySelector('#registers'), hardware.registers);
+        this.updateIntervalId = setInterval(function () {
+            RegisterMonitor.update();
+        });
+    };
+    Monitor.updateIntervalId = null;
+    return Monitor;
+}());
+exports.default = Monitor;
+
 
 /***/ }),
 
@@ -582,12 +900,38 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export (binding) *
 /*!**********************!*\
   !*** ./src/index.ts ***!
   \**********************/
-/*! no exports provided */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony import */ var _Emulator_CPU_index__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Emulator/CPU/index */ \"./src/Emulator/CPU/index.ts\");\n/* harmony import */ var _Emulator_GPU_index__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Emulator/GPU/index */ \"./src/Emulator/GPU/index.ts\");\n/* harmony import */ var _Emulator_Hardware__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Emulator/Hardware */ \"./src/Emulator/Hardware.ts\");\n/* harmony import */ var _Emulator_Memory_index__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./Emulator/Memory/index */ \"./src/Emulator/Memory/index.ts\");\n/* harmony import */ var _Monitor__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./Monitor */ \"./src/Monitor.ts\");\n\n\n\n\n\nconst cpu = new _Emulator_CPU_index__WEBPACK_IMPORTED_MODULE_0__[\"Cpu\"]();\nconst memory = new _Emulator_Memory_index__WEBPACK_IMPORTED_MODULE_3__[\"Memory\"]();\nconst gpu = new _Emulator_GPU_index__WEBPACK_IMPORTED_MODULE_1__[\"Gpu\"](document.getElementById('screen'));\nconst hardware = new _Emulator_Hardware__WEBPACK_IMPORTED_MODULE_2__[\"HardwareBus\"](cpu, memory, gpu);\ncpu.setHardwareBus(hardware);\nmemory.setHardwareBus(hardware);\ngpu.setHardwareBus(hardware);\n_Monitor__WEBPACK_IMPORTED_MODULE_4__[\"default\"].attach(document.querySelector('#monitor'), hardware);\nconst romLoader = document.getElementById('rom-loader');\nromLoader.addEventListener('change', () => {\n    gpu.reset();\n    memory.reset();\n    cpu.reset();\n    cpu.halt = true;\n    if (!romLoader.files.length)\n        return;\n    memory.load(romLoader.files[0]).then(() => cpu.exec());\n});\n\n\n//# sourceURL=webpack:///./src/index.ts?");
+
+Object.defineProperty(exports, "__esModule", { value: true });
+var index_1 = __webpack_require__(/*! ./Emulator/CPU/index */ "./src/Emulator/CPU/index.ts");
+var index_2 = __webpack_require__(/*! ./Emulator/GPU/index */ "./src/Emulator/GPU/index.ts");
+var Hardware_1 = __webpack_require__(/*! ./Emulator/Hardware */ "./src/Emulator/Hardware.ts");
+var index_3 = __webpack_require__(/*! ./Emulator/Memory/index */ "./src/Emulator/Memory/index.ts");
+var Monitor_1 = __webpack_require__(/*! ./Monitor */ "./src/Monitor.ts");
+var cpu = new index_1.Cpu();
+var memory = new index_3.Memory();
+var gpu = new index_2.Gpu(document.getElementById('screen'));
+var hardware = new Hardware_1.HardwareBus(cpu, memory, gpu);
+cpu.setHardwareBus(hardware);
+memory.setHardwareBus(hardware);
+gpu.setHardwareBus(hardware);
+Monitor_1.default.attach(document.querySelector('#monitor'), hardware);
+var romLoader = document.getElementById('rom-loader');
+romLoader.addEventListener('change', function () {
+    gpu.reset();
+    memory.reset();
+    cpu.reset();
+    cpu.halt = true;
+    if (!romLoader.files.length)
+        return;
+    memory.load(romLoader.files[0]).then(function () { return cpu.exec(); });
+});
+
 
 /***/ })
 
 /******/ });
+//# sourceMappingURL=bundle.js.map

@@ -1,12 +1,31 @@
 {
+	"name": "dbstudios--gbemu",
+	"license": "GPL-3.0",
 	"scripts": {
 		"start": "webpack -w --mode development",
-		"build": "webpack --mode=production"
+		"compile": "webpack --mode development",
+		"build": "webpack --mode production",
+		"test": "jest src/"
 	},
 	"devDependencies": {
+		"@types/jest": "^23.1.4",
+		"jest": "^23.3.0",
+		"ts-jest": "^23.0.0",
 		"ts-loader": "^4.4.1",
 		"typescript": "^2.9.2",
 		"webpack": "^4.12.1",
 		"webpack-cli": "^3.0.8"
+	},
+	"jest": {
+		"transform": {
+			"^.+\\.ts$": "ts-jest"
+		},
+		"testRegex": "\\.spec\\.ts$",
+		"moduleFileExtensions": [
+			"ts",
+			"js",
+			"json",
+			"node"
+		]
 	}
 }

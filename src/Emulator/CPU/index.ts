@@ -1,44 +1,12 @@
 import {HardwareBusAwareInterface, HardwareBusInterface} from '../Hardware';
+import {toHex} from '../util';
 import {Clock, ClockInterface} from './Clock';
-import {AddOperators, AddOperatorSet} from './Operations/Add';
-import {BitManipulationOperators, BitManipulationOperatorSet} from './Operations/BitManipulation';
-import {BitwiseOperators, BitwiseOperatorSet} from './Operations/Bitwise';
-import {CompareOperators, CompareOperatorSet} from './Operations/Compare';
-import {DecrementOperators, DecrementOperatorSet} from './Operations/Decrement';
-import {ExtraOperators, ExtraOperatorSet} from './Operations/Extra';
-import {IncrementOperators, IncrementOperatorSet} from './Operations/Increment';
-import {OperatorCallback, OperatorSet} from './Operations/index';
-import {Interrupt, InterruptOperators, InterruptOperatorSet} from './Operations/Interrupt';
-import {JumpOperators, JumpOperatorSet} from './Operations/Jump';
-import {LoadStoreOperators, LoadStoreOperatorSet} from './Operations/LoadStore';
-import {toCbcodeMap, toOpcodeMap} from './Operations/mappings';
-import {ReturnOperators, ReturnOperatorSet} from './Operations/Return';
-import {StackOperators, StackOperatorSet} from './Operations/Stack';
-import {SubtractOperators, SubtractOperatorSet} from './Operations/Subtract';
+import {PrimaryInstructions} from './InstructionSet';
 import {RegisterSet, RegisterSetInterface} from './Registers';
-
-export interface CompoundOperatorSet extends OperatorSet,
-	AddOperatorSet,
-	BitManipulationOperatorSet,
-	BitwiseOperatorSet,
-	CompareOperatorSet,
-	DecrementOperatorSet,
-	ExtraOperatorSet,
-	IncrementOperatorSet,
-	InterruptOperatorSet,
-	JumpOperatorSet,
-	LoadStoreOperatorSet,
-	ReturnOperatorSet,
-	StackOperatorSet,
-	SubtractOperatorSet {
-}
 
 export interface CpuInterface {
 	clock: ClockInterface;
 	registers: RegisterSetInterface;
-	operators: CompoundOperatorSet;
-	opcodes: OperatorCallback[];
-	cbcodes: OperatorCallback[];
 
 	allowInterrupts: boolean;
 
@@ -53,15 +21,10 @@ export interface CpuInterface {
 export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 	public clock: ClockInterface;
 	public registers: RegisterSetInterface;
-	public operators: CompoundOperatorSet;
-	public opcodes: OperatorCallback[];
-	public cbcodes: OperatorCallback[];
 
 	public halt: boolean = false;
 	public stop: boolean = false;
 	public allowInterrupts: boolean = true;
-
-	private interruptMap: {[key: number]: OperatorCallback};
 
 	private hardware: HardwareBusInterface = null;
 	private tickIntervalId: number = null;
@@ -69,32 +32,6 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 	public constructor() {
 		this.clock = new Clock();
 		this.registers = new RegisterSet();
-		this.operators = {
-			...AddOperators,
-			...BitManipulationOperators,
-			...BitwiseOperators,
-			...CompareOperators,
-			...DecrementOperators,
-			...ExtraOperators,
-			...IncrementOperators,
-			...InterruptOperators,
-			...JumpOperators,
-			...LoadStoreOperators,
-			...ReturnOperators,
-			...StackOperators,
-			...SubtractOperators,
-		};
-
-		this.interruptMap = {
-			[Interrupt.VBLANK]: this.operators.Interrupt40,
-			[Interrupt.LCD_STAT]: this.operators.Interrupt48,
-			[Interrupt.TIMER]: this.operators.Interrupt50,
-			[Interrupt.SERIAL]: this.operators.Interrupt58,
-			[Interrupt.JOYPAD]: this.operators.Interrupt60,
-		};
-
-		this.opcodes = toOpcodeMap(this.operators);
-		this.cbcodes = toCbcodeMap(this.operators);
 	}
 
 	public setHardwareBus(hardware: HardwareBusInterface): void {
@@ -102,11 +39,15 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 	}
 
 	public step(): void {
-		const op = this.hardware.memory.readByte(this.registers.programCount++);
-
-		this.opcodes[op](this.hardware);
+		const opcode = this.hardware.memory.readByte(this.registers.programCount++);
+		const operator = PrimaryInstructions.getByCode(opcode);
 
 		this.registers.programCount &= 65535;
+
+		if (!operator)
+			throw new Error(`Instruction ${toHex(opcode)} is not implemented (at ${(this.registers.programCount - 1) & 65535}`);
+
+		operator.invoke(this.hardware);
 		this.clock.m += this.registers.m;
 
 		this.hardware.gpu.step();
@@ -117,22 +58,11 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 			this.halt = false;
 			this.allowInterrupts = false;
 
-			const interrupts = memory.interruptsEnabled & memory.interruptFlags;
+			// const interrupts = memory.interruptsEnabled & memory.interruptFlags;
 
 			let fired = false;
 
-			for (let key in this.interruptMap) {
-				const mask = parseInt(key, 10);
-
-				if (interrupts & mask) {
-					fired = true;
-					memory.interruptFlags ^= mask;
-
-					this.interruptMap[key](this.hardware);
-
-					break;
-				}
-			}
+			// TODO Add interrupt handling
 
 			if (!fired)
 				this.allowInterrupts = true;

@@ -1,7 +1,7 @@
-import {Cpu} from './Emulator/CPU/index';
-import {Gpu} from './Emulator/GPU/index';
+import {Cpu} from './Emulator/CPU';
+import {Gpu} from './Emulator/GPU';
 import {HardwareBus} from './Emulator/Hardware';
-import {Memory} from './Emulator/Memory/index';
+import {Memory} from './Emulator/Memory';
 import Monitor from './Monitor';
 
 const cpu = new Cpu();
