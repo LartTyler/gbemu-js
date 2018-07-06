@@ -3,5 +3,5 @@ export const toBinary = (value: number): string => {
 };
 
 export const toHex = (value: number): string => {
-	return value.toString(16).toUpperCase();
+	return `0x${value.toString(16).toUpperCase()}`;
 };

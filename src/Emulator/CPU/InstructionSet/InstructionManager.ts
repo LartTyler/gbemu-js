@@ -1,4 +1,5 @@
 import {HardwareBusInterface} from '../../Hardware';
+import {toHex} from '../../util';
 
 export type OperatorCallback = (hardware: HardwareBusInterface) => void;
 
@@ -32,9 +33,13 @@ export interface OperatorSet {
 
 export interface InstructionManagerInterface {
 	getByName(name: string): OperatorInterface | null;
+
 	getByCode(opcode: number): OperatorInterface | null;
+
 	register(operator: OperatorInterface): this;
+
 	registerAll(operators: OperatorInterface[]): this;
+
 	deregister(operator: OperatorInterface): this;
 }
 
@@ -71,8 +76,13 @@ export class InstructionManager implements InstructionManagerInterface {
 	/**
 	 * @param {OperatorInterface} operator
 	 * @return {InstructionManager}
+	 *
+	 * @throws Will throw an error if the operator's opcode or name are already in use
 	 */
 	public register(operator: OperatorInterface): this {
+		if (this.getByCode(operator.opcode) || this.getByName(operator.name))
+			throw new Error(`Cannot register ${operator.name} at ${toHex(operator.opcode)}: Operator already exists with that name or opcode`);
+
 		this.operators[operator.name] = operator;
 		this.opcodes[operator.opcode] = operator;
 
