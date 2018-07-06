@@ -1,5 +1,6 @@
 import {toHex} from '../../../util';
-import {BitInstructions, Operator, OperatorInterface, PrimaryInstructions} from '../Operators';
+import {BitInstructions} from '../index';
+import {Operator, OperatorInterface} from '../InstructionManager';
 
 export const MiscOperators: OperatorInterface[] = [
 	new Operator('Noop', 0x00, hardware => {
@@ -19,5 +20,3 @@ export const MiscOperators: OperatorInterface[] = [
 			throw new Error(`Bit instruction ${toHex(opcode)} is not implemented (at ${(registers.programCount - 1) & 65535}`);
 	}),
 ];
-
-MiscOperators.forEach(PrimaryInstructions.register);
