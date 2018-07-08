@@ -101,4 +101,16 @@ export const AddOperators: OperatorInterface[] = [
 
 		registers.m = 3;
 	}),
+
+	new Operator('AddPCAddressToSP', 0xE8, hardware => {
+		const registers = hardware.registers;
+
+		let value = hardware.memory.readByte(registers.programCount++);
+
+		if (value > 127)
+			value = -((~value + 1) & 255);
+
+		registers.stackPointer += value;
+		registers.m = 4;
+	}),
 ];

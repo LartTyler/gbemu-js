@@ -272,4 +272,30 @@ describe('Add operators', () => {
 		expect(registers.flags).toBe(RegisterFlag.CARRY);
 		expect(registers.m).toBe(3);
 	});
+
+	test('AddPCAddressToSP', () => {
+		const operator = PrimaryInstructions.getByCode(0xE8);
+
+		expect(operator).not.toBeNull();
+		expect(operator.name).toBe('AddPCAddressToSP');
+
+		registers.stackPointer = 1;
+		registers.programCount = 0xC000;
+		memory.writeByte(0xC000, 3);
+
+		operator.invoke(hardware);
+
+		expect(registers.programCount).toBe(0xC001);
+		expect(registers.stackPointer).toBe(4);
+		expect(registers.m).toBe(4);
+
+		registers.stackPointer = 1;
+		memory.writeByte(0xC001, 128);
+
+		operator.invoke(hardware);
+
+		expect(registers.programCount).toBe(0xC002);
+		expect(registers.stackPointer).toBe(-127);
+		expect(registers.m).toBe(4);
+	});
 });
