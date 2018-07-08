@@ -242,4 +242,34 @@ describe('Add operators', () => {
 	test('AddDEPairToHLPair', () => runPairToHLPairTests('d', 'e', 0x19));
 	test('AddHLPairToHLPair', () => runPairToHLPairTests('h', 'l', 0x29));
 	// endregion
+
+	test('AddSPToHLPair', () => {
+		const operator = PrimaryInstructions.getByCode(0x39);
+
+		expect(operator).not.toBeNull();
+		expect(operator.name).toBe('AddSPToHLPair');
+
+		registers.h = 0;
+		registers.l = 1;
+		registers.stackPointer = 3;
+		registers.flags = 0;
+
+		operator.invoke(hardware);
+
+		expect((registers.h << 8) + registers.l).toBe(4);
+		expect(registers.flags).toBe(0);
+		expect(registers.m).toBe(3);
+
+		registers.h = 0xFF;
+		registers.l = 0xFF;
+		registers.stackPointer = 1;
+		registers.flags = 0;
+
+		operator.invoke(hardware);
+
+		expect(registers.h).toBe(0);
+		expect(registers.l).toBe(0);
+		expect(registers.flags).toBe(RegisterFlag.CARRY);
+		expect(registers.m).toBe(3);
+	});
 });

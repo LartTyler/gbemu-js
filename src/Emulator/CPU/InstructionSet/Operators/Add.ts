@@ -85,4 +85,20 @@ export const AddOperators: OperatorInterface[] = [
 	new Operator('AddDEPairToHLPair', 0x19, hardware => addPairToHLPair('d', 'e', hardware)),
 	new Operator('AddHLPairToHLPair', 0x29, hardware => addPairToHLPair('h', 'l', hardware)),
 	// endregion
+
+	new Operator('AddSPToHLPair', 0x39, hardware => {
+		const {registers} = hardware;
+
+		const value = (registers.h << 8) + registers.l + registers.stackPointer;
+
+		if (value > 65535)
+			registers.flags |= RegisterFlag.CARRY;
+		else
+			registers.flags &= ~RegisterFlag.CARRY;
+
+		registers.h = (value >> 8) & 255;
+		registers.l = value & 255;
+
+		registers.m = 3;
+	}),
 ];
