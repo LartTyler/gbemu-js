@@ -1,11 +1,23 @@
-import {RegisterKey} from './CPU/Registers';
+export const toBinary = (value: number, minLength?: number): string => {
+	let bin = value.toString(2);
 
-export const toBinary = (value: number): string => {
-	return value.toString(2);
+	if (minLength !== null && bin.length < minLength) {
+		for (let i = minLength - bin.length; i < minLength; i++)
+			bin = '0' + bin;
+	}
+
+	return bin;
 };
 
-export const toHex = (value: number): string => {
-	return `0x${value.toString(16).toUpperCase()}`;
+export const toHex = (value: number, minLength?: number): string => {
+	let hex = value.toString(16).toUpperCase();
+
+	if (minLength !== null && hex.length < minLength) {
+		for (let i = minLength - hex.length; i < minLength; i++)
+			hex = '0' + hex;
+	}
+
+	return `0x${hex.toUpperCase()}`;
 };
 
 export const pairTo16Bit = (high: number, low: number): number => {
