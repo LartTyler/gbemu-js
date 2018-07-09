@@ -298,4 +298,185 @@ describe('Add operators', () => {
 		expect(registers.stackPointer).toBe(-127);
 		expect(registers.m).toBe(4);
 	});
+
+	// region Add register to A with carry
+	const runRegisterToAWithCarryTests = (key: RegisterKey, opcode: number): void => {
+		const operator = PrimaryInstructions.getByCode(opcode);
+
+		expect(operator).not.toBeNull();
+		expect(operator.name).toBe(`Add${key.toUpperCase()}WithCarry`);
+
+		registers.a = 3;
+		registers[key] = 3;
+		registers.flags = 0;
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(6);
+		expect(registers.m).toBe(1);
+		expect(registers.flags).toBe(0);
+
+		registers.a = 3;
+		registers[key] = 3;
+		registers.flags = RegisterFlag.CARRY;
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(7);
+		expect(registers.m).toBe(1);
+		expect(registers.flags).toBe(0);
+
+		registers.a = 0;
+		registers[key] = 0;
+		registers.flags = 0;
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(0);
+		expect(registers.m).toBe(1);
+		expect(registers.flags).toBe(RegisterFlag.ZERO);
+
+		registers.a = 200;
+		registers[key] = 200;
+		registers.flags = 0;
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(144);
+		expect(registers.m).toBe(1);
+		expect(registers.flags).toBe(RegisterFlag.HALF_CARRY | RegisterFlag.CARRY);
+
+		registers.a = 128;
+		registers[key] = 128;
+		registers.flags = 0;
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(0);
+		expect(registers.m).toBe(1);
+		expect(registers.flags).toBe(RegisterFlag.CARRY | RegisterFlag.ZERO);
+
+		registers.a = 8;
+		registers[key] = 8;
+		registers.flags = 0;
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(16);
+		expect(registers.m).toBe(1);
+		expect(registers.flags).toBe(RegisterFlag.HALF_CARRY);
+	};
+
+	test('AddAWithCarry', () => runRegisterToAWithCarryTests('a', 0x8F));
+	test('AddBWithCarry', () => runRegisterToAWithCarryTests('b', 0x88));
+	test('AddCWithCarry', () => runRegisterToAWithCarryTests('c', 0x89));
+	test('AddDWithCarry', () => runRegisterToAWithCarryTests('d', 0x8A));
+	test('AddEWithCarry', () => runRegisterToAWithCarryTests('e', 0x8B));
+	test('AddHWithCarry', () => runRegisterToAWithCarryTests('h', 0x8C));
+	test('AddLWithCarry', () => runRegisterToAWithCarryTests('l', 0x8D));
+	// endregion
+
+	// region Add address to A with carry
+	test('AddPCAddressWithCarry', () => {
+		const operator = PrimaryInstructions.getByCode(0xCE);
+
+		expect(operator).not.toBeNull();
+		expect(operator.name).toBe('AddPCAddressWithCarry');
+
+		registers.a = 1;
+		registers.programCount = 0xC000;
+		registers.flags = RegisterFlag.CARRY;
+		memory.writeByte(0xC000, 3);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(5);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(0);
+		expect(registers.programCount).toBe(0xC001);
+
+		registers.a = 0;
+		registers.flags = 0;
+		memory.writeByte(0xC001, 0);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(0);
+		expect(registers.m).toBe(2);
+		expect(registers.programCount).toBe(0xC002);
+		expect(registers.flags).toBe(RegisterFlag.ZERO);
+
+		registers.a = 200;
+		registers.flags = 0;
+		memory.writeByte(0xC002, 200);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(144);
+		expect(registers.m).toBe(2);
+		expect(registers.programCount).toBe(0xC003);
+		expect(registers.flags).toBe(RegisterFlag.CARRY | RegisterFlag.HALF_CARRY);
+
+		registers.a = 128;
+		registers.flags = 0;
+		memory.writeByte(0xC003, 128);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(0);
+		expect(registers.m).toBe(2);
+		expect(registers.programCount).toBe(0xC004);
+		expect(registers.flags).toBe(RegisterFlag.CARRY | RegisterFlag.ZERO);
+	});
+
+	test('AddHLAddressWithCarry', () => {
+		const operator = PrimaryInstructions.getByCode(0x8E);
+
+		expect(operator).not.toBeNull();
+		expect(operator.name).toBe('AddHLAddressWithCarry');
+
+		registers.h = 0xC0;
+		registers.l = 0x00;
+
+		registers.a = 1;
+		registers.flags = RegisterFlag.CARRY;
+		memory.writeByte(0xC000, 3);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(5);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(0);
+
+		registers.a = 0;
+		registers.flags = 0;
+		memory.writeByte(0xC000, 0);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(0);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.ZERO);
+
+		registers.a = 200;
+		registers.flags = 0;
+		memory.writeByte(0xC000, 200);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(144);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.CARRY | RegisterFlag.HALF_CARRY);
+
+		registers.a = 128;
+		registers.flags = 0;
+		memory.writeByte(0xC000, 128);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(0);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.CARRY | RegisterFlag.ZERO);
+	});
+	// endregion
 });
