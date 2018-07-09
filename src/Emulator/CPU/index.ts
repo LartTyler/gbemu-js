@@ -44,8 +44,11 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 
 		this.registers.programCount &= 65535;
 
-		if (!operator)
-			throw new Error(`Instruction ${toHex(opcode)} is not implemented (at ${(this.registers.programCount - 1) & 65535}`);
+		if (!operator) {
+			this.stop = true;
+
+			throw new Error(`Instruction ${toHex(opcode)} is not implemented (at ${(this.registers.programCount - 1) & 65535})`);
+		}
 
 		operator.invoke(this.hardware);
 		this.clock.m += this.registers.m;
