@@ -17,6 +17,6 @@ export const MiscOperators: OperatorInterface[] = [
 		if (operator)
 			operator.invoke(hardware);
 		else
-			throw new Error(`Bit instruction ${toHex(opcode)} is not implemented (at ${(registers.programCount - 1) & 65535}`);
+			throw new Error(`Bit instruction ${toHex(opcode)} is not implemented (at ${(registers.programCount - 1) & 65535})`);
 	}),
 ];
