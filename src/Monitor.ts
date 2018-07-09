@@ -1,5 +1,6 @@
 import {RegisterKey, RegisterSetInterface} from './Emulator/CPU/Registers';
 import {HardwareBusInterface} from './Emulator/Hardware';
+import {toHex} from './Emulator/util';
 
 const registerKeys: RegisterKey[] = ['a', 'b', 'c', 'd', 'e', 'h', 'l', 'flags', 'programCount', 'stackPointer', 'm', 't'];
 
@@ -16,12 +17,7 @@ class RegisterMonitor {
 			if (!this.elements[key])
 				return;
 
-			let value = this.registers[<RegisterKey>key].toString(16);
-
-			if (value.length < 2)
-				value = `0${value}`;
-
-			this.elements[key].textContent = '0x' + value;
+			this.elements[key].textContent = toHex(this.registers[<RegisterKey>key], 2);
 		});
 	}
 
