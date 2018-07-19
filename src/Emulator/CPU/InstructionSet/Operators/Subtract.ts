@@ -68,6 +68,12 @@ const subtractRegisterWithCarry = (key: RegisterKey, hardware: HardwareBusInterf
 	registers.m = 1;
 };
 
+const subtractAddressWithCarry = (address: number, hardware: HardwareBusInterface): void => {
+	subtractWithCarry(hardware.memory.readByte(address), hardware);
+
+	hardware.registers.m = 2;
+};
+
 export const SubtractOperators: OperatorInterface[] = [
 	// region Subtract registers
 	new Operator('SubtractA', 0x97, hardware => subtractRegister('a', hardware)),
@@ -96,5 +102,17 @@ export const SubtractOperators: OperatorInterface[] = [
 	new Operator('SubtractEWithCarry', 0x9B, hardware => subtractRegisterWithCarry('e', hardware)),
 	new Operator('SubtractHWithCarry', 0x9C, hardware => subtractRegisterWithCarry('h', hardware)),
 	new Operator('SubtractLWithCarry', 0x9D, hardware => subtractRegisterWithCarry('l', hardware)),
+	// endregion
+
+	// region Subtract address with carry
+	new Operator('SubtractHLAddressWithCarry', 0x9E, hardware => {
+		const registers = hardware.registers;
+
+		subtractAddressWithCarry((registers.h << 8) + registers.l, hardware);
+	}),
+
+	new Operator('SubtractPCAddressWithCarry', 0xDE, hardware => {
+		subtractAddressWithCarry(hardware.registers.programCount++, hardware);
+	}),
 	// endregion
 ];

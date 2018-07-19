@@ -13,7 +13,6 @@ export interface CpuInterface {
 	halt: boolean;
 	stop: boolean;
 
-	step(): void;
 	exec(): void;
 	reset(): void;
 }
@@ -38,7 +37,37 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 		this.hardware = hardware;
 	}
 
-	public step(): void {
+	public exec(): void {
+		this.halt = false;
+		this.stop = false;
+
+		this.frame();
+	}
+
+	public reset(): void {
+		this.clock.reset();
+		this.registers.reset();
+
+		this.halt = true;
+		this.stop = false;
+	}
+
+	protected frame(): void {
+		this.tickIntervalId = null;
+
+		const frameClock = this.clock.m + 17556;
+
+		do {
+			this.step();
+
+			if (this.halt || this.stop)
+				return;
+		} while (this.clock.m < frameClock);
+
+		this.tickIntervalId = setTimeout(this.frame, 1);
+	}
+
+	protected step(): void {
 		const opcode = this.hardware.memory.readByte(this.registers.programCount++);
 		const operator = PrimaryInstructions.getByCode(opcode);
 
@@ -70,32 +99,5 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 			if (!fired)
 				this.allowInterrupts = true;
 		}
-	}
-
-	public exec(): void {
-		this.halt = false;
-		this.stop = false;
-
-		this.tickIntervalId = setInterval(() => {
-			const frameClock = this.clock.m + 17556;
-
-			do {
-				this.step();
-
-				if (this.halt || this.stop) {
-					clearInterval(this.tickIntervalId);
-
-					this.tickIntervalId = null;
-				}
-			} while (this.clock.m < frameClock);
-		}, 1);
-	}
-
-	public reset(): void {
-		this.clock.reset();
-		this.registers.reset();
-
-		this.halt = true;
-		this.stop = false;
 	}
 }

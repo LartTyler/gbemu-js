@@ -19,4 +19,13 @@ describe('Miscellaneous operators', () => {
 
 		expect(hardware.registers.m).toBe(1);
 	});
+
+	test('DecimalAdjust', () => {
+		const operator = PrimaryInstructions.getByCode(0x27);
+
+		expect(operator).not.toBeNull();
+		expect(operator.name).toBe('DecimalAdjust');
+
+		// TODO Add test for DecimalAdjust
+	});
 });

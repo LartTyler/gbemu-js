@@ -1,6 +1,8 @@
 import {InstructionManager} from './InstructionManager';
 import {AddOperators} from './Operators/Add';
 import {BitManipulationOperators} from './Operators/BitManipulation';
+import {BitwiseOperators} from './Operators/Bitwise';
+import {CompareOperators} from './Operators/Compare';
 import {LoadOperators} from './Operators/Load';
 import {MiscOperators} from './Operators/Misc';
 import {SubtractOperators} from './Operators/Subtract';
@@ -10,6 +12,8 @@ import {SubtractOperators} from './Operators/Subtract';
 
 export const PrimaryInstructions = new InstructionManager([
 	...AddOperators,
+	...BitwiseOperators,
+	...CompareOperators,
 	...LoadOperators,
 	...MiscOperators,
 	...SubtractOperators,

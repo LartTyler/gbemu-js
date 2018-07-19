@@ -275,6 +275,102 @@ describe('Subtract operators', () => {
 
 		registers.a = 0;
 		memory.writeByte(0xC000, 3);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(253);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.OPERATION | RegisterFlag.CARRY | RegisterFlag.HALF_CARRY);
+
+		registers.a = 1;
+		registers.flags = 0;
+		memory.writeByte(0xC000, 1);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(0);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.OPERATION | RegisterFlag.ZERO);
+
+		registers.a = 18;
+		memory.writeByte(0xC000, 5);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(13);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.OPERATION | RegisterFlag.HALF_CARRY);
+
+		registers.a = 3;
+		registers.flags = RegisterFlag.CARRY;
+		memory.writeByte(0xC000, 1);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(1);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.OPERATION);
+	});
+
+	test('SubtractPCAddressWithCarry', () => {
+		const operator = PrimaryInstructions.getByCode(0xDE);
+
+		expect(operator).not.toBeNull();
+		expect(operator.name).toBe('SubtractPCAddressWithCarry');
+
+		registers.programCount = 0xC000;
+
+		registers.a = 3;
+		memory.writeByte(registers.programCount, 1);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(2);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.OPERATION);
+		expect(registers.programCount).toBe(0xC001);
+
+		registers.a = 0;
+		memory.writeByte(registers.programCount, 3);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(253);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.OPERATION | RegisterFlag.CARRY | RegisterFlag.HALF_CARRY);
+		expect(registers.programCount).toBe(0xC002);
+
+		registers.a = 1;
+		registers.flags = 0;
+		memory.writeByte(registers.programCount, 1);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(0);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.OPERATION | RegisterFlag.ZERO);
+		expect(registers.programCount).toBe(0xC003);
+
+		registers.a = 18;
+		memory.writeByte(registers.programCount, 5);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(13);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.OPERATION | RegisterFlag.HALF_CARRY);
+		expect(registers.programCount).toBe(0xC004);
+
+		registers.a = 3;
+		registers.flags = RegisterFlag.CARRY;
+		memory.writeByte(registers.programCount, 1);
+
+		operator.invoke(hardware);
+
+		expect(registers.a).toBe(1);
+		expect(registers.m).toBe(2);
+		expect(registers.flags).toBe(RegisterFlag.OPERATION);
+		expect(registers.programCount).toBe(0xC005);
 	});
 	// endregion
 });
