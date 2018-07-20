@@ -2,7 +2,7 @@ export const toBinary = (value: number, minLength?: number): string => {
 	let bin = value.toString(2);
 
 	if (minLength !== null && bin.length < minLength) {
-		for (let i = minLength - bin.length; i < minLength; i++)
+		for (let i = 0, ii = minLength - bin.length; i < ii; i++)
 			bin = '0' + bin;
 	}
 
@@ -22,4 +22,11 @@ export const toHex = (value: number, minLength?: number): string => {
 
 export const pairTo16Bit = (high: number, low: number): number => {
 	return (high << 8) + low;
+};
+
+export const pairFrom16Bit = (value: number): [number, number] => {
+	return [
+		(value >> 8) & 255,
+		value & 255,
+	];
 };

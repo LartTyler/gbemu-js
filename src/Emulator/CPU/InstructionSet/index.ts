@@ -1,8 +1,11 @@
 import {InstructionManager} from './InstructionManager';
 import {AddOperators} from './Operators/Add';
-import {BitManipulationOperators} from './Operators/BitManipulation';
+import {ResetOperators} from './Operators/BitManipulation/Reset';
+import {SwapOperators} from './Operators/BitManipulation/Swap';
+import {TestOperators} from './Operators/BitManipulation/Test';
 import {BitwiseOperators} from './Operators/Bitwise';
 import {CompareOperators} from './Operators/Compare';
+import {DecrementOperators} from './Operators/Decrement';
 import {IncrementOperators} from './Operators/Increment';
 import {LoadOperators} from './Operators/Load';
 import {MiscOperators} from './Operators/Misc';
@@ -15,6 +18,7 @@ export const PrimaryInstructions = new InstructionManager([
 	...AddOperators,
 	...BitwiseOperators,
 	...CompareOperators,
+	...DecrementOperators,
 	...IncrementOperators,
 	...LoadOperators,
 	...MiscOperators,
@@ -22,5 +26,7 @@ export const PrimaryInstructions = new InstructionManager([
 ]);
 
 export const BitInstructions = new InstructionManager([
-	...BitManipulationOperators,
+	...ResetOperators,
+	...SwapOperators,
+	...TestOperators,
 ]);
