@@ -1,4 +1,5 @@
 import {HardwareBusInterface} from '../../../../Hardware';
+import {pairTo16Bit} from '../../../../util';
 import {RegisterKey} from '../../../Registers';
 import {Operator, OperatorInterface} from '../../InstructionManager';
 
@@ -7,6 +8,17 @@ const resetRegister = (key: RegisterKey, position: number, hardware: HardwareBus
 
 	registers[key] &= ~(1 << position);
 	registers.m = 2;
+};
+
+const resetHLAddress = (position: number, hardware: HardwareBusInterface): void => {
+	const {memory, registers} = hardware;
+	const address = pairTo16Bit(registers.h, registers.l);
+
+	const value = memory.readByte(address) & ~(1 << position);
+
+	memory.writeByte(address, value);
+
+	registers.m = 4;
 };
 
 export const ResetOperators: OperatorInterface[] = [
@@ -74,5 +86,16 @@ export const ResetOperators: OperatorInterface[] = [
 	new Operator('ResetBit7InE', 0xBB, hardware => resetRegister('e', 7, hardware)),
 	new Operator('ResetBit7InH', 0xBC, hardware => resetRegister('h', 7, hardware)),
 	new Operator('ResetBit7InL', 0xBD, hardware => resetRegister('l', 7, hardware)),
+	// endregion
+
+	// region Addresses
+	new Operator('ResetBit0InHLAddress', 0x86, hardware => resetHLAddress(0, hardware)),
+	new Operator('ResetBit1InHLAddress', 0x8E, hardware => resetHLAddress(1, hardware)),
+	new Operator('ResetBit2InHLAddress', 0x96, hardware => resetHLAddress(2, hardware)),
+	new Operator('ResetBit3InHLAddress', 0x9E, hardware => resetHLAddress(3, hardware)),
+	new Operator('ResetBit4InHLAddress', 0xA6, hardware => resetHLAddress(4, hardware)),
+	new Operator('ResetBit5InHLAddress', 0xAE, hardware => resetHLAddress(5, hardware)),
+	new Operator('ResetBit6InHLAddress', 0xB6, hardware => resetHLAddress(6, hardware)),
+	new Operator('ResetBit7InHLAddress', 0xBE, hardware => resetHLAddress(7, hardware)),
 	// endregion
 ];

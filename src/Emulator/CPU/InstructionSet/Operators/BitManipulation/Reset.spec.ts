@@ -113,4 +113,39 @@ describe('Bit reset operators', () => {
 	test('ResetBit7InH', () => runRegisterTests('h', 7, 0xBC));
 	test('ResetBit7InL', () => runRegisterTests('l', 7, 0xBD));
 	// endregion
+
+	// region Addresses
+	const runAddressTests = (position: number, opcode: number): void => {
+		const operator = BitInstructions.getByCode(opcode);
+
+		expect(operator).not.toBeNull();
+		expect(operator.name).toBe(`ResetBit${position}InHLAddress`);
+
+		registers.h = 0xC0;
+		registers.l = 0x00;
+
+		memory.writeByte(0xC000, 0);
+		operator.invoke(hardware);
+
+		expect(memory.readByte(0xC000)).toBe(0);
+		expect(registers.m).toBe(4);
+
+		const value = getValue(position);
+
+		memory.writeByte(0xC000, value);
+		operator.invoke(hardware);
+
+		expect(memory.readByte(0xC000)).toBe(value & ~(1 << position));
+		expect(registers.m).toBe(4);
+	};
+
+	test('ResetBit0InHLAddress', () => runAddressTests(0, 0x86));
+	test('ResetBit1InHLAddress', () => runAddressTests(1, 0x8E));
+	test('ResetBit2InHLAddress', () => runAddressTests(2, 0x96));
+	test('ResetBit3InHLAddress', () => runAddressTests(3, 0x9E));
+	test('ResetBit4InHLAddress', () => runAddressTests(4, 0xA6));
+	test('ResetBit5InHLAddress', () => runAddressTests(5, 0xAE));
+	test('ResetBit6InHLAddress', () => runAddressTests(6, 0xB6));
+	test('ResetBit7InHLAddress', () => runAddressTests(7, 0xBE));
+	// endregion
 });
