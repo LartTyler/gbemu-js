@@ -1,7 +1,10 @@
 import {InstructionManager} from './InstructionManager';
 import {AddOperators} from './Operators/Add';
 import {ResetOperators} from './Operators/BitManipulation/Reset';
-import {RotateLeftBitOperators, RotateLeftPrimaryOperators} from './Operators/BitManipulation/RotateLeft';
+import {
+	RotateLeftCarryBitOperators,
+	RotateLeftCarryPrimaryOperators,
+} from './Operators/BitManipulation/RotateLeftCarry';
 import {SetOperators} from './Operators/BitManipulation/Set';
 import {SwapOperators} from './Operators/BitManipulation/Swap';
 import {TestOperators} from './Operators/BitManipulation/Test';
@@ -15,6 +18,7 @@ import {SubtractOperators} from './Operators/Subtract';
 
 // @see http://z80-heaven.wikidot.com/opcode-reference-chart
 // @see https://rednex.github.io/rgbds/gbz80.7.html
+// @see http://pastraiser.com/cpu/gameboy/gameboy_opcodes.html
 
 export const PrimaryInstructions = new InstructionManager([
 	...AddOperators,
@@ -24,13 +28,13 @@ export const PrimaryInstructions = new InstructionManager([
 	...IncrementOperators,
 	...LoadOperators,
 	...MiscOperators,
-	...RotateLeftPrimaryOperators,
+	...RotateLeftCarryPrimaryOperators,
 	...SubtractOperators,
 ]);
 
 export const BitInstructions = new InstructionManager([
 	...ResetOperators,
-	...RotateLeftBitOperators,
+	...RotateLeftCarryBitOperators,
 	...SetOperators,
 	...SwapOperators,
 	...TestOperators,
