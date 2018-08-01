@@ -1,6 +1,7 @@
 import {Gpu} from '../../../../GPU';
 import {HardwareBus} from '../../../../Hardware';
 import {Memory} from '../../../../Memory';
+import {pairFrom16Bit} from '../../../../util';
 import {Cpu} from '../../../index';
 import {RegisterFlag, RegisterKey} from '../../../Registers';
 import {BitInstructions, PrimaryInstructions} from '../../index';
@@ -8,16 +9,15 @@ import {InstructionManagerInterface} from '../../InstructionManager';
 
 jest.mock('../../../../GPU');
 
-describe('RotateLeftCarry operators', () => {
+describe('RotateRightCarry operators', () => {
 	const hardware = new HardwareBus(new Cpu(), new Memory(), new Gpu(null));
 	const {memory, registers} = hardware;
 
 	beforeEach(() => {
-		hardware.cpu.reset();
 		memory.reset();
+		hardware.cpu.reset();
 	});
 
-	// region Registers
 	const runRegisterTests = (
 		key: RegisterKey,
 		fast: boolean,
@@ -27,7 +27,7 @@ describe('RotateLeftCarry operators', () => {
 		const operator = instructions.getByCode(opcode);
 
 		expect(operator).not.toBeNull();
-		expect(operator.name).toBe(`Rotate${key.toUpperCase()}LeftCarry${fast ? 'Fast' : ''}`);
+		expect(operator.name).toBe(`Rotate${key.toUpperCase()}RightCarry${fast ? 'Fast' : ''}`);
 
 		const mtime = fast ? 1 : 2;
 
@@ -38,7 +38,7 @@ describe('RotateLeftCarry operators', () => {
 		expect(registers.flags).toBe(fast ? 0 : RegisterFlag.ZERO);
 		expect(registers.m).toBe(mtime);
 
-		registers[key] = 0x80;
+		registers[key] = 1;
 		operator.invoke(hardware);
 
 		expect(registers[key]).toBe(0);
@@ -48,27 +48,26 @@ describe('RotateLeftCarry operators', () => {
 		// Invoking operator on previous results for the next test
 		operator.invoke(hardware);
 
-		expect(registers[key]).toBe(1);
+		expect(registers[key]).toBe(0x80);
 		expect(registers.flags).toBe(0);
 		expect(registers.m).toBe(mtime);
 	};
 
-	test('RotateALeftCarryFast', () => runRegisterTests('a', true, 0x17, PrimaryInstructions));
+	test('RotateARightCarryFast', () => runRegisterTests('a', true, 0x1F, PrimaryInstructions));
 
-	test('RotateALeftCarry', () => runRegisterTests('a', false, 0x17, BitInstructions));
-	test('RotateBLeftCarry', () => runRegisterTests('b', false, 0x10, BitInstructions));
-	test('RotateCLeftCarry', () => runRegisterTests('c', false, 0x11, BitInstructions));
-	test('RotateDLeftCarry', () => runRegisterTests('d', false, 0x12, BitInstructions));
-	test('RotateELeftCarry', () => runRegisterTests('e', false, 0x13, BitInstructions));
-	test('RotateHLeftCarry', () => runRegisterTests('h', false, 0x14, BitInstructions));
-	test('RotateLLeftCarry', () => runRegisterTests('l', false, 0x15, BitInstructions));
-	// endregion
+	test('RotateARightCarry', () => runRegisterTests('a', false, 0x1F, BitInstructions));
+	test('RotateBRightCarry', () => runRegisterTests('b', false, 0x18, BitInstructions));
+	test('RotateCRightCarry', () => runRegisterTests('c', false, 0x19, BitInstructions));
+	test('RotateDRightCarry', () => runRegisterTests('d', false, 0x1A, BitInstructions));
+	test('RotateERightCarry', () => runRegisterTests('e', false, 0x1B, BitInstructions));
+	test('RotateHRightCarry', () => runRegisterTests('h', false, 0x1C, BitInstructions));
+	test('RotateLRightCarry', () => runRegisterTests('l', false, 0x1D, BitInstructions));
 
-	test('RotateHLAddressLeftCarry', () => {
-		const operator = BitInstructions.getByCode(0x16);
+	test('RotateHLAddressRightCarry', () => {
+		const operator = BitInstructions.getByCode(0x1E);
 
 		expect(operator).not.toBeNull();
-		expect(operator.name).toBe('RotateHLAddressLeftCarry');
+		expect(operator.name).toBe('RotateHLAddressRightCarry');
 
 		registers.h = 0xC0;
 		registers.l = 0x00;
@@ -80,7 +79,7 @@ describe('RotateLeftCarry operators', () => {
 		expect(registers.flags).toBe(RegisterFlag.ZERO);
 		expect(registers.m).toBe(4);
 
-		memory.writeByte(0xC000, 0x80);
+		memory.writeByte(0xC000, 1);
 		operator.invoke(hardware);
 
 		expect(memory.readByte(0xC000)).toBe(0);
@@ -90,7 +89,7 @@ describe('RotateLeftCarry operators', () => {
 		// Invoking operator on previous results for the next test
 		operator.invoke(hardware);
 
-		expect(memory.readByte(0xC000)).toBe(1);
+		expect(memory.readByte(0xC000)).toBe(0x80);
 		expect(registers.flags).toBe(0);
 		expect(registers.m).toBe(4);
 	});

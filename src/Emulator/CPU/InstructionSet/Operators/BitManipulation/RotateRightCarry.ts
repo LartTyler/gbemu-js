@@ -7,9 +7,9 @@ const rotate = (value: number, hardware: HardwareBusInterface): number => {
 	const registers = hardware.registers;
 
 	const oldCarry = registers.flags & RegisterFlag.CARRY;
-	const newCarry = value & 0x80;
+	const newCarry = value & 1;
 
-	value = ((value << 1) + (oldCarry ? 1 : 0)) & 255;
+	value = ((value >> 1) + (oldCarry ? 0x80 : 0)) & 255;
 	registers.flags = newCarry ? RegisterFlag.CARRY : 0;
 
 	if (!value)
@@ -29,22 +29,20 @@ const rotateRegister = (key: RegisterKey, fast: boolean, hardware: HardwareBusIn
 		registers.flags &= RegisterFlag.CARRY;
 };
 
-export const RotateLeftCarryPrimaryOperators: OperatorInterface[] = [
-	new Operator('RotateALeftCarryFast', 0x17, hardware => rotateRegister('a', true, hardware), 'RLA'),
+export const RotateRightCarryPrimaryOperators: OperatorInterface[] = [
+	new Operator('RotateARightCarryFast', 0x1F, hardware => rotateRegister('a', true, hardware), 'RRA'),
 ];
 
-export const RotateLeftCarryBitOperators: OperatorInterface[] = [
-	// region Registers
-	new Operator('RotateALeftCarry', 0x17, hardware => rotateRegister('a', false, hardware), 'RL a'),
-	new Operator('RotateBLeftCarry', 0x10, hardware => rotateRegister('b', false, hardware), 'RL b'),
-	new Operator('RotateCLeftCarry', 0x11, hardware => rotateRegister('c', false, hardware), 'RL c'),
-	new Operator('RotateDLeftCarry', 0x12, hardware => rotateRegister('d', false, hardware), 'RL d'),
-	new Operator('RotateELeftCarry', 0x13, hardware => rotateRegister('e', false, hardware), 'RL e'),
-	new Operator('RotateHLeftCarry', 0x14, hardware => rotateRegister('h', false, hardware), 'RL h'),
-	new Operator('RotateLLeftCarry', 0x15, hardware => rotateRegister('l', false, hardware), 'RL l'),
-	// endregion
+export const RotateRightCarryBitOperators: OperatorInterface[] = [
+	new Operator('RotateARightCarry', 0x1F, hardware => rotateRegister('a', false, hardware), 'RR a'),
+	new Operator('RotateBRightCarry', 0x18, hardware => rotateRegister('b', false, hardware), 'RR b'),
+	new Operator('RotateCRightCarry', 0x19, hardware => rotateRegister('c', false, hardware), 'RR c'),
+	new Operator('RotateDRightCarry', 0x1A, hardware => rotateRegister('d', false, hardware), 'RR d'),
+	new Operator('RotateERightCarry', 0x1B, hardware => rotateRegister('e', false, hardware), 'RR e'),
+	new Operator('RotateHRightCarry', 0x1C, hardware => rotateRegister('h', false, hardware), 'RR h'),
+	new Operator('RotateLRightCarry', 0x1D, hardware => rotateRegister('l', false, hardware), 'RR l'),
 
-	new Operator('RotateHLAddressLeftCarry', 0x16, hardware => {
+	new Operator('RotateHLAddressRightCarry', 0x1E, hardware => {
 		const {memory, registers} = hardware;
 		const address = pairTo16Bit(registers.h, registers.l);
 
