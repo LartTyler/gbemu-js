@@ -38,4 +38,12 @@ export const MiscOperators: OperatorInterface[] = [
 
 		registers.m = 1;
 	}),
+	new Operator('ComplementA', 0x2F, hardware => {
+		const registers = hardware.registers;
+
+		registers.a ^= 255;
+		registers.flags |= RegisterFlag.HALF_CARRY | RegisterFlag.OPERATION;
+
+		registers.m = 1;
+	}),
 ];

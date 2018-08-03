@@ -6,10 +6,21 @@ import {
 	RotateLeftCarryPrimaryOperators,
 } from './Operators/BitManipulation/RotateLeftCarry';
 import {
+	RotateLeftCircularBitOperators,
+	RotateLeftCircularPrimaryOperators,
+} from './Operators/BitManipulation/RotateLeftCircular';
+import {
 	RotateRightCarryBitOperators,
 	RotateRightCarryPrimaryOperators,
 } from './Operators/BitManipulation/RotateRightCarry';
+import {
+	RotateRightCircularBitOperators,
+	RotateRightCircularPrimaryOperators,
+} from './Operators/BitManipulation/RotateRightCircular';
 import {SetOperators} from './Operators/BitManipulation/Set';
+import {ShiftLeftArithmeticOperators} from './Operators/BitManipulation/ShiftLeftArithemetic';
+import {ShiftRightArithmeticOperators} from './Operators/BitManipulation/ShiftRightArithmetic';
+import {ShiftRightLogicalOperators} from './Operators/BitManipulation/ShiftRightLogical';
 import {SwapOperators} from './Operators/BitManipulation/Swap';
 import {TestOperators} from './Operators/BitManipulation/Test';
 import {BitwiseOperators} from './Operators/Bitwise';
@@ -33,15 +44,22 @@ export const PrimaryInstructions = new InstructionManager([
 	...LoadOperators,
 	...MiscOperators,
 	...RotateLeftCarryPrimaryOperators,
+	...RotateLeftCircularPrimaryOperators,
 	...RotateRightCarryPrimaryOperators,
+	...RotateRightCircularPrimaryOperators,
 	...SubtractOperators,
 ]);
 
 export const BitInstructions = new InstructionManager([
 	...ResetOperators,
 	...RotateLeftCarryBitOperators,
+	...RotateLeftCircularBitOperators,
 	...RotateRightCarryBitOperators,
+	...RotateRightCircularBitOperators,
 	...SetOperators,
+	...ShiftLeftArithmeticOperators,
+	...ShiftRightArithmeticOperators,
+	...ShiftRightLogicalOperators,
 	...SwapOperators,
 	...TestOperators,
 ]);

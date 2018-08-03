@@ -51,5 +51,5 @@ export const RotateLeftCarryBitOperators: OperatorInterface[] = [
 		memory.writeByte(address, rotate(memory.readByte(address), hardware));
 
 		registers.m = 4;
-	}),
+	}, 'RL (hl)'),
 ];
