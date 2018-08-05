@@ -29,10 +29,12 @@ import {DecrementOperators} from './Operators/Decrement';
 import {IncrementOperators} from './Operators/Increment';
 import {LoadOperators} from './Operators/Load';
 import {MiscOperators} from './Operators/Misc';
+import {PushOperators} from './Operators/Stack/Push';
 import {SubtractOperators} from './Operators/Subtract';
 
 // @see http://z80-heaven.wikidot.com/opcode-reference-chart
 // @see https://rednex.github.io/rgbds/gbz80.7.html
+// @see http://www.devrs.com/gb/files/GBCPU_Instr.html
 // @see http://pastraiser.com/cpu/gameboy/gameboy_opcodes.html
 
 export const PrimaryInstructions = new InstructionManager([
@@ -43,6 +45,7 @@ export const PrimaryInstructions = new InstructionManager([
 	...IncrementOperators,
 	...LoadOperators,
 	...MiscOperators,
+	...PushOperators,
 	...RotateLeftCarryPrimaryOperators,
 	...RotateLeftCircularPrimaryOperators,
 	...RotateRightCarryPrimaryOperators,
