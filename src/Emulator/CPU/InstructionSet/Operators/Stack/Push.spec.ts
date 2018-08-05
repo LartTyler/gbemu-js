@@ -1,7 +1,7 @@
 import {Gpu} from '../../../../GPU';
 import {HardwareBus} from '../../../../Hardware';
 import {Memory} from '../../../../Memory';
-import {pairFrom16Bit, pairTo16Bit} from '../../../../util';
+import {pairFrom16Bit} from '../../../../util';
 import {Cpu} from '../../../index';
 import {RegisterKey} from '../../../Registers';
 import {PrimaryInstructions} from '../../index';
