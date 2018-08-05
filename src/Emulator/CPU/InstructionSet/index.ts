@@ -29,6 +29,7 @@ import {DecrementOperators} from './Operators/Decrement';
 import {IncrementOperators} from './Operators/Increment';
 import {LoadOperators} from './Operators/Load';
 import {MiscOperators} from './Operators/Misc';
+import {PopOperators} from './Operators/Stack/Pop';
 import {PushOperators} from './Operators/Stack/Push';
 import {SubtractOperators} from './Operators/Subtract';
 
@@ -45,6 +46,7 @@ export const PrimaryInstructions = new InstructionManager([
 	...IncrementOperators,
 	...LoadOperators,
 	...MiscOperators,
+	...PopOperators,
 	...PushOperators,
 	...RotateLeftCarryPrimaryOperators,
 	...RotateLeftCircularPrimaryOperators,
