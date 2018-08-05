@@ -27,6 +27,7 @@ import {BitwiseOperators} from './Operators/Bitwise';
 import {CompareOperators} from './Operators/Compare';
 import {DecrementOperators} from './Operators/Decrement';
 import {IncrementOperators} from './Operators/Increment';
+import {JumpOperators} from './Operators/Jump';
 import {LoadOperators} from './Operators/Load';
 import {MiscOperators} from './Operators/Misc';
 import {PopOperators} from './Operators/Stack/Pop';
@@ -44,6 +45,7 @@ export const PrimaryInstructions = new InstructionManager([
 	...CompareOperators,
 	...DecrementOperators,
 	...IncrementOperators,
+	...JumpOperators,
 	...LoadOperators,
 	...MiscOperators,
 	...PopOperators,
