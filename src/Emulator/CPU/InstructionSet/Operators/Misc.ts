@@ -46,4 +46,17 @@ export const MiscOperators: OperatorInterface[] = [
 
 		registers.m = 1;
 	}),
+	new Operator('ComplementCarryFlag', 0x3F, hardware => {
+		const registers = hardware.registers;
+		const carry = registers.flags & RegisterFlag.CARRY;
+
+		registers.flags = (registers.flags & RegisterFlag.ZERO) | (carry ? 0 : RegisterFlag.CARRY);
+		registers.m = 1;
+	}),
+	new Operator('SetCarryFlag', 0x37, hardware => {
+		const registers = hardware.registers;
+
+		registers.flags = (registers.flags & RegisterFlag.ZERO) | RegisterFlag.CARRY;
+		registers.m = 1;
+	}),
 ];

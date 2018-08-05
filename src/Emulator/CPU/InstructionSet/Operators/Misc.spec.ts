@@ -69,4 +69,48 @@ describe('Miscellaneous operators', () => {
 		expect(registers.flags).toBe(flags);
 		expect(registers.m).toBe(1);
 	});
+
+	test('ComplementCarryFlag', () => {
+		const operator = PrimaryInstructions.getByCode(0x3F);
+
+		expect(operator).not.toBeNull();
+		expect(operator.name).toBe('ComplementCarryFlag');
+
+		registers.flags = 0;
+		operator.invoke(hardware);
+
+		expect(registers.flags).toBe(RegisterFlag.CARRY);
+		expect(registers.m).toBe(1);
+
+		registers.flags = RegisterFlag.CARRY | RegisterFlag.ZERO | RegisterFlag.HALF_CARRY | RegisterFlag.OPERATION;
+		operator.invoke(hardware);
+
+		expect(registers.flags).toBe(RegisterFlag.ZERO);
+		expect(registers.m).toBe(1);
+	});
+
+	test('SetCarryFlag', () => {
+		const operator = PrimaryInstructions.getByCode(0x37);
+
+		expect(operator).not.toBeNull();
+		expect(operator.name).toBe('SetCarryFlag');
+
+		registers.flags = 0;
+		operator.invoke(hardware);
+
+		expect(registers.flags).toBe(RegisterFlag.CARRY);
+		expect(registers.m).toBe(1);
+
+		registers.flags = RegisterFlag.ZERO;
+		operator.invoke(hardware);
+
+		expect(registers.flags).toBe(RegisterFlag.CARRY | RegisterFlag.ZERO);
+		expect(registers.m).toBe(1);
+
+		registers.flags = RegisterFlag.CARRY | RegisterFlag.HALF_CARRY | RegisterFlag.OPERATION;
+		operator.invoke(hardware);
+
+		expect(registers.flags).toBe(RegisterFlag.CARRY);
+		expect(registers.m).toBe(1);
+	});
 });
