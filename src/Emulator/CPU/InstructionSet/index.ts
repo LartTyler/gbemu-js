@@ -28,10 +28,13 @@ import {CompareOperators} from './Operators/Compare';
 import {DecrementOperators} from './Operators/Decrement';
 import {IncrementOperators} from './Operators/Increment';
 import {JumpOperators} from './Operators/Jump';
+import {JumpRelativeOperators} from './Operators/JumpRelative';
 import {LoadOperators} from './Operators/Load';
 import {MiscOperators} from './Operators/Misc';
 import {PopOperators} from './Operators/Stack/Pop';
 import {PushOperators} from './Operators/Stack/Push';
+import {CallOperators} from './Operators/Subroutine/Call';
+import {ReturnOperators} from './Operators/Subroutine/Return';
 import {SubtractOperators} from './Operators/Subtract';
 
 // @see http://z80-heaven.wikidot.com/opcode-reference-chart
@@ -42,14 +45,17 @@ import {SubtractOperators} from './Operators/Subtract';
 export const PrimaryInstructions = new InstructionManager([
 	...AddOperators,
 	...BitwiseOperators,
+	...CallOperators,
 	...CompareOperators,
 	...DecrementOperators,
 	...IncrementOperators,
 	...JumpOperators,
+	...JumpRelativeOperators,
 	...LoadOperators,
 	...MiscOperators,
 	...PopOperators,
 	...PushOperators,
+	...ReturnOperators,
 	...RotateLeftCarryPrimaryOperators,
 	...RotateLeftCircularPrimaryOperators,
 	...RotateRightCarryPrimaryOperators,

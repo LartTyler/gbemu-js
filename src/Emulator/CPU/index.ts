@@ -1,5 +1,5 @@
 import {HardwareBusAwareInterface, HardwareBusInterface} from '../Hardware';
-import {toHex} from '../util';
+import {lpad, toHex} from '../util';
 import {Clock, ClockInterface} from './Clock';
 import {PrimaryInstructions} from './InstructionSet';
 import {RegisterSet, RegisterSetInterface} from './Registers';
@@ -24,9 +24,13 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 	public halt: boolean = false;
 	public stop: boolean = false;
 	public allowInterrupts: boolean = true;
+	public tickInterval: number = 1;
+	public enableLog: boolean = false;
 
 	private hardware: HardwareBusInterface = null;
 	private tickIntervalId: number = null;
+
+	private logLines = 0;
 
 	public constructor() {
 		this.clock = new Clock();
@@ -62,9 +66,9 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 
 			if (this.halt || this.stop)
 				return;
-		} while (this.clock.m < frameClock);
+		} while (!this.enableLog && this.clock.m < frameClock);
 
-		this.tickIntervalId = setTimeout(this.frame, 1);
+		this.tickIntervalId = setTimeout(() => this.frame(), this.tickInterval);
 	}
 
 	protected step(): void {
@@ -78,6 +82,9 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 
 			throw new Error(`Instruction ${toHex(opcode)} is not implemented (at ${(this.registers.programCount - 1) & 65535})`);
 		}
+
+		if (this.enableLog)
+			console.log(`${lpad(this.registers.programCount.toString(), 5)}: (${toHex(operator.opcode)}) ${operator.name}`);
 
 		operator.invoke(this.hardware);
 		this.clock.m += this.registers.m;

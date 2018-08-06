@@ -12,6 +12,8 @@ const hardware = new HardwareBus(cpu, memory, gpu);
 
 Monitor.attach(document.querySelector('#monitor'), hardware);
 
+cpu.enableLog = true;
+
 const romLoader = <HTMLInputElement>document.getElementById('rom-loader');
 
 romLoader.addEventListener('change', () => {

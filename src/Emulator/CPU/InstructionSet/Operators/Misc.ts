@@ -7,6 +7,10 @@ export const MiscOperators: OperatorInterface[] = [
 	new Operator('Noop', 0x00, hardware => {
 		hardware.registers.m = 1;
 	}),
+	new Operator('Halt', 0x76, hardware => {
+		hardware.cpu.halt = true;
+		hardware.registers.m = 1;
+	}, 'HALT'),
 	new Operator('BitInstructionShift', 0xCB, hardware => {
 		const registers = hardware.registers;
 

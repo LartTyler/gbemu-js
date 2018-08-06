@@ -27,13 +27,13 @@ const shiftRegister = (key: RegisterKey, hardware: HardwareBusInterface): void =
 
 export const ShiftRightArithmeticOperators: OperatorInterface[] = [
 	// region Registers
-	new Operator('ShiftARightArithmetic', 0x2F, hardware => shiftRegister('a', hardware)),
-	new Operator('ShiftBRightArithmetic', 0x28, hardware => shiftRegister('b', hardware)),
-	new Operator('ShiftCRightArithmetic', 0x29, hardware => shiftRegister('c', hardware)),
-	new Operator('ShiftDRightArithmetic', 0x2A, hardware => shiftRegister('d', hardware)),
-	new Operator('ShiftERightArithmetic', 0x2B, hardware => shiftRegister('e', hardware)),
-	new Operator('ShiftHRightArithmetic', 0x2C, hardware => shiftRegister('h', hardware)),
-	new Operator('ShiftLRightArithmetic', 0x2D, hardware => shiftRegister('l', hardware)),
+	new Operator('ShiftARightArithmetic', 0x2F, hardware => shiftRegister('a', hardware), 'SRA a'),
+	new Operator('ShiftBRightArithmetic', 0x28, hardware => shiftRegister('b', hardware), 'SRA b'),
+	new Operator('ShiftCRightArithmetic', 0x29, hardware => shiftRegister('c', hardware), 'SRA c'),
+	new Operator('ShiftDRightArithmetic', 0x2A, hardware => shiftRegister('d', hardware), 'SRA d'),
+	new Operator('ShiftERightArithmetic', 0x2B, hardware => shiftRegister('e', hardware), 'SRA e'),
+	new Operator('ShiftHRightArithmetic', 0x2C, hardware => shiftRegister('h', hardware), 'SRA h'),
+	new Operator('ShiftLRightArithmetic', 0x2D, hardware => shiftRegister('l', hardware), 'SRA l'),
 	// endregion
 
 	new Operator('ShiftHLAddressRightArithmetic', 0x2E, hardware => {
@@ -43,5 +43,5 @@ export const ShiftRightArithmeticOperators: OperatorInterface[] = [
 		memory.writeByte(address, shift(memory.readByte(address), hardware));
 
 		registers.m = 4;
-	}),
+	}, 'SRA (hl)'),
 ];

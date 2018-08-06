@@ -30,3 +30,12 @@ export const pairFrom16Bit = (value: number): [number, number] => {
 		value & 255,
 	];
 };
+
+export const lpad = (string: string, length: number, padChar: string = ' '): string => {
+	if (string.length < length) {
+		for (let i = 0, ii = length - string.length; i < ii; i++)
+			string = padChar + string;
+	}
+
+	return string;
+};
