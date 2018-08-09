@@ -20,7 +20,22 @@ export interface RegisterSetInterface {
 	t: number;
 
 	reset(): void;
+
+	save(): void;
+	restore(): void;
 }
+
+type Snapshot = null | {
+	a: number;
+	b: number;
+	c: number;
+	d: number;
+	e: number;
+	h: number;
+	l: number;
+
+	flags: number;
+};
 
 export enum RegisterFlag {
 	CARRY = 0x10,
@@ -45,6 +60,8 @@ export class RegisterSet implements RegisterSetInterface {
 
 	private clock: ClockInterface;
 
+	private snapshot: Snapshot = null;
+
 	public constructor(clock?: ClockInterface) {
 		this.clock = clock || new Clock();
 
@@ -65,6 +82,8 @@ export class RegisterSet implements RegisterSetInterface {
 		this.stackPointer = 0;
 		this.programCount = 0;
 
+		this.snapshot = null;
+
 		this.clock.reset();
 	}
 
@@ -82,5 +101,35 @@ export class RegisterSet implements RegisterSetInterface {
 
 	set t(value: number) {
 		this.clock.t = value;
+	}
+
+	public save(): void {
+		if (this.snapshot)
+			throw new Error('Cannot save snapshot while another snapshot is waiting to be restored');
+
+		this.snapshot = {
+			a: this.a,
+			b: this.b,
+			c: this.c,
+			d: this.d,
+			e: this.e,
+			h: this.h,
+			l: this.l,
+
+			flags: this.flags
+		};
+	}
+
+	public restore(): void {
+		this.a = this.snapshot.a;
+		this.b = this.snapshot.b;
+		this.c = this.snapshot.c;
+		this.d = this.snapshot.d;
+		this.e = this.snapshot.e;
+		this.h = this.snapshot.h;
+		this.l = this.snapshot.l;
+		this.flags = this.snapshot.flags;
+
+		this.snapshot = null;
 	}
 }

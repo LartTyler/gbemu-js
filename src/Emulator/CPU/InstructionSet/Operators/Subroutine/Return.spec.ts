@@ -140,6 +140,7 @@ describe('Return operators', () => {
 		const operator = getOperator(0xD9, 'ReturnInterrupt');
 		const cpu = hardware.cpu;
 
+		registers.save();
 		cpu.allowInterrupts = true;
 		registers.stackPointer = 0xC000;
 		memory.writeWord(registers.stackPointer, 0);
@@ -150,6 +151,7 @@ describe('Return operators', () => {
 		expect(registers.programCount).toBe(0);
 		expect(registers.m).toBe(3);
 
+		registers.save();
 		cpu.allowInterrupts = false;
 		registers.stackPointer = 0xC000;
 		memory.writeWord(registers.stackPointer, 0xC0FF);

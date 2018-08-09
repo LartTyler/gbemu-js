@@ -1,4 +1,5 @@
 import {HardwareBusAwareInterface, HardwareBusInterface} from '../Hardware';
+import {toHex} from '../util';
 import {bios} from './Bios';
 
 export interface MemoryInterface {

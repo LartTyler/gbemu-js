@@ -87,7 +87,6 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 			console.log(`${lpad(this.registers.programCount.toString(), 5)}: (${toHex(operator.opcode)}) ${operator.name}`);
 
 		operator.invoke(this.hardware);
-		this.clock.m += this.registers.m;
 
 		this.hardware.gpu.step();
 
@@ -97,14 +96,32 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 			this.halt = false;
 			this.allowInterrupts = false;
 
-			// const interrupts = memory.interruptsEnabled & memory.interruptFlags;
+			const interrupts = memory.interruptsEnabled & memory.interruptFlags;
 
-			let fired = false;
+			if (interrupts & 1) {
+				memory.interruptFlags &= 0xFE;
 
-			// TODO Add interrupt handling
+				PrimaryInstructions.getByName('InterruptJumpTo40').invoke(this.hardware);
+			} else if (interrupts & 2) {
+				memory.interruptFlags &= 0xFD;
 
-			if (!fired)
+				PrimaryInstructions.getByName('InterruptJumpTo48').invoke(this.hardware);
+			} else if (interrupts & 4) {
+				memory.interruptFlags &= 0xFB;
+
+				PrimaryInstructions.getByName('InterruptJumpTo50').invoke(this.hardware);
+			} else if (interrupts & 8) {
+				memory.interruptFlags &= 0xF7;
+
+				PrimaryInstructions.getByName('InterruptJumpTo58').invoke(this.hardware);
+			} else if (interrupts & 16) {
+				memory.interruptFlags &= 0xEF;
+
+				PrimaryInstructions.getByName('InterruptJumpTo60').invoke(this.hardware);
+			} else
 				this.allowInterrupts = true;
+
+			this.clock.m += this.registers.m;
 		}
 	}
 }

@@ -34,6 +34,7 @@ import {MiscOperators} from './Operators/Misc';
 import {PopOperators} from './Operators/Stack/Pop';
 import {PushOperators} from './Operators/Stack/Push';
 import {CallOperators} from './Operators/Subroutine/Call';
+import {InterruptOperators} from './Operators/Subroutine/Interrupt';
 import {ReturnOperators} from './Operators/Subroutine/Return';
 import {SubtractOperators} from './Operators/Subtract';
 
@@ -49,6 +50,7 @@ export const PrimaryInstructions = new InstructionManager([
 	...CompareOperators,
 	...DecrementOperators,
 	...IncrementOperators,
+	...InterruptOperators,
 	...JumpOperators,
 	...JumpRelativeOperators,
 	...LoadOperators,

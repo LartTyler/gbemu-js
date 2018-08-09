@@ -35,6 +35,7 @@ export const ReturnOperators: OperatorInterface[] = [
 
 	new Operator('ReturnInterrupt', 0xD9, hardware => {
 		hardware.cpu.allowInterrupts = true;
+		hardware.registers.restore();
 
 		ret(hardware);
 	}),

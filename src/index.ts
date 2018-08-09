@@ -1,3 +1,4 @@
+import {Application} from './Console';
 import {Cpu} from './Emulator/CPU';
 import {Gpu} from './Emulator/GPU';
 import {HardwareBus} from './Emulator/Hardware';
@@ -11,8 +12,6 @@ const gpu = new Gpu(<HTMLCanvasElement>document.getElementById('screen'));
 const hardware = new HardwareBus(cpu, memory, gpu);
 
 Monitor.attach(document.querySelector('#monitor'), hardware);
-
-cpu.enableLog = true;
 
 const romLoader = <HTMLInputElement>document.getElementById('rom-loader');
 
@@ -28,3 +27,5 @@ romLoader.addEventListener('change', () => {
 
 	memory.load(romLoader.files[0]).then(() => cpu.exec());
 });
+
+export default Application;

@@ -9,7 +9,7 @@ export const toBinary = (value: number, minLength?: number): string => {
 	return bin;
 };
 
-export const toHex = (value: number, minLength?: number): string => {
+export const toHex = (value: number, minLength?: number, prefix: boolean = true): string => {
 	let hex = value.toString(16).toUpperCase();
 
 	if (minLength !== null && hex.length < minLength) {
@@ -17,7 +17,7 @@ export const toHex = (value: number, minLength?: number): string => {
 			hex = '0' + hex;
 	}
 
-	return `0x${hex.toUpperCase()}`;
+	return `${prefix ? '0x' : ''}${hex.toUpperCase()}`;
 };
 
 export const pairTo16Bit = (high: number, low: number): number => {
