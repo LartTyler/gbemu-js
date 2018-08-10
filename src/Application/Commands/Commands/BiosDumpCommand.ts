@@ -1,8 +1,12 @@
-import {BitInstructions, PrimaryInstructions} from '../../Emulator/CPU/InstructionSet';
-import {bios} from '../../Emulator/Memory/Bios';
-import {Command} from '../Console';
+import {BitInstructions, PrimaryInstructions} from '../../../Emulator/CPU/InstructionSet';
+import {bios} from '../../../Emulator/Memory/bios';
+import {Command} from '../Command';
 
-export class DumpBiosCommand implements Command {
+export class BiosDumpCommand implements Command {
+	public getName(): string {
+		return 'bios:dump';
+	}
+
 	public execute(key: 'name' | 'mnemonic' = 'name'): void {
 		let extended = false;
 

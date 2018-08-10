@@ -1,12 +1,12 @@
-import {Gpu} from '../../../../GPU';
+import {Gpu} from '../../../../_GPU';
 import {HardwareBus} from '../../../../Hardware';
-import {Memory} from '../../../../Memory';
+import {Memory} from '../../../../Memory/Memory';
 import {toHex} from '../../../../util';
 import {Cpu} from '../../../index';
 import {PrimaryInstructions} from '../../index';
 import {OperatorInterface} from '../../InstructionManager';
 
-jest.mock('../../../../GPU');
+jest.mock('../../../../_GPU');
 
 describe('Interrupt jump operators', () => {
 	const hardware = new HardwareBus(new Cpu(), new Memory(), new Gpu(null));

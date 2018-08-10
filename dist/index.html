@@ -6,20 +6,7 @@
 	<meta http-equiv="X-UA-Compatible" content="ie=edge">
 	<title>GBEmu-JS</title>
 
-	<style>
-		#device {
-			display: flex;
-		}
-
-		#registers {
-			display: flex;
-			font-family: monospace;
-		}
-
-		#registers > div:not(:first-of-type) {
-			margin-left: 10px;
-		}
-	</style>
+	<link rel="stylesheet" href="index.css">
 </head>
 <body>
 	<div id="device">
@@ -29,33 +16,33 @@
 			<div id="registers">
 				<div>
 					<div class="register">
-						A: <span id="register-a">0</span>
+						A: <span id="register-a">0x00</span>
 					</div>
 
 					<div class="register">
-						B: <span id="register-b">0</span>
+						B: <span id="register-b">0x00</span>
 					</div>
 
 					<div class="register">
-						C: <span id="register-c">0</span>
+						C: <span id="register-c">0x00</span>
 					</div>
 
 					<div class="register">
-						D: <span id="register-d">0</span>
+						D: <span id="register-d">0x00</span>
 					</div>
 				</div>
 
 				<div>
 					<div class="register">
-						E: <span id="register-e">0</span>
+						E: <span id="register-e">0x00</span>
 					</div>
 
 					<div class="register">
-						H: <span id="register-h">0</span>
+						H: <span id="register-h">0x00</span>
 					</div>
 
 					<div class="register">
-						L: <span id="register-l">0</span>
+						L: <span id="register-l">0x00</span>
 					</div>
 
 					<div class="register">
@@ -65,29 +52,48 @@
 
 				<div>
 					<div class="register">
-						M: <span id="register-m">0</span>
+						M: <span id="register-m">0x00</span>
 					</div>
 
 					<div class="register">
-						T: <span id="register-t">0</span>
+						T: <span id="register-t">0x00</span>
 					</div>
 				</div>
 
 				<div>
 					<div class="register">
-						PC: <span id="register-programCount">0</span>
+						PC: <span id="register-programCount">0x0000</span>
 					</div>
 
 					<div class="register">
-						SP: <span id="register-stackPointer">0</span>
+						SP: <span id="register-stackPointer">0x0000</span>
 					</div>
 				</div>
+			</div>
+
+			<div id="instruction-log">
+				<div id="instruction-log-output"></div>
 			</div>
 		</div>
 	</div>
 
 	<div id="controls">
-		<input type="file" id="rom-loader">
+		<div class="form-group">
+			<label for="debug-tick-interval">Tick Interval:</label>
+
+			<input type="number" id="debug-tick-interval" value="1">
+			<button class="btn" id="debug-update-tick-interval-button">Update</button>
+		</div>
+
+		<div class="form-group">
+			<button class="btn" id="debug-pause-button">Pause</button>
+			<button class="btn" id="debug-resume-button">Resume</button>
+			<button class="btn" id="debug-reset-button">Reset</button>
+		</div>
+
+		<div class="form-group">
+			<input type="file" id="rom-loader">
+		</div>
 	</div>
 
 	<script src="./bundle.js"></script>

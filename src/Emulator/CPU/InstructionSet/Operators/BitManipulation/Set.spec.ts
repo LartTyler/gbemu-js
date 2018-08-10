@@ -1,11 +1,11 @@
-import {Gpu} from '../../../../GPU';
+import {Gpu} from '../../../../_GPU';
 import {HardwareBus} from '../../../../Hardware';
-import {Memory} from '../../../../Memory';
+import {Memory} from '../../../../Memory/Memory';
 import {Cpu} from '../../../index';
 import {RegisterKey} from '../../../Registers';
 import {BitInstructions} from '../../index';
 
-jest.mock('../../../../GPU');
+jest.mock('../../../../_GPU');
 
 describe('Bit SET operators', () => {
 	const hardware = new HardwareBus(new Cpu(), new Memory(), new Gpu(null));

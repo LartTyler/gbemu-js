@@ -13,7 +13,7 @@ export const toHex = (value: number, minLength?: number, prefix: boolean = true)
 	let hex = value.toString(16).toUpperCase();
 
 	if (minLength !== null && hex.length < minLength) {
-		for (let i = minLength - hex.length; i < minLength; i++)
+		for (let i = 0, ii = minLength - hex.length; i < ii; i++)
 			hex = '0' + hex;
 	}
 

@@ -1,6 +1,11 @@
+import {Application} from '../../Application';
 import {HardwareBusAwareInterface, HardwareBusInterface} from '../Hardware';
 import {lpad, toHex} from '../util';
 import {Clock, ClockInterface} from './Clock';
+import {CpuAfterInstructionCallEvent} from './Events/CpuAfterInstructionCallEvent';
+import {CpuAfterStepEvent} from './Events/CpuAfterStepEvent';
+import {CpuInstructionCallEvent} from './Events/CpuInstructionCallEvent';
+import {CpuStepEvent} from './Events/CpuStepEvent';
 import {PrimaryInstructions} from './InstructionSet';
 import {RegisterSet, RegisterSetInterface} from './Registers';
 
@@ -29,8 +34,6 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 
 	private hardware: HardwareBusInterface = null;
 	private tickIntervalId: number = null;
-
-	private logLines = 0;
 
 	public constructor() {
 		this.clock = new Clock();
@@ -62,18 +65,20 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 		const frameClock = this.clock.m + 17556;
 
 		do {
+			Application.getEventDispatcher().dispatch(new CpuStepEvent(this));
+
 			this.step();
 
 			if (this.halt || this.stop)
 				return;
-		} while (!this.enableLog && this.clock.m < frameClock);
+		} while (this.tickInterval === 1 && this.clock.m < frameClock);
 
 		this.tickIntervalId = setTimeout(() => this.frame(), this.tickInterval);
 	}
 
 	protected step(): void {
 		const opcode = this.hardware.memory.readByte(this.registers.programCount++);
-		const operator = PrimaryInstructions.getByCode(opcode);
+		let operator = PrimaryInstructions.getByCode(opcode);
 
 		this.registers.programCount &= 65535;
 
@@ -82,6 +87,12 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 
 			throw new Error(`Instruction ${toHex(opcode)} is not implemented (at ${(this.registers.programCount - 1) & 65535})`);
 		}
+
+		const event = new CpuInstructionCallEvent(this, operator);
+
+		Application.getEventDispatcher().dispatch(event);
+
+		operator = event.operator;
 
 		if (this.enableLog)
 			console.log(`${lpad(this.registers.programCount.toString(), 5)}: (${toHex(operator.opcode)}) ${operator.name}`);
@@ -120,8 +131,10 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 				PrimaryInstructions.getByName('InterruptJumpTo60').invoke(this.hardware);
 			} else
 				this.allowInterrupts = true;
-
-			this.clock.m += this.registers.m;
 		}
+
+		this.clock.m += this.registers.m;
+
+		Application.getEventDispatcher().dispatch(new CpuAfterInstructionCallEvent(this, operator));
 	}
 }

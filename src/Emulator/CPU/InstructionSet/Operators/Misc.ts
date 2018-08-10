@@ -1,4 +1,6 @@
+import {Application} from '../../../../Application';
 import {toHex} from '../../../util';
+import {CpuInstructionCallEvent} from '../../Events/CpuInstructionCallEvent';
 import {RegisterFlag} from '../../Registers';
 import {BitInstructions} from '../index';
 import {Operator, OperatorInterface} from '../InstructionManager';
@@ -18,6 +20,8 @@ export const MiscOperators: OperatorInterface[] = [
 		const operator = BitInstructions.getByCode(opcode);
 
 		registers.programCount &= 65535;
+
+		Application.getEventDispatcher().dispatch(new CpuInstructionCallEvent(hardware.cpu, operator));
 
 		if (operator)
 			operator.invoke(hardware);

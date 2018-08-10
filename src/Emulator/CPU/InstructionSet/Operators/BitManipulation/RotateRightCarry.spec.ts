@@ -1,13 +1,13 @@
-import {Gpu} from '../../../../GPU';
+import {Gpu} from '../../../../_GPU';
 import {HardwareBus} from '../../../../Hardware';
-import {Memory} from '../../../../Memory';
+import {Memory} from '../../../../Memory/Memory';
 import {pairFrom16Bit} from '../../../../util';
 import {Cpu} from '../../../index';
 import {RegisterFlag, RegisterKey} from '../../../Registers';
 import {BitInstructions, PrimaryInstructions} from '../../index';
 import {InstructionManagerInterface} from '../../InstructionManager';
 
-jest.mock('../../../../GPU');
+jest.mock('../../../../_GPU');
 
 describe('RotateRightCarry operators', () => {
 	const hardware = new HardwareBus(new Cpu(), new Memory(), new Gpu(null));

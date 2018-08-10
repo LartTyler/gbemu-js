@@ -1,11 +1,11 @@
-import {Gpu} from '../../../GPU';
+import {Gpu} from '../../../_GPU';
 import {HardwareBus} from '../../../Hardware';
-import {Memory} from '../../../Memory';
+import {Memory} from '../../../Memory/Memory';
 import {Cpu} from '../../index';
 import {RegisterKey} from '../../Registers';
 import {PrimaryInstructions} from '../index';
 
-jest.mock('../../../GPU');
+jest.mock('../../../_GPU');
 
 describe('Load Operators', () => {
 	const hardware = new HardwareBus(new Cpu(), new Memory(), new Gpu(null));
@@ -402,43 +402,6 @@ describe('Load Operators', () => {
 		expect(registers.m).toBe(2);
 	});
 	// endregion
-
-	// region Load using Uint8
-	test('LoadPCAddress8IntoA', () => {
-		const operator = PrimaryInstructions.getByCode(0xF0);
-
-		expect(operator).not.toBeNull();
-		expect(operator.name).toBe('LoadPCAddress8IntoA');
-
-		registers.a = 1;
-		registers.programCount = 0xFE;
-		memory.bios[0xFE] = 0x80; // directly set the memory value we'll need, since we can't write that low
-		memory.writeByte(0xFF80, 3);
-
-		operator.invoke(hardware);
-
-		expect(registers.a).toBe(3);
-		expect(registers.programCount).toBe(0xFF);
-		expect(registers.m).toBe(3);
-	});
-
-	test('LoadAIntoPCAddress8', () => {
-		const operator = PrimaryInstructions.getByCode(0xE0);
-
-		expect(operator).not.toBeNull();
-		expect(operator.name).toBe('LoadAIntoPCAddress8');
-
-		registers.a = 3;
-		registers.programCount = 0xFE;
-		memory.bios[0xFE] = 0x80;
-		memory.writeByte(0xFF80, 1);
-
-		operator.invoke(hardware);
-
-		expect(memory.readByte(0xFF80)).toBe(3);
-		expect(registers.programCount).toBe(0xFF);
-		expect(registers.m).toBe(3);
-	});
 
 	test('LoadCAddress8IntoA', () => {
 		const operator = PrimaryInstructions.getByCode(0xF2);
