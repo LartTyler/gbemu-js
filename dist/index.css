@@ -1,0 +1,46 @@
+body {
+    font-family: sans-serif;
+}
+
+#device {
+    display: flex;
+    font-family: monospace;
+}
+
+#monitor {
+    display: flex;
+}
+
+#registers {
+    display: flex;
+}
+
+#registers > div:not(:first-of-type) {
+    margin-left: 10px;
+}
+
+#instruction-log-output {
+    height: 200px;
+    width: 500px;
+    overflow: scroll;
+    margin-left: 25px;
+}
+
+.form-group {
+    margin-bottom: 10px;
+}
+
+label {
+    display: block;
+}
+
+.btn {
+    display: inline-block;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

@@ -63,8 +63,7 @@ typings/
 /.idea
 
 # Build files
-/dist
-!/dist/index.html
+/dist/bundle.js*
 
 # Local testing / development files
 /.local
