@@ -19,9 +19,22 @@ body {
     margin-left: 10px;
 }
 
+#instruction-log-headers > div {
+    display: inline-block;
+}
+
+#instruction-log-headers > .il-header-pc {
+    width: 130px;
+    text-align: right;
+}
+
+#instruction-log-headers > .il-header-opcode {
+    width: 155px;
+}
+
 #instruction-log-output {
     height: 200px;
-    width: 500px;
+    width: 600px;
     overflow: scroll;
     margin-left: 25px;
 }
