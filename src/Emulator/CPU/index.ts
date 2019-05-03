@@ -3,7 +3,6 @@ import {HardwareBusAwareInterface, HardwareBusInterface} from '../Hardware';
 import {lpad, toHex} from '../util';
 import {Clock, ClockInterface} from './Clock';
 import {CpuAfterInstructionCallEvent} from './Events/CpuAfterInstructionCallEvent';
-import {CpuAfterStepEvent} from './Events/CpuAfterStepEvent';
 import {CpuInstructionCallEvent} from './Events/CpuInstructionCallEvent';
 import {CpuStepEvent} from './Events/CpuStepEvent';
 import {PrimaryInstructions} from './InstructionSet';
@@ -19,6 +18,7 @@ export interface CpuInterface {
 	stop: boolean;
 
 	exec(): void;
+	step(): void;
 	reset(): void;
 }
 
@@ -65,8 +65,6 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 		const frameClock = this.clock.m + 17556;
 
 		do {
-			Application.getEventDispatcher().dispatch(new CpuStepEvent(this));
-
 			this.step();
 
 			if (this.halt || this.stop)
@@ -76,7 +74,9 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 		this.tickIntervalId = setTimeout(() => this.frame(), this.tickInterval);
 	}
 
-	protected step(): void {
+	public step(): void {
+		Application.getEventDispatcher().dispatch(new CpuStepEvent(this));
+
 		const opcode = this.hardware.memory.readByte(this.registers.programCount++);
 		let operator = PrimaryInstructions.getByCode(opcode);
 
@@ -95,7 +95,10 @@ export class Cpu implements CpuInterface, HardwareBusAwareInterface {
 		operator = event.operator;
 
 		if (this.enableLog)
-			console.log(`${lpad(this.registers.programCount.toString(), 5)}: (${toHex(operator.opcode)}) ${operator.name}`);
+			console.log(`${lpad(
+				this.registers.programCount.toString(),
+				5,
+			)}: (${toHex(operator.opcode)}) ${operator.name}`);
 
 		operator.invoke(this.hardware);
 

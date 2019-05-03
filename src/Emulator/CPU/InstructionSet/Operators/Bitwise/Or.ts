@@ -40,6 +40,6 @@ export const OrOperators: OperatorInterface[] = [
 
 		orAddress((registers.h << 8) + registers.l, hardware);
 	}),
-	new Operator('OrPCAddress', 0xF6, hardware => orAddress(hardware.registers.programCount++, hardware)),
+	new Operator('OrPCAddress', 0xF6, hardware => orAddress(hardware.registers.programCount++, hardware), null, 2),
 	// endregion
 ];

@@ -30,9 +30,9 @@ export const JumpOperators: OperatorInterface[] = [
 		registers.m = 1;
 	}),
 
-	new Operator('JumpIfZeroReset', 0xC2, hardware => jumpIf(!testZero(hardware), hardware)),
-	new Operator('JumpIfZeroSet', 0xCA, hardware => jumpIf(testZero(hardware), hardware)),
+	new Operator('JumpIfZeroReset', 0xC2, hardware => jumpIf(!testZero(hardware), hardware), null, 3),
+	new Operator('JumpIfZeroSet', 0xCA, hardware => jumpIf(testZero(hardware), hardware), null, 3),
 
-	new Operator('JumpIfCarryReset', 0xD2, hardware => jumpIf(!testCarry(hardware), hardware)),
-	new Operator('JumpIfCarrySet', 0xDA, hardware => jumpIf(testCarry(hardware), hardware)),
+	new Operator('JumpIfCarryReset', 0xD2, hardware => jumpIf(!testCarry(hardware), hardware), null, 3),
+	new Operator('JumpIfCarrySet', 0xDA, hardware => jumpIf(testCarry(hardware), hardware), null, 3),
 ];

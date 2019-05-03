@@ -26,7 +26,7 @@ romLoader.addEventListener('change', () => {
 	if (!romLoader.files.length)
 		return;
 
-	memory.load(romLoader.files[0]).then(() => cpu.exec());
+	memory.load(romLoader.files[0]);
 });
 
 new DebugControls(hardware);

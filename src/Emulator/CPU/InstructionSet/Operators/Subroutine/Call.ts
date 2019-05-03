@@ -26,11 +26,11 @@ const callIf = (condition: boolean, hardware: HardwareBusInterface): void => {
 };
 
 export const CallOperators: OperatorInterface[] = [
-	new Operator('Call', 0xCD, hardware => call(hardware)),
+	new Operator('Call', 0xCD, hardware => call(hardware), null, 3),
 
-	new Operator('CallIfZeroReset', 0xC4, hardware => callIf(!testZero(hardware), hardware)),
-	new Operator('CallIfZeroSet', 0xCC, hardware => callIf(testZero(hardware), hardware)),
+	new Operator('CallIfZeroReset', 0xC4, hardware => callIf(!testZero(hardware), hardware), null, 3),
+	new Operator('CallIfZeroSet', 0xCC, hardware => callIf(testZero(hardware), hardware), null, 3),
 
-	new Operator('CallIfCarryReset', 0xD4, hardware => callIf(!testCarry(hardware), hardware)),
-	new Operator('CallIfCarrySet', 0xDC, hardware => callIf(testCarry(hardware), hardware)),
+	new Operator('CallIfCarryReset', 0xD4, hardware => callIf(!testCarry(hardware), hardware), null, 3),
+	new Operator('CallIfCarrySet', 0xDC, hardware => callIf(testCarry(hardware), hardware), null, 3),
 ];

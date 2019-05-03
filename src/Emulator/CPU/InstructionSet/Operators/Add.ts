@@ -118,7 +118,13 @@ export const AddOperators: OperatorInterface[] = [
 
 		addAddress((registers.h << 8) + registers.l, hardware);
 	}, 'ADD a, (hl)'),
-	new Operator('AddPCAddress', 0xC6, hardware => addAddress(hardware.registers.programCount++, hardware), 'ADD a, (pc)'),
+	new Operator(
+		'AddPCAddress',
+		0xC6,
+		hardware => addAddress(hardware.registers.programCount++, hardware),
+		'ADD a, (pc)',
+		2,
+	),
 	// endregion
 
 	// region Add register pair to HL pair
@@ -153,7 +159,7 @@ export const AddOperators: OperatorInterface[] = [
 
 		registers.stackPointer += value;
 		registers.m = 4;
-	}, 'ADD sp, pc'),
+	}, 'ADD sp, pc', 2),
 
 	// region Add register to A with carry
 	new Operator('AddAWithCarry', 0x8F, hardware => addWithCarry('a', hardware), 'ADC a, a'),
@@ -166,7 +172,13 @@ export const AddOperators: OperatorInterface[] = [
 	// endregion
 
 	// region Add address to A with carry
-	new Operator('AddPCAddressWithCarry', 0xCE, hardware => addAddressWithCarry(hardware.registers.programCount++, hardware), 'ADC a, (pc)'),
+	new Operator(
+		'AddPCAddressWithCarry',
+		0xCE,
+		hardware => addAddressWithCarry(hardware.registers.programCount++, hardware),
+		'ADC a, (pc)',
+		2
+	),
 	new Operator('AddHLAddressWithCarry', 0x8E, hardware => {
 		const registers = hardware.registers;
 

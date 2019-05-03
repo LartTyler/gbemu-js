@@ -2,7 +2,11 @@ import {HardwareBusInterface} from '../../../Hardware';
 import {RegisterKey} from '../../Registers';
 import {Operator, OperatorInterface} from '../InstructionManager';
 
-const loadRegisterIntoRegister = (source: RegisterKey, destination: RegisterKey, hardware: HardwareBusInterface): void => {
+const loadRegisterIntoRegister = (
+	source: RegisterKey,
+	destination: RegisterKey,
+	hardware: HardwareBusInterface,
+): void => {
 	const registers = hardware.registers;
 
 	registers[destination] = registers[source];
@@ -18,7 +22,12 @@ const loadAddressIntoRegister = (address: number, destination: RegisterKey, hard
 	registers.m = 2;
 };
 
-const loadPairAddressIntoRegister = (high: RegisterKey, low: RegisterKey, destination: RegisterKey, hardware: HardwareBusInterface): void => {
+const loadPairAddressIntoRegister = (
+	high: RegisterKey,
+	low: RegisterKey,
+	destination: RegisterKey,
+	hardware: HardwareBusInterface,
+): void => {
 	const registers = hardware.registers;
 
 	loadAddressIntoRegister((registers[high] << 8) + registers[low], destination, hardware);
@@ -32,13 +41,23 @@ const loadRegisterIntoAddress = (address: number, source: RegisterKey, hardware:
 	registers.m = 2;
 };
 
-const loadRegisterIntoPairAddress = (source: RegisterKey, high: RegisterKey, low: RegisterKey, hardware: HardwareBusInterface): void => {
+const loadRegisterIntoPairAddress = (
+	source: RegisterKey,
+	high: RegisterKey,
+	low: RegisterKey,
+	hardware: HardwareBusInterface,
+): void => {
 	const registers = hardware.registers;
 
 	loadRegisterIntoAddress((registers[high] << 8) + registers[low], source, hardware);
 };
 
-const loadAddressWordIntoPair = (address: number, high: RegisterKey, low: RegisterKey, hardware: HardwareBusInterface): void => {
+const loadAddressWordIntoPair = (
+	address: number,
+	high: RegisterKey,
+	low: RegisterKey,
+	hardware: HardwareBusInterface,
+): void => {
 	const {memory, registers} = hardware;
 
 	registers[low] = memory.readByte(address);
@@ -64,7 +83,13 @@ export const LoadOperators: OperatorInterface[] = [
 	new Operator('LoadRegisterHIntoA', 0x7C, hardware => loadRegisterIntoRegister('h', 'a', hardware), 'LD a, h'),
 	new Operator('LoadRegisterLIntoA', 0x7D, hardware => loadRegisterIntoRegister('l', 'a', hardware), 'LD a, l'),
 	new Operator('LoadRegisterAIntoA', 0x7F, hardware => loadRegisterIntoRegister('a', 'a', hardware), 'LD a, a'),
-	new Operator('LoadPCAddressIntoA', 0x3E, hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'a', hardware), 'LD a, (pc)'),
+	new Operator(
+		'LoadPCAddressIntoA',
+		0x3E,
+		hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'a', hardware),
+		'LD a, (pc)',
+		2,
+	),
 	new Operator('LoadHLAddressIntoA', 0x7E, hardware => {
 		const registers = hardware.registers;
 
@@ -78,7 +103,13 @@ export const LoadOperators: OperatorInterface[] = [
 	new Operator('LoadRegisterHIntoB', 0x44, hardware => loadRegisterIntoRegister('h', 'b', hardware), 'LD b, h'),
 	new Operator('LoadRegisterLIntoB', 0x45, hardware => loadRegisterIntoRegister('l', 'b', hardware), 'LD b, l'),
 	new Operator('LoadRegisterAIntoB', 0x47, hardware => loadRegisterIntoRegister('a', 'b', hardware), 'LD b, a'),
-	new Operator('LoadPCAddressIntoB', 0x06, hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'b', hardware), 'LD b, (pc)'),
+	new Operator(
+		'LoadPCAddressIntoB',
+		0x06,
+		hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'b', hardware),
+		'LD b, (pc)',
+		2,
+	),
 	new Operator('LoadHLAddressIntoB', 0x46, hardware => {
 		const registers = hardware.registers;
 
@@ -92,7 +123,13 @@ export const LoadOperators: OperatorInterface[] = [
 	new Operator('LoadRegisterHIntoC', 0x4C, hardware => loadRegisterIntoRegister('h', 'c', hardware), 'LD c, h'),
 	new Operator('LoadRegisterLIntoC', 0x4D, hardware => loadRegisterIntoRegister('l', 'c', hardware), 'LD c, l'),
 	new Operator('LoadRegisterAIntoC', 0x4F, hardware => loadRegisterIntoRegister('a', 'c', hardware), 'LD c, a'),
-	new Operator('LoadPCAddressIntoC', 0x0E, hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'c', hardware), 'LD c, (pc)'),
+	new Operator(
+		'LoadPCAddressIntoC',
+		0x0E,
+		hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'c', hardware),
+		'LD c, (pc)',
+		2,
+	),
 	new Operator('LoadHLAddressIntoC', 0x4E, hardware => {
 		const registers = hardware.registers;
 
@@ -106,7 +143,13 @@ export const LoadOperators: OperatorInterface[] = [
 	new Operator('LoadRegisterHIntoD', 0x54, hardware => loadRegisterIntoRegister('h', 'd', hardware), 'LD d, h'),
 	new Operator('LoadRegisterLIntoD', 0x55, hardware => loadRegisterIntoRegister('l', 'd', hardware), 'LD d, l'),
 	new Operator('LoadRegisterAIntoD', 0x57, hardware => loadRegisterIntoRegister('a', 'd', hardware), 'LD d, a'),
-	new Operator('LoadPCAddressIntoD', 0x16, hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'd', hardware), 'LD d, (pc)'),
+	new Operator(
+		'LoadPCAddressIntoD',
+		0x16,
+		hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'd', hardware),
+		'LD d, (pc)',
+		2,
+	),
 	new Operator('LoadHLAddressIntoD', 0x56, hardware => {
 		const registers = hardware.registers;
 
@@ -120,7 +163,13 @@ export const LoadOperators: OperatorInterface[] = [
 	new Operator('LoadRegisterHIntoE', 0x5C, hardware => loadRegisterIntoRegister('h', 'e', hardware), 'LD e, h'),
 	new Operator('LoadRegisterLIntoE', 0x5D, hardware => loadRegisterIntoRegister('l', 'e', hardware), 'LD e, l'),
 	new Operator('LoadRegisterAIntoE', 0x5F, hardware => loadRegisterIntoRegister('a', 'e', hardware), 'LD e, a'),
-	new Operator('LoadPCAddressIntoE', 0x1E, hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'e', hardware), 'LD e, (pc)'),
+	new Operator(
+		'LoadPCAddressIntoE',
+		0x1E,
+		hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'e', hardware),
+		'LD e, (pc)',
+		2,
+	),
 	new Operator('LoadHLAddressIntoE', 0x5E, hardware => {
 		const registers = hardware.registers;
 
@@ -134,7 +183,13 @@ export const LoadOperators: OperatorInterface[] = [
 	new Operator('LoadRegisterHIntoH', 0x64, hardware => loadRegisterIntoRegister('h', 'h', hardware), 'LD h, h'),
 	new Operator('LoadRegisterLIntoH', 0x65, hardware => loadRegisterIntoRegister('l', 'h', hardware), 'LD h, l'),
 	new Operator('LoadRegisterAIntoH', 0x67, hardware => loadRegisterIntoRegister('a', 'h', hardware), 'LD h, a'),
-	new Operator('LoadPCAddressIntoH', 0x26, hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'h', hardware), 'LD h, (pc)'),
+	new Operator(
+		'LoadPCAddressIntoH',
+		0x26,
+		hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'h', hardware),
+		'LD h, (pc)',
+		2,
+	),
 	new Operator('LoadHLAddressIntoH', 0x66, hardware => {
 		const registers = hardware.registers;
 
@@ -148,32 +203,111 @@ export const LoadOperators: OperatorInterface[] = [
 	new Operator('LoadRegisterHIntoL', 0x6C, hardware => loadRegisterIntoRegister('h', 'l', hardware), 'LD l, h'),
 	new Operator('LoadRegisterLIntoL', 0x6D, hardware => loadRegisterIntoRegister('l', 'l', hardware), 'LD l, l'),
 	new Operator('LoadRegisterAIntoL', 0x6F, hardware => loadRegisterIntoRegister('a', 'l', hardware), 'LD l, a'),
-	new Operator('LoadPCAddressIntoL', 0x2E, hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'l', hardware), 'LD l, (pc)'),
+	new Operator(
+		'LoadPCAddressIntoL',
+		0x2E,
+		hardware => loadAddressIntoRegister(hardware.registers.programCount++, 'l', hardware),
+		'LD l, (pc)',
+		2,
+	),
 	new Operator('LoadHLAddressIntoL', 0x6E, hardware => {
 		const registers = hardware.registers;
 
 		loadAddressIntoRegister((registers.h << 8) + registers.l, 'l', hardware);
 	}, 'LD l, (hl)'),
 
-	new Operator('LoadBCAddressIntoA', 0x0A, hardware => loadPairAddressIntoRegister('b', 'c', 'a', hardware), 'LD a, (bc)'),
-	new Operator('LoadDEAddressIntoA', 0x1A, hardware => loadPairAddressIntoRegister('d', 'e', 'a', hardware), 'LD a, (de)'),
+	new Operator(
+		'LoadBCAddressIntoA',
+		0x0A,
+		hardware => loadPairAddressIntoRegister('b', 'c', 'a', hardware),
+		'LD a, (bc)',
+	),
+	new Operator(
+		'LoadDEAddressIntoA',
+		0x1A,
+		hardware => loadPairAddressIntoRegister('d', 'e', 'a', hardware),
+		'LD a, (de)',
+	),
 
-	new Operator('LoadPCAddressWordIntoBCPair', 0x01, hardware => loadPCAddressWordIntoPair('b', 'c', hardware), 'LD bc, (pc)'),
-	new Operator('LoadPCAddressWordIntoDEPair', 0x11, hardware => loadPCAddressWordIntoPair('d', 'e', hardware), 'LD de, (pc)'),
-	new Operator('LoadPCAddressWordIntoHLPair', 0x21, hardware => loadPCAddressWordIntoPair('h', 'l', hardware), 'LD hl, (pc)'),
+	new Operator(
+		'LoadPCAddressWordIntoBCPair',
+		0x01,
+		hardware => loadPCAddressWordIntoPair('b', 'c', hardware),
+		'LD bc, (pc)',
+		3,
+	),
+	new Operator(
+		'LoadPCAddressWordIntoDEPair',
+		0x11,
+		hardware => loadPCAddressWordIntoPair('d', 'e', hardware),
+		'LD de, (pc)',
+		3,
+	),
+	new Operator(
+		'LoadPCAddressWordIntoHLPair',
+		0x21,
+		hardware => loadPCAddressWordIntoPair('h', 'l', hardware),
+		'LD hl, (pc)',
+		3,
+	),
 	// endregion
 
 	// region Load registers into memory
-	new Operator('LoadAIntoHLAddress', 0x77, hardware => loadRegisterIntoPairAddress('a', 'h', 'l', hardware), 'LD (hl), a'),
-	new Operator('LoadBIntoHLAddress', 0x70, hardware => loadRegisterIntoPairAddress('b', 'h', 'l', hardware), 'LD (hl), b'),
-	new Operator('LoadCIntoHLAddress', 0x71, hardware => loadRegisterIntoPairAddress('c', 'h', 'l', hardware), 'LD (hl), c'),
-	new Operator('LoadDIntoHLAddress', 0x72, hardware => loadRegisterIntoPairAddress('d', 'h', 'l', hardware), 'LD (hl), d'),
-	new Operator('LoadEIntoHLAddress', 0x73, hardware => loadRegisterIntoPairAddress('e', 'h', 'l', hardware), 'LD (hl), e'),
-	new Operator('LoadHIntoHLAddress', 0x74, hardware => loadRegisterIntoPairAddress('h', 'h', 'l', hardware), 'LD (hl), h'),
-	new Operator('LoadLIntoHLAddress', 0x75, hardware => loadRegisterIntoPairAddress('l', 'h', 'l', hardware), 'LD (hl), l'),
+	new Operator(
+		'LoadAIntoHLAddress',
+		0x77,
+		hardware => loadRegisterIntoPairAddress('a', 'h', 'l', hardware),
+		'LD (hl), a',
+	),
+	new Operator(
+		'LoadBIntoHLAddress',
+		0x70,
+		hardware => loadRegisterIntoPairAddress('b', 'h', 'l', hardware),
+		'LD (hl), b',
+	),
+	new Operator(
+		'LoadCIntoHLAddress',
+		0x71,
+		hardware => loadRegisterIntoPairAddress('c', 'h', 'l', hardware),
+		'LD (hl), c',
+	),
+	new Operator(
+		'LoadDIntoHLAddress',
+		0x72,
+		hardware => loadRegisterIntoPairAddress('d', 'h', 'l', hardware),
+		'LD (hl), d',
+	),
+	new Operator(
+		'LoadEIntoHLAddress',
+		0x73,
+		hardware => loadRegisterIntoPairAddress('e', 'h', 'l', hardware),
+		'LD (hl), e',
+	),
+	new Operator(
+		'LoadHIntoHLAddress',
+		0x74,
+		hardware => loadRegisterIntoPairAddress('h', 'h', 'l', hardware),
+		'LD (hl), h',
+	),
+	new Operator(
+		'LoadLIntoHLAddress',
+		0x75,
+		hardware => loadRegisterIntoPairAddress('l', 'h', 'l', hardware),
+		'LD (hl), l',
+	),
 
-	new Operator('LoadAIntoBCAddress', 0x02, hardware => loadRegisterIntoPairAddress('a', 'b', 'c', hardware), 'LD (bc), a'),
-	new Operator('LoadAIntoDEAddress', 0x12, hardware => loadRegisterIntoPairAddress('a', 'd', 'e', hardware), 'LD (de), a'),
+	new Operator(
+		'LoadAIntoBCAddress',
+		0x02,
+		hardware => loadRegisterIntoPairAddress('a', 'b', 'c', hardware),
+		'LD (bc), a',
+	),
+	new Operator(
+		'LoadAIntoDEAddress',
+		0x12,
+		hardware => loadRegisterIntoPairAddress('a', 'd', 'e', hardware),
+		'LD (de), a',
+	),
 	// endregion
 
 	// region Load and increment
@@ -237,14 +371,14 @@ export const LoadOperators: OperatorInterface[] = [
 		registers.a = memory.readByte(0xFF00 + memory.readByte(registers.programCount++));
 
 		registers.m = 3;
-	}, 'LDH a, $FF00+(pc)'),
+	}, 'LDH a, $FF00+(pc)', 2),
 	new Operator('LoadAIntoPCAddress8', 0xE0, hardware => {
 		const {memory, registers} = hardware;
 
 		memory.writeByte(0xFF00 + memory.readByte(registers.programCount++), registers.a);
 
 		registers.m = 3;
-	}, 'LDH $FF00+(pc), a'),
+	}, 'LDH $FF00+(pc), a', 2),
 	new Operator('LoadCAddress8IntoA', 0xF2, hardware => {
 		const registers = hardware.registers;
 
@@ -273,7 +407,7 @@ export const LoadOperators: OperatorInterface[] = [
 		registers.l = value & 255;
 
 		registers.m = 3;
-	}, 'LDH sp, hl'),
+	}, 'LDH sp, hl', 2),
 	// endregion
 
 	new Operator('LoadPCAddressIntoHLAddress', 0x36, hardware => {
@@ -282,7 +416,7 @@ export const LoadOperators: OperatorInterface[] = [
 		memory.writeByte((registers.h << 8) + registers.l, memory.readByte(registers.programCount++));
 
 		registers.m = 3;
-	}, 'LD (hl), (pc)'),
+	}, 'LD (hl), (pc)', 2),
 
 	new Operator('LoadAIntoPCAddress16', 0xEA, hardware => {
 		const {memory, registers} = hardware;
@@ -291,7 +425,7 @@ export const LoadOperators: OperatorInterface[] = [
 
 		registers.programCount += 2;
 		registers.m = 4;
-	}),
+	}, null, 3),
 	new Operator('LoadPCAddress16IntoA', 0xFA, hardware => {
 		const {memory, registers} = hardware;
 
@@ -299,7 +433,7 @@ export const LoadOperators: OperatorInterface[] = [
 
 		registers.programCount += 2;
 		registers.m = 4;
-	}),
+	}, null, 3),
 
 	new Operator('LoadPCAddressWordIntoSP', 0x31, hardware => {
 		const registers = hardware.registers;
@@ -308,5 +442,5 @@ export const LoadOperators: OperatorInterface[] = [
 
 		registers.programCount += 2;
 		registers.m = 3;
-	}),
+	}, null, 3),
 ];

@@ -40,6 +40,12 @@ export const AndOperators: OperatorInterface[] = [
 
 		andAddress((registers.h << 8) + registers.l, hardware);
 	}, 'AND a, (hl)'),
-	new Operator('AndPCAddress', 0xE6, hardware => andAddress(hardware.registers.programCount++, hardware), 'AND a, (pc)'),
+	new Operator(
+		'AndPCAddress',
+		0xE6,
+		hardware => andAddress(hardware.registers.programCount++, hardware),
+		'AND a, (pc)',
+		2,
+	),
 	// endregion
 ];

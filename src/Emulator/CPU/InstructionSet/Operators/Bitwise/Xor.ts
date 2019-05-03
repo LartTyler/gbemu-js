@@ -41,6 +41,6 @@ export const XorOperators: OperatorInterface[] = [
 
 		xorAddress(pairTo16Bit(registers.h, registers.l), hardware);
 	}),
-	new Operator('XorPCAddress', 0xEE, hardware => xorAddress(hardware.registers.programCount++, hardware)),
+	new Operator('XorPCAddress', 0xEE, hardware => xorAddress(hardware.registers.programCount++, hardware), null, 2),
 	// endregion
 ];

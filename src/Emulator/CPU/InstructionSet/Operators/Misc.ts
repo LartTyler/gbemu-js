@@ -8,7 +8,7 @@ import {Operator, OperatorInterface} from '../InstructionManager';
 export const MiscOperators: OperatorInterface[] = [
 	new Operator('Noop', 0x00, hardware => {
 		hardware.registers.m = 1;
-	}),
+	}, 'NOP'),
 	new Operator('Halt', 0x76, hardware => {
 		hardware.cpu.halt = true;
 		hardware.registers.m = 1;
@@ -27,7 +27,7 @@ export const MiscOperators: OperatorInterface[] = [
 			operator.invoke(hardware);
 		else
 			throw new Error(`Bit instruction ${toHex(opcode)} is not implemented (at ${(registers.programCount - 1) & 65535})`);
-	}),
+	}, null, 1),
 	new Operator('DecimalAdjust', 0x27, hardware => {
 		const registers = hardware.registers;
 

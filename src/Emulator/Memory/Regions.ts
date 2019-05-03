@@ -84,30 +84,6 @@ export const MemoryRegionMap: RegionMap = {
 	[MemoryRegion.JOYPAD]: [
 		0xFF00,
 	],
-	[MemoryRegion.TIMER]: [
-		{
-			start: 0xFF04,
-			end: 0xFF07,
-		},
-	],
-	[MemoryRegion.GPU]: [
-		0xFF40,
-		{
-			start: 0xFF42,
-			end: 0xFF43,
-		},
-		{
-			start: 0xFF47,
-			end: 0xFF4B,
-		},
-	],
-	[MemoryRegion.LCD]: [
-		0xFF41,
-		{
-			start: 0xFF44,
-			end: 0xFF45,
-		},
-	],
 	[MemoryRegion.IO]: [
 		{
 			start: 0xFF00,

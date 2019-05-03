@@ -79,6 +79,7 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 				if (this.biosEnabled)
 					return this.bios[address];
 
+			// noinspection FallThroughInSwitchStatementJS
 			case MemoryRegion.CART:
 				return this.cart.readByte(address);
 
@@ -99,15 +100,6 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 
 			case MemoryRegion.JOYPAD:
 				return this.joypad.readByte(address);
-
-			case MemoryRegion.TIMER:
-				throw new Error('Timer not yet implemented');
-
-			case MemoryRegion.GPU:
-				return this.gpu.readByte(address);
-
-			case MemoryRegion.LCD:
-				throw new Error('LCD not yet implemented');
 
 			case MemoryRegion.IO:
 				return this.ioRam[address & 0xFF];
@@ -163,17 +155,6 @@ export class Memory implements MemoryInterface, HardwareBusAwareInterface {
 				this.joypad.writeByte(address, value);
 
 				break;
-
-			case MemoryRegion.TIMER:
-				throw new Error('Timer not yet implemented');
-
-			case MemoryRegion.GPU:
-				this.gpu.writeByte(address, value);
-
-				break;
-
-			case MemoryRegion.LCD:
-				throw new Error('LCD not yet implemented');
 
 			case MemoryRegion.IO:
 				this.ioRam[address & 0xFF] = value;

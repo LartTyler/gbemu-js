@@ -39,3 +39,12 @@ export const lpad = (string: string, length: number, padChar: string = ' '): str
 
 	return string;
 };
+
+export const rpad = (string: string, length: number, char: string = ' '): string => {
+	if (string.length < length) {
+		for (let i = 0, ii = length - string.length; i < ii; i++)
+			string += char;
+	}
+
+	return string;
+};

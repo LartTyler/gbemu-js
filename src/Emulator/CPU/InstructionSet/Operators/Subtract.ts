@@ -91,7 +91,13 @@ export const SubtractOperators: OperatorInterface[] = [
 
 		subtractAddress((registers.h << 8) + registers.l, hardware);
 	}),
-	new Operator('SubtractPCAddress', 0xD6, hardware => subtractAddress(hardware.registers.programCount++, hardware)),
+	new Operator(
+		'SubtractPCAddress',
+		0xD6,
+		hardware => subtractAddress(hardware.registers.programCount++, hardware),
+		null,
+		2,
+	),
 	// endregion
 
 	// region Subtract register with carry
@@ -113,6 +119,6 @@ export const SubtractOperators: OperatorInterface[] = [
 
 	new Operator('SubtractPCAddressWithCarry', 0xDE, hardware => {
 		subtractAddressWithCarry(hardware.registers.programCount++, hardware);
-	}),
+	}, null, 2),
 	// endregion
 ];

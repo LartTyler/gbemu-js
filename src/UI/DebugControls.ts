@@ -7,13 +7,17 @@ export class DebugControls {
 	public constructor(hardware: HardwareBusInterface) {
 		this.hardware = hardware;
 
-		const pauseButton = <HTMLButtonElement>document.getElementById('debug-pause-button');
-		pauseButton.addEventListener('click', () => this.hardware.cpu.halt = true);
+		const toggleRunButton = <HTMLButtonElement>document.getElementById('debug-pause-button');
+		toggleRunButton.addEventListener('click', () => {
+			this.hardware.cpu.halt = !this.hardware.cpu.halt;
 
-		const resumeButton = <HTMLButtonElement>document.getElementById('debug-resume-button');
-		resumeButton.addEventListener('click', () => {
 			if (this.hardware.cpu.halt)
+				toggleRunButton.textContent = 'Start';
+			else {
+				toggleRunButton.textContent = 'Pause';
+
 				this.hardware.cpu.exec();
+			}
 		});
 
 		const cpu = hardware.cpu;
@@ -23,6 +27,7 @@ export class DebugControls {
 			const tickUpdateInput = <HTMLInputElement>document.getElementById('debug-tick-interval');
 
 			tickUpdateInput.value = localStorage.getItem('debug_cpu_tick_rate') || '1';
+			cpu.tickInterval = parseInt(tickUpdateInput.value);
 
 			tickUpdateButton.addEventListener('click', () => {
 				const tickRate = parseInt(tickUpdateInput.value, 10);
@@ -40,6 +45,13 @@ export class DebugControls {
 			hardware.reset();
 
 			hardware.cpu.exec();
+		});
+
+		const stepButton = <HTMLButtonElement>document.getElementById('debug-step-button');
+		stepButton.addEventListener('click', () => {
+			this.hardware.cpu.halt = true;
+
+			cpu.step();
 		});
 	}
 }

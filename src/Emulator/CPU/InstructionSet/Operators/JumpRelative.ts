@@ -27,11 +27,11 @@ const jumpIf = (condition: boolean, hardware: HardwareBusInterface): void => {
 };
 
 export const JumpRelativeOperators: OperatorInterface[] = [
-	new Operator('JumpRelative', 0x18, hardware => jumpIf(true, hardware)),
+	new Operator('JumpRelative', 0x18, hardware => jumpIf(true, hardware), null, 2),
 
-	new Operator('JumpRelativeIfZeroReset', 0x20, hardware => jumpIf(!testZero(hardware), hardware)),
-	new Operator('JumpRelativeIfZeroSet', 0x28, hardware => jumpIf(testZero(hardware), hardware)),
+	new Operator('JumpRelativeIfZeroReset', 0x20, hardware => jumpIf(!testZero(hardware), hardware), null, 2),
+	new Operator('JumpRelativeIfZeroSet', 0x28, hardware => jumpIf(testZero(hardware), hardware), null, 2),
 
-	new Operator('JumpRelativeIfCarryReset', 0x30, hardware => jumpIf(!testCarry(hardware), hardware)),
-	new Operator('JumpRelativeIfCarrySet', 0x38, hardware => jumpIf(testCarry(hardware), hardware)),
+	new Operator('JumpRelativeIfCarryReset', 0x30, hardware => jumpIf(!testCarry(hardware), hardware), null, 2),
+	new Operator('JumpRelativeIfCarrySet', 0x38, hardware => jumpIf(testCarry(hardware), hardware), null, 2),
 ];

@@ -11,8 +11,8 @@ const pop = (high: RegisterKey, low: RegisterKey, hardware: HardwareBusInterface
 };
 
 export const PopOperators: OperatorInterface[] = [
-	new Operator('PopBC', 0xC1, hardware => pop('b', 'c', hardware)),
-	new Operator('PopDE', 0xD1, hardware => pop('d', 'e', hardware)),
-	new Operator('PopHL', 0xE1, hardware => pop('h', 'l', hardware)),
-	new Operator('PopAF', 0xF1, hardware => pop('a', 'flags', hardware)),
+	new Operator('PopBC', 0xC1, hardware => pop('b', 'c', hardware), 'POP bc'),
+	new Operator('PopDE', 0xD1, hardware => pop('d', 'e', hardware), 'POP de'),
+	new Operator('PopHL', 0xE1, hardware => pop('h', 'l', hardware), 'POP hl'),
+	new Operator('PopAF', 0xF1, hardware => pop('a', 'flags', hardware), 'POP af'),
 ];

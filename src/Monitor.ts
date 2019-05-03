@@ -2,7 +2,7 @@ import {Application} from './Application';
 import {CpuInstructionCallEvent} from './Emulator/CPU/Events/CpuInstructionCallEvent';
 import {RegisterKey} from './Emulator/CPU/Registers';
 import {ResetEvent} from './Emulator/Events/ResetEvent';
-import {lpad, toHex} from './Emulator/util';
+import {lpad, rpad, toHex} from './Emulator/util';
 import {isAfterInstructionCallEvent, isTickableCpu} from './guards';
 
 const registerKeys: RegisterKey[] = ['a', 'b', 'c', 'd', 'e', 'h', 'l', 'flags', 'programCount', 'stackPointer', 'm', 't'];
@@ -97,6 +97,7 @@ class InstructionMonitor {
 		line.innerHTML = `
 			${lpad((cpu.registers.programCount - 1).toString(), 5, '&nbsp;')} (${toHex(cpu.registers.programCount - 1, 4)}):
 			[${toHex(event.operator.opcode)}]
+			${rpad(event.operator.mnemonic, 20, '&nbsp;')}
 			${event.operator.name}
 		`;
 

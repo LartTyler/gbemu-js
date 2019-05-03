@@ -6,7 +6,8 @@ export type OperatorCallback = (hardware: HardwareBusInterface) => void;
 export interface OperatorInterface {
 	readonly opcode: number;
 	readonly name: string;
-	readonly mnemonic?: string;
+	readonly mnemonic: string;
+	readonly width: number;
 
 	invoke: OperatorCallback;
 }
@@ -15,14 +16,22 @@ export class Operator implements OperatorInterface {
 	public readonly name: string;
 	public readonly opcode: number;
 	public readonly mnemonic: string;
+	public readonly width: number;
 
 	private readonly callback: OperatorCallback;
 
-	public constructor(name: string, opcode: number, callback: OperatorCallback, mnemonic?: string) {
+	public constructor(
+		name: string,
+		opcode: number,
+		callback: OperatorCallback,
+		mnemonic: string = null,
+		width: number = 1,
+	) {
 		this.name = name;
 		this.opcode = opcode;
 		this.callback = callback;
 		this.mnemonic = mnemonic || '???';
+		this.width = width;
 	}
 
 	public invoke(hardware: HardwareBusInterface): void {
